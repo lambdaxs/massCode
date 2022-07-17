@@ -20,3 +20,36 @@ export const flatToNested = (
       children: flatToNested(items, item[idLink])
     }))
 }
+
+export const formatSecond = (second: number)=> {
+  if (second === 0) {
+    return ''
+  }
+  const days = Math.floor(second / 86400);
+  const hours = Math.floor((second % 86400) / 3600);
+  const minutes = Math.floor(((second % 86400) % 3600) / 60);
+  const seconds = Math.floor(((second % 86400) % 3600) % 60);
+
+  console.log(days,hours, minutes, seconds);
+
+  const hourStr = PrefixZero(hours, 2);
+  const minuteStr = PrefixZero(minutes, 2);
+  const secondStr = PrefixZero(seconds, 2);
+
+  if (days) {
+    return `${days}d:${hourStr}:${minuteStr}:${secondStr}`
+  }
+  if (hours) {
+    return `${hourStr}:${minuteStr}:${secondStr}`
+  }
+  if (minutes) {
+    return `${minuteStr}:${secondStr}`
+  }
+  return `0:${secondStr}`;
+}
+
+
+function PrefixZero(num:number, n:number) {
+  return (Array(n).join('0') + num).slice(-n);
+}
+

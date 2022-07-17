@@ -19,6 +19,9 @@
           </option>
         </select>
       </span>
+      <spna>
+        {{snippetStore.selected.costTime?`任务耗时:${formatSecond(snippetStore.selected.costTime)}`:''}}
+      </spna>
       <span>
         Line {{ cursorPosition.row + 1 }}, Column
         {{ cursorPosition.column + 1 }}
@@ -39,6 +42,7 @@ import { useSnippetStore } from '@/store/snippets'
 import { ipc, track } from '@/electron'
 import { emitter } from '@/composable'
 import { useFolderStore } from '@/store/folders'
+import {formatSecond} from '@/utils'
 
 interface Props {
   lang: Language

@@ -86,6 +86,11 @@ export const onCopySnippet = () => {
   track('snippets/copy')
 }
 
+export const StartMoyu = (title:string)=>{
+  // @ts-ignore
+  ipc.invoke(`tab:startMoyu`, title)
+}
+
 export const setScrollPosition = (el: HTMLElement, offset: number) => {
   const ps = el.querySelector('.ps')
   if (ps) ps.scrollTop = offset

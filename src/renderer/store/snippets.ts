@@ -29,7 +29,8 @@ export const useSnippetStore = defineStore('snippets', {
     sort: 'updatedAt',
     isContextState: false,
     isMarkdownPreview: false,
-    isScreenshotPreview: false
+    isScreenshotPreview: false,
+    currentTaskId: ''
   }),
 
   getters: {
@@ -63,6 +64,9 @@ export const useSnippetStore = defineStore('snippets', {
     isTagsShow (): boolean {
       const appStore = useAppStore()
       return this.tagsCount ? this.tagsCount > 0 : appStore.showTags
+    },
+    isTaskStart(): boolean{
+      return this.currentTaskId === this.selected?.id;
     },
     isDescriptionShow: state =>
       typeof state.selected?.description === 'string'
@@ -100,6 +104,9 @@ export const useSnippetStore = defineStore('snippets', {
         store.app.delete('selectedSnippetId')
         this.selected = undefined
       }
+    },
+    async setTaskId(id: string) {
+      this.currentTaskId = id;
     },
     async patchSnippetsById (id: string, body: Partial<Snippet>) {
       const { data } = await useApi(`/snippets/${id}`).patch(body).json()
@@ -141,6 +148,7 @@ export const useSnippetStore = defineStore('snippets', {
       _body.folderId = ''
       _body.tagsIds = []
       _body.description = null
+      _body.costTime = 0
 
       if (body) {
         _body = {

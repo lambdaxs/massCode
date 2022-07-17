@@ -44,6 +44,7 @@ import { computed, ref } from 'vue'
 import type { SystemFolderAlias } from '@shared/types/renderer/sidebar'
 import { useTagStore } from '@/store/tags'
 import { isToday, format } from 'date-fns'
+import { emitter } from '@/composable'
 
 interface Props {
   id: string
@@ -84,6 +85,7 @@ onClickOutside(itemRef, () => {
 })
 
 const onClickSnippet = (e: MouseEvent) => {
+
   if (e.shiftKey) {
     if (snippetStore.selectedIndex < props.index) {
       snippetStore.selectedMultiple = snippetStore.snippets.slice(
@@ -105,6 +107,8 @@ const onClickSnippet = (e: MouseEvent) => {
     snippetStore.getSnippetsById(props.id)
     tagStore.getTags()
   }
+
+  emitter.emit('snippet:click', props.id);
 }
 
 const onClickContextMenu = async () => {

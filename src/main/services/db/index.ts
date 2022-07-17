@@ -310,7 +310,8 @@ export const migrateFromSnippetsLabOld = (path: string) => {
       isDeleted: false,
       isFavorites: false,
       createdAt: new Date(i['Date Created']).valueOf(),
-      updatedAt: new Date(i['Date Modified']).valueOf()
+      updatedAt: new Date(i['Date Modified']).valueOf(),
+      costTime: 0,
     }
 
     if (i.Fragments.length) {
@@ -445,7 +446,8 @@ export const migrateFromSnippetsLabNew = (path: string) => {
       isDeleted: false,
       isFavorites: false,
       content: createContent(s.fragments),
-      tagsIds: s.tags || []
+      tagsIds: s.tags || [],
+      costTime:0,
     })
   })
 

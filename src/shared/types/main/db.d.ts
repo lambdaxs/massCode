@@ -34,6 +34,7 @@ export interface Snippet {
   isDeleted: boolean
   createdAt: number
   updatedAt: number
+  costTime: number
 }
 
 export interface Tag {
