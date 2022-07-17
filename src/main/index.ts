@@ -46,6 +46,8 @@ function createWindow () {
   mainWindow.on('resize', () => storeBounds(mainWindow))
   mainWindow.on('move', () => storeBounds(mainWindow))
 
+  mainWindow.webContents.setBackgroundThrottling(false);
+
   checkForUpdateWithInterval()
 }
 

@@ -69,7 +69,7 @@ import { useAppStore } from '@/store/app'
 import { ipcRenderer } from "electron"
 import {formatSecond} from '@/utils'
 
-import {setTimeout,setInterval,clearTimeout,clearInterval} from 'timers-browserify';
+import {setInterval, clearInterval} from 'timers-browserify';
 
 const snippetStore = useSnippetStore()
 const appStore = useAppStore()
@@ -100,15 +100,16 @@ const name = computed({
 
 const startTaskTimer = ()=>{
 
+
   const snippetStore = useSnippetStore()
 
   //设置当前任务id
-  snippetStore.setTaskId(snippetStore.selected?.id)
+  snippetStore.setTaskId(snippetStore.selected?.id || '')
 
 
   timer = setInterval(()=>{
 
-    let value = costNumber.value;
+    let value = costNumber?.value || 0;
     value++;
     costNumber.value = value;
 

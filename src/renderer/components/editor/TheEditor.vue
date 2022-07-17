@@ -19,9 +19,9 @@
           </option>
         </select>
       </span>
-      <spna>
+      <span>
         {{snippetStore.selected.costTime?`任务耗时:${formatSecond(snippetStore.selected.costTime)}`:''}}
-      </spna>
+      </span>
       <span>
         Line {{ cursorPosition.row + 1 }}, Column
         {{ cursorPosition.column + 1 }}
