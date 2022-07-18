@@ -92,6 +92,7 @@ import Inbox from '~icons/unicons/inbox'
 import Favorite from '~icons/unicons/favorite'
 import Archive from '~icons/unicons/archive'
 import Trash from '~icons/unicons/trash'
+import DoneIcon from '~icons/unicons/check'
 import LabelAlt from '~icons/unicons/label-alt'
 import { useFolderStore } from '@/store/folders'
 import { useSnippetStore } from '@/store/snippets'
@@ -114,7 +115,8 @@ const systemFolders: SidebarSystemFolder[] = [
   { name: 'Inbox', alias: 'inbox', icon: Inbox },
   { name: 'Favorites', alias: 'favorites', icon: Favorite },
   { name: 'All Snippets', alias: 'all', icon: Archive },
-  { name: 'Trash', alias: 'trash', icon: Trash }
+  { name: 'Trash', alias: 'trash', icon: Trash },
+  { name: 'Done', alias: 'done', icon: DoneIcon }
 ]
 
 const tabs: Tabs[] = [
@@ -152,6 +154,9 @@ const onUpdate = async () => {
 }
 
 const onDrop = async (e: DragEvent, id: string) => {
+
+  console.log('onDrop=========')
+
   const payload = e.dataTransfer?.getData('payload')
 
   if (payload) {
@@ -166,6 +171,7 @@ const onDrop = async (e: DragEvent, id: string) => {
 }
 
 const onDragEnter = (id: string) => {
+  console.log('onDragEnter=========')
   folderStore.hoveredId = id
 }
 

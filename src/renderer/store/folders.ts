@@ -29,6 +29,8 @@ export const useFolderStore = defineStore('folders', {
       const { data } = await useApi<Folder[]>('/folders').get().json()
       this.folders = data.value
       this.foldersTree = flatToNested(this.folders.filter(i => !i.isSystem))
+
+      console.log('getFolders', this.foldersTree);
     },
     async addNewFolder () {
       const snippetStore = useSnippetStore()

@@ -15,7 +15,7 @@ export interface FolderTree extends Folder {
   children: Folder[]
 }
 
-export type SnippetsSort = 'updatedAt' | 'createdAt' | 'name'
+export type SnippetsSort = 'updatedAt' | 'createdAt' | 'name' | 'index'
 
 export interface SnippetContent {
   label: string
@@ -35,6 +35,8 @@ export interface Snippet {
   createdAt: number
   updatedAt: number
   costTime: number
+  isDone: boolean
+  index: number
 }
 
 export interface Tag {

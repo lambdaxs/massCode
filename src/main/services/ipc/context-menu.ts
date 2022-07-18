@@ -64,7 +64,17 @@ export const subscribeToContextMenu = () => {
 
         const defaultMenu: MenuItemConstructorOptions[] = [
           {
-            label: 'Add to Favorites',
+            label: '置顶',
+            click: () => {
+              resolve({
+                action: 'top',
+                type,
+                data: true
+              })
+            }
+          },
+          {
+            label: '收藏',
             click: () => {
               resolve({
                 action: 'favorites',
@@ -75,7 +85,7 @@ export const subscribeToContextMenu = () => {
           },
           { type: 'separator' },
           {
-            label: 'Duplicate',
+            label: '复制',
             click: () => {
               resolve({
                 action: 'duplicate',
@@ -85,7 +95,7 @@ export const subscribeToContextMenu = () => {
             }
           },
           {
-            label: 'Delete',
+            label: '删除',
             click: () => {
               resolve({
                 action: 'delete',
@@ -156,6 +166,42 @@ export const subscribeToContextMenu = () => {
           }
         ]
 
+        const doneMenu: MenuItemConstructorOptions[] = [
+          {
+            label: '立即删除',
+            click: () => {
+              const message =
+                selectedCount === 0
+                  ? `是否永久删除 "${name}"?`
+                  : `是否永久删除 ${selectedCount} 个选择的文档?`
+              const buttonId = dialog.showMessageBoxSync(
+                BrowserWindow.getFocusedWindow()!,
+                {
+                  message,
+                  detail: 'You cannot undo this action.',
+                  buttons: ['Delete', 'Cancel'],
+                  defaultId: 0,
+                  cancelId: 1
+                }
+              )
+
+              if (buttonId === 0) {
+                resolve({
+                  action: 'delete',
+                  type,
+                  data: undefined
+                })
+              } else {
+                resolve({
+                  action: 'none',
+                  type,
+                  data: undefined
+                })
+              }
+            }
+          }
+        ]
+
         if (type === 'folder' || type === 'all' || type === 'inbox') {
           defaultMenu.forEach(i => {
             menu.append(new MenuItem(i))
@@ -172,6 +218,13 @@ export const subscribeToContextMenu = () => {
 
         if (type === 'trash') {
           trashMenu.forEach(i => {
+            menu.append(new MenuItem(i))
+            menu.popup({ window: BrowserWindow.getFocusedWindow()! })
+          })
+        }
+
+        if (type === 'done') {
+          doneMenu.forEach(i => {
             menu.append(new MenuItem(i))
             menu.popup({ window: BrowserWindow.getFocusedWindow()! })
           })

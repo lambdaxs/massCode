@@ -24,6 +24,12 @@
           <UniconsPause v-else />
         </AppActionButton>
 
+        <AppActionButton @click="onClickDone">
+          <UniconsCheck />
+        </AppActionButton>
+
+
+
         <AppActionButton @click="onClickScreenshotPreview">
           <UniconsCamera v-if="!snippetStore.isScreenshotPreview" />
           <UniconsCameraSlash v-else />
@@ -70,9 +76,11 @@ import { ipcRenderer } from "electron"
 import {formatSecond} from '@/utils'
 
 import {setInterval, clearInterval} from 'timers-browserify';
+import { useFolderStore } from '@/store/folders'
 
 const snippetStore = useSnippetStore()
 const appStore = useAppStore()
+const folderStore = useFolderStore();
 
 const inputRef = ref<HTMLInputElement>()
 
@@ -146,15 +154,37 @@ const onClickScreenshotPreview = () => {
   snippetStore.isScreenshotPreview = !snippetStore.isScreenshotPreview
 }
 
-const onClickMoyu = ()=>{
+const onClickDone = async ()=>{
+  const id = snippetStore.selected?.id || '';
+  await snippetStore.patchSnippetsById(id, {
+    isDone: true,
+  })
+
+  await snippetStore.getSnippetsByFolderIds(folderStore.selectedIds!)
+  snippetStore.selected = snippetStore.snippets[0]
+}
+
+const onClickMoyu = async()=>{
 
   console.log('123', snippetStore.isTaskStart);
 
   if (snippetStore.isTaskStart) {//执行任务中，可暂停
+
     clearInterval(timer);
     snippetStore.setTaskId('');
+
   }else {//未执行任务，可开始
     startTaskTimer();
+    //任务置顶
+    const id = snippetStore.selected?.id || '';
+
+    await snippetStore.patchSnippetsById(id, {
+      index: 999,
+    })
+
+    //刷新文档列表
+    await snippetStore.getSnippetsByFolderIds(folderStore.selectedIds!)
+    snippetStore.selected = snippetStore.snippets[0]
   }
 }
 

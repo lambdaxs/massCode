@@ -2,7 +2,7 @@ import type { Folder } from '@shared/types/main/db'
 import type { FunctionalComponent } from 'vue'
 
 export type Tab = 'library' | 'tags'
-export type SystemFolderAlias = 'inbox' | 'favorites' | 'trash' | 'all'
+export type SystemFolderAlias = 'inbox' | 'favorites' | 'trash' | 'all' | 'done'
 
 export interface Tabs {
   label: string

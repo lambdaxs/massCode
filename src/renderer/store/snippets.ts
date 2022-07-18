@@ -92,7 +92,9 @@ export const useSnippetStore = defineStore('snippets', {
         snippets.push(...data.value)
       }
 
-      this.snippets = snippets.filter(i => !i.isDeleted)
+      this.snippets = snippets.filter(i => {
+         return !(i.isDeleted || i.isDone)
+      })
       sortSnippetsBy(this.snippets, this.sort)
     },
     async getSnippetsById (id: string) {
@@ -149,6 +151,7 @@ export const useSnippetStore = defineStore('snippets', {
       _body.tagsIds = []
       _body.description = null
       _body.costTime = 0
+      _body.index = 1
 
       if (body) {
         _body = {
@@ -257,6 +260,10 @@ export const useSnippetStore = defineStore('snippets', {
 
       if (alias === 'trash') {
         snippets = this.all.filter(i => i.isDeleted)
+      }
+
+      if (alias === 'done') {
+        snippets = this.all.filter(i => i.isDone)
       }
 
       this.snippets = snippets

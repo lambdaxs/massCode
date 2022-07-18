@@ -18,6 +18,9 @@
         <span>
           {{ name || 'Untitled snippet' }}
         </span>
+        <span class="cost" v-if="folderStore.selectedAlias === 'done'">
+            {{ `耗时:${formatSecond(snippetStore.selected.costTime)}` || '' }}
+        </span>
       </div>
     </div>
     <div class="footer">
@@ -45,6 +48,7 @@ import type { SystemFolderAlias } from '@shared/types/renderer/sidebar'
 import { useTagStore } from '@/store/tags'
 import { isToday, format } from 'date-fns'
 import { emitter } from '@/composable'
+import {formatSecond} from '@/utils'
 
 interface Props {
   id: string
@@ -86,6 +90,8 @@ onClickOutside(itemRef, () => {
 
 const onClickSnippet = (e: MouseEvent) => {
 
+  console.log(folderStore.selectedAlias);
+
   if (e.shiftKey) {
     if (snippetStore.selectedIndex < props.index) {
       snippetStore.selectedMultiple = snippetStore.snippets.slice(
@@ -112,6 +118,7 @@ const onClickSnippet = (e: MouseEvent) => {
 }
 
 const onClickContextMenu = async () => {
+
   isHighlighted.value = true
   snippetStore.isContextState = true
 
@@ -154,13 +161,14 @@ const onClickContextMenu = async () => {
     if (type === 'folder') {
       await moveToTrash()
       track('snippets/move-to-trash')
+      console.log("delete folder")
     }
 
     if (type === 'favorites' || type === 'all' || type === 'inbox') {
       await moveToTrash(type)
     }
 
-    if (type === 'trash') {
+    if (type === 'trash' || type === 'done') {//清理垃圾箱 或 已完成的任务
       if (snippetStore.selectedIds.length) {
         await snippetStore.deleteSnippetsByIds(snippetStore.selectedIds)
       } else {
@@ -209,6 +217,15 @@ const onClickContextMenu = async () => {
     if (type === 'favorites') {
       snippetStore.setSnippetsByAlias(type)
     }
+  }
+
+  if (action === 'top') {//todo 置顶功能
+    await snippetStore.patchSnippetsById(props.id, {
+      index: 999,
+    })
+
+    await snippetStore.getSnippetsByFolderIds(folderStore.selectedIds!)
+    snippetStore.selected = snippetStore.snippets[0]
   }
 
   isHighlighted.value = false
@@ -328,6 +345,9 @@ const onDragEnd = () => {
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
+  }
+  .cost {
+    font-size: 11px;
   }
 }
 .footer {

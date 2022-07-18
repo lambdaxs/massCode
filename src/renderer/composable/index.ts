@@ -110,6 +110,10 @@ export const sortSnippetsBy = (snippets: Snippet[], sort: SnippetsSort) => {
       a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
     )
   }
+
+  if (sort === 'index') {
+    snippets.sort((a, b) => (a.index > b.index ? -1 : 1))
+  }
 }
 
 export const useHljsTheme = async (theme: 'dark' | 'light') => {

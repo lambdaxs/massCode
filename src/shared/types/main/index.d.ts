@@ -20,6 +20,7 @@ type ContextMenuAction =
   | 'new'
   | 'update:language'
   | 'none'
+  | 'top'
 
 export type ContextMenuType =
   | 'folder'
@@ -28,6 +29,7 @@ export type ContextMenuType =
   | 'trash'
   | 'favorites'
   | 'tag'
+  | 'done'
 
 type MainMenuAction =
   | 'add-description'
