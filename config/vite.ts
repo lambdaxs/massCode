@@ -8,8 +8,6 @@ import { FileSystemIconLoader } from 'unplugin-icons/loaders'
 import IconsResolver from 'unplugin-icons/resolver'
 
 
-import optimizer from "vite-plugin-optimizer";
-
 const pathSrc = path.resolve(__dirname, '../../src/renderer')
 const pathOut = path.resolve(__dirname, '../renderer')
 
@@ -41,12 +39,6 @@ export default defineConfig({
     target: 'esnext',
   },
   plugins: [
-    optimizer({
-      timers: () => ({
-        find: /^(node:)?timers$/,
-        code: `const timers = require('timers'); export { timers as default }`
-      }),
-    }),
     vuePlugin(),
     AutoImport({
       dts: `${pathSrc}/types/auto-imports.d.ts`

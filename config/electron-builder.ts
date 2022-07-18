@@ -16,7 +16,7 @@ export default {
   mac: {
     target: [
       // { target: 'dmg', arch: 'arm64' },
-      { target: 'dmg', arch: 'x64' }
+      { target: 'dmg', arch: 'x64' },
     ],
     icon: 'config/icons/icon.icns'
   },

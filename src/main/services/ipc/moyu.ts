@@ -1,16 +1,25 @@
 import electron,{ipcMain, Menu,BrowserWindow } from 'electron'
+import { getMainWindow } from '../mainwindows';
+import { homedir, platform } from 'os'
+
 const Tray = electron.Tray;
 const app = electron.app;
-import { getMainWindow } from '../mainwindows';
+
+const isWin = platform() === 'win32'
+
+const defaultPath = isWin ? homedir() + '\\massCode' : homedir() + '/massCode'
+
+
 
 var tray:any = null;
 
 app.on('ready', function(){
 
-  console.log('app ready');
+  console.log('app ready', defaultPath);
   try {
 
-    tray = new Tray('/tmp/Icon.png');
+    tray = new Tray(defaultPath+"/Icon.png");
+
     const contextMenu = Menu.buildFromTemplate([])
     tray.setToolTip('This is my application.')
     tray.setContextMenu(contextMenu)
