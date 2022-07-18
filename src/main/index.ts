@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, Menu, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, shell,globalShortcut } from 'electron'
 import path from 'path'
 import os from 'os'
 import { store } from './store'
@@ -30,7 +30,7 @@ function createWindow () {
       preload: path.resolve(__dirname, 'preload.js'),
       nodeIntegration: true,
       contextIsolation: true,
-      webSecurity: false
+      webSecurity: false,
     }
   })
 
@@ -46,9 +46,9 @@ function createWindow () {
   mainWindow.on('resize', () => storeBounds(mainWindow))
   mainWindow.on('move', () => storeBounds(mainWindow))
 
-  mainWindow.webContents.setBackgroundThrottling(false);
+  // mainWindow.webContents.setBackgroundThrottling(true);
 
-  checkForUpdateWithInterval()
+  // checkForUpdateWithInterval()
 }
 
 const storeBounds = debounce((mainWindow: BrowserWindow) => {
@@ -57,6 +57,12 @@ const storeBounds = debounce((mainWindow: BrowserWindow) => {
 
 app.whenReady().then(async () => {
   createWindow()
+
+  globalShortcut.register('CommandOrControl+Shift+L', () => {
+    let focusWin = BrowserWindow.getFocusedWindow()
+    focusWin && focusWin.webContents.toggleDevTools()
+  })
+
 
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the

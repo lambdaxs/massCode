@@ -56,17 +56,25 @@ type MainAction =
 
 type ApiAction = 'snippet-create'
 
+type TabAction =
+  | 'startTask'
+  | 'stopTask'
+  | 'startMoyu'
+  | 'updateCostTime'
+
 export type ContextMenuChannel = CombineWith<ChannelSubject, 'context-menu'>
 
 export type MainMenuChannel = CombineWith<MainMenuAction, 'main-menu'>
 export type MainChannel = CombineWith<MainAction, 'main'>
 export type ApiChannel = CombineWith<ApiAction, 'api'>
+export type TabChannel = CombineWith<TabAction, 'tab'>
 
 export type Channel =
   | ContextMenuChannel
   | MainMenuChannel
   | MainChannel
   | ApiChannel
+  | TabChannel
 export interface ContextMenuRequest {
   name?: string
   type: ContextMenuType

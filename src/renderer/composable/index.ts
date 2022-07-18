@@ -87,8 +87,29 @@ export const onCopySnippet = () => {
 }
 
 export const StartMoyu = (title:string)=>{
-  // @ts-ignore
   ipc.invoke(`tab:startMoyu`, title)
+}
+
+//监听定时器回调
+export const initStartTask = (updateFunc:any)=>{
+  ipc.on('tab:updateCostTime',(event, args)=>{
+    console.log(event, args);
+    updateFunc(args);
+  })
+}
+
+//开启定时任务
+export const StartTask = (id:string, title:string, costTime: number)=>{
+  ipc.invoke(`tab:startTask`, {
+    id,
+    title,
+    costTime,
+  })
+}
+
+//停止定时任务
+export const StopTask = () =>{
+  ipc.invoke(`tab:stopTask`, "")
 }
 
 export const setScrollPosition = (el: HTMLElement, offset: number) => {
@@ -97,6 +118,10 @@ export const setScrollPosition = (el: HTMLElement, offset: number) => {
 }
 
 export const sortSnippetsBy = (snippets: Snippet[], sort: SnippetsSort) => {
+  if (snippets === null) {
+    snippets = []
+  }
+
   if (sort === 'updatedAt') {
     snippets.sort((a, b) => (a.updatedAt > b.updatedAt ? -1 : 1))
   }

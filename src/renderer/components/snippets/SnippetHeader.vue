@@ -65,18 +65,23 @@ import {
   onAddDescription,
   onCopySnippet,
   StartMoyu,
-  emitter
+  StartTask,
+  StopTask,
+  emitter, initStartTask,
 } from '@/composable'
 
 import { useSnippetStore } from '@/store/snippets'
 import { useDebounceFn } from '@vueuse/core'
-import { computed, onUnmounted, ref } from 'vue'
+import { computed, onUnmounted, ref,onMounted } from 'vue'
 import { useAppStore } from '@/store/app'
 import { ipcRenderer } from "electron"
 import {formatSecond} from '@/utils'
-
-import {setInterval, clearInterval} from 'timers-browserify';
 import { useFolderStore } from '@/store/folders'
+
+
+// import {setInterval, clearInterval} from 'timers'
+
+
 
 const snippetStore = useSnippetStore()
 const appStore = useAppStore()
@@ -108,42 +113,27 @@ const name = computed({
 
 const startTaskTimer = ()=>{
 
-
   const snippetStore = useSnippetStore()
+  const title = snippetStore.selected?.name || '';
+  const id = snippetStore.selected?.id || '';
+  let value = costNumber?.value || 0;
+  StartTask(id, title, value);
 
   //设置当前任务id
   snippetStore.setTaskId(snippetStore.selected?.id || '')
 
-
-  timer = setInterval(()=>{
-
-    let value = costNumber?.value || 0;
-    value++;
-    costNumber.value = value;
-
-    const costStr = formatSecond(value)
-    const title = snippetStore.selected?.name +' '+costStr;
-    StartMoyu(title);
-
-  }, 1000);
+  return;
 }
 
 const stopTaskTimer = () => {
 
-  if (timer !== null) {
-
-    const snippetStore = useSnippetStore()
-
-    //取消当前任务id
+  //取消当前任务
+  if (snippetStore.isTaskStart) {
     snippetStore.setTaskId('');
-
     StartMoyu('');
-
-    clearInterval(timer)
-
-    timer = null;
+    StopTask();
   }
-
+  return;
 }
 
 const onClickMarkdownPreview = () => {
@@ -170,7 +160,7 @@ const onClickMoyu = async()=>{
 
   if (snippetStore.isTaskStart) {//执行任务中，可暂停
 
-    clearInterval(timer);
+    StopTask();
     snippetStore.setTaskId('');
 
   }else {//未执行任务，可开始
@@ -199,8 +189,18 @@ emitter.on('folder:click', ()=>{
 })
 
 emitter.on('snippet:click',(id: string)=>{
-  console.log('change snippet', id)
   stopTaskTimer();
+})
+
+const updateFunc = async(data:any)=>{
+  const {id, costTime} = data;
+  await snippetStore.patchSnippetsById(id, {
+    costTime: costTime,
+  })
+}
+
+onMounted(()=>{
+  initStartTask(updateFunc);
 })
 
 onUnmounted(() => {

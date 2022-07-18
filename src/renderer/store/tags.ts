@@ -13,7 +13,7 @@ export const useTagStore = defineStore('tags', {
   actions: {
     async getTags () {
       const { data } = await useApi('/tags').get().json()
-      this.tags = data.value
+      this.tags = data.value || [];
       this.tags.sort((a, b) => (a.name > b.name ? 1 : -1))
     },
     async postTags (name: string): Promise<Tag> {

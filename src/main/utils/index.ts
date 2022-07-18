@@ -45,3 +45,4 @@ export function nestedToFlat (items: any[], link = 'id') {
 
   return flatList.map(({ children, ...rest }) => rest)
 }
+

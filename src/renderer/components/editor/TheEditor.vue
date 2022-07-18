@@ -20,7 +20,7 @@
         </select>
       </span>
       <span>
-        {{snippetStore.selected.costTime?`任务耗时:${formatSecond(snippetStore.selected.costTime)}`:''}}
+        {{snippetStore.selected?.costTime?`任务耗时:${formatSecond(snippetStore.selected?.costTime)}`:''}}
       </span>
       <span>
         Line {{ cursorPosition.row + 1 }}, Column

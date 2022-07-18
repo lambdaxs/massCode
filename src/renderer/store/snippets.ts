@@ -76,7 +76,7 @@ export const useSnippetStore = defineStore('snippets', {
     async getSnippets () {
       const { data } = await useApi('/snippets/embed-folder').get().json()
 
-      this.all = data.value
+      this.all = data.value || [];
       sortSnippetsBy(this.all, this.sort)
     },
     async getSnippetsByFolderIds (ids: string[]) {

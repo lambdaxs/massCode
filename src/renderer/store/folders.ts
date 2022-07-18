@@ -27,7 +27,7 @@ export const useFolderStore = defineStore('folders', {
   actions: {
     async getFolders () {
       const { data } = await useApi<Folder[]>('/folders').get().json()
-      this.folders = data.value
+      this.folders = data.value || [];
       this.foldersTree = flatToNested(this.folders.filter(i => !i.isSystem))
 
       console.log('getFolders', this.foldersTree);
@@ -97,11 +97,20 @@ export const useFolderStore = defineStore('folders', {
       return folder
     },
     getIds (folders: FolderTree[]) {
+
       const ids: string[] = []
+
+      folders = folders.filter(i=>i)
+
+      if (folders.length === 0) {
+        return ids;
+      }
+
+
 
       const find = (folders: FolderTree[]) => {
         folders.forEach(i => {
-          ids.push(i.id)
+          ids.push(i?.id)
 
           if (i.children && i.children.length) {
             find(i.children as FolderTree[])
