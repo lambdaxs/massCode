@@ -19,7 +19,7 @@
           {{ name || 'Untitled snippet' }}
         </span>
         <span class="cost" v-if="folderStore.selectedAlias === 'done'">
-            {{ `耗时:${formatSecond(snippetStore.selected?.costTime || 0)}` || '' }}
+            {{ `耗时:${formatSecond(costTime || 0)}` || '' }}
         </span>
       </div>
     </div>
@@ -56,6 +56,7 @@ interface Props {
   name: string
   folder?: string
   date: number
+  costTime: number
 }
 
 const props = defineProps<Props>()
@@ -132,6 +133,7 @@ const onClickContextMenu = async () => {
   ContextMenuResponse
   >('context-menu:snippet', {
     name: props.name,
+    costTime: props.costTime,
     type: folderStore.selectedAlias ?? 'folder',
     selectedCount: snippetStore.selectedMultiple.length
   })

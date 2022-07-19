@@ -75,11 +75,13 @@ export type Channel =
   | MainChannel
   | ApiChannel
   | TabChannel
+  
 export interface ContextMenuRequest {
   name?: string
   type: ContextMenuType
   data?: any
   selectedCount?: number
+  costTime?: number
 }
 
 export interface ContextMenuResponse {

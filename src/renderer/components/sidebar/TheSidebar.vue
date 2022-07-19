@@ -171,7 +171,6 @@ const onDrop = async (e: DragEvent, id: string) => {
 }
 
 const onDragEnter = (id: string) => {
-  console.log('onDragEnter=========')
   folderStore.hoveredId = id
 }
 

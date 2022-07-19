@@ -20,6 +20,7 @@
           :folder="i.folder?.name"
           :date="i.updatedAt"
           :name="i.name"
+          :cost-time="i.costTime"
         />
       </PerfectScrollbar>
     </div>
