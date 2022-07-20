@@ -16,9 +16,10 @@ var tray:any = null;
 app.on('ready', function(){
 
   console.log('app ready', defaultPath);
+
   try {
 
-    tray = new Tray(defaultPath+"/Icon.png");
+    tray = new Tray(defaultPath+"/Icon_Template.png");
 
     const contextMenu = Menu.buildFromTemplate([])
     tray.setToolTip('This is my application.')
