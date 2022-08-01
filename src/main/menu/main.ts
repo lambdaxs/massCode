@@ -335,7 +335,7 @@ const editorMenu: MenuItemConstructorOptions[] = [
   },
   {
     label: 'Preview Markdown',
-    accelerator: 'Shift+CommandOrControl+M',
+    accelerator: 'CommandOrControl+M',
     click: () => {
       BrowserWindow.getFocusedWindow()?.webContents.send(
         'main-menu:preview-markdown'
