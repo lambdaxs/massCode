@@ -59,7 +59,7 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  lang: 'typescript'
+  lang: 'markdown'
 })
 
 const emit = defineEmits<Emits>()

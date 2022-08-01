@@ -272,7 +272,7 @@ export const migrateFromSnippetsLabOld = (path: string) => {
     db.folders.push({
       id: nanoid(8),
       name: i,
-      defaultLanguage: 'plain_text',
+      defaultLanguage: 'markdown',
       parentId: null,
       isOpen: false,
       isSystem: false,
@@ -390,7 +390,7 @@ export const migrateFromSnippetsLabNew = (path: string) => {
         updatedAt: new Date().valueOf(),
         isOpen: false,
         isSystem: false,
-        defaultLanguage: 'plain_text',
+        defaultLanguage: 'markdown',
         parentId
       }
 

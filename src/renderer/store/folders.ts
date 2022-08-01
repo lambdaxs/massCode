@@ -40,7 +40,7 @@ export const useFolderStore = defineStore('folders', {
         parentId: null,
         isOpen: false,
         isSystem: false,
-        defaultLanguage: 'plain_text'
+        defaultLanguage: 'markdown'
       }
 
       const { data } = await useApi('/folders').post(body).json()

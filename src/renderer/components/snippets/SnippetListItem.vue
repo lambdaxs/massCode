@@ -18,7 +18,7 @@
         <span>
           {{ name || 'Untitled snippet' }}
         </span>
-        <span class="cost" v-if="folderStore.selectedAlias === 'done'">
+        <span class="cost" v-if="costTime && costTime > 0">
             {{ `耗时:${formatSecond(costTime || 0)}` || '' }}
         </span>
       </div>

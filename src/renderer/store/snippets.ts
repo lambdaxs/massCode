@@ -165,7 +165,7 @@ export const useSnippetStore = defineStore('snippets', {
         _body.content = [
           {
             label: 'Fragment 1',
-            language: folderStore.selected?.defaultLanguage || 'plain_text',
+            language: folderStore.selected?.defaultLanguage || 'markdown',
             value: ''
           }
         ]

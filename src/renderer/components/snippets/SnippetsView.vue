@@ -61,7 +61,7 @@ const snippet = computed({
 })
 
 const lang = computed({
-  get: () => snippetStore.currentLanguage || 'plain_text',
+  get: () => snippetStore.currentLanguage || 'markdown',
   set: v => {
     snippetStore.patchCurrentSnippetContentByKey('language', v)
   }
