@@ -1,0 +1,33 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "strict": true,
+    "jsx": "preserve",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM"],
+    "outDir": "./build",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@shared/*": ["./src/shared/*"],
+      "@renderer/*": ["./src/renderer/*"],
+      "@main/*": ["./src/main/*"]
+    }
+  },
+  "include": [
+    "./config/*.ts",
+    "./scripts/*.ts",
+    "./src/main/**/*.ts",
+    "./src/main/**/*.d.ts",
+    "./src/shared/**/*.ts",
+    "./src/shared/**/*.d.ts"
+  ],
+  "exclude": [
+    "./node_modules",
+  ]
+}
