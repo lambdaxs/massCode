@@ -1,4 +1,5 @@
 import electron,{ipcMain, Menu,BrowserWindow } from 'electron'
+import timers from 'timers';
 import { getMainWindow } from '../mainwindows';
 import { homedir, platform } from 'os'
 
@@ -10,8 +11,9 @@ const isWin = platform() === 'win32'
 const defaultPath = isWin ? homedir() + '\\massCode' : homedir() + '/massCode'
 
 
-
 var tray:any = null;
+let timer:any = null;
+
 
 app.on('ready', function(){
 
@@ -21,7 +23,18 @@ app.on('ready', function(){
 
     tray = new Tray(defaultPath+"/Icon_Template.png");
 
-    const contextMenu = Menu.buildFromTemplate([])
+    const contextMenu = Menu.buildFromTemplate([
+      {
+        label: '清除',
+        click: () => {
+          if (timer !== null) {
+            timers.clearInterval(timer)
+            timer = null
+          }
+          tray.setTitle('');
+        }
+      }
+    ])
     tray.setToolTip('This is my application.')
     tray.setContextMenu(contextMenu)
 
@@ -30,13 +43,11 @@ app.on('ready', function(){
       mainWindow.show();
     })
 
+
   }catch (e) {
     console.log(e);
   }
 })
-
-let timer:any = null;
-import timers from 'timers';
 
 export const subscribeToMoyu = () => {
 
