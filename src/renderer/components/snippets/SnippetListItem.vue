@@ -21,6 +21,9 @@
         <span class="cost" v-if="costTime && costTime > 0">
             {{ `耗时:${formatSecond(costTime || 0)}` || '' }}
         </span>
+        <div v-if="tagValueList && tagValueList.length > 0">
+          <span v-for="i in tagValueList" class="tag-view">{{i.name}}</span>
+        </div>
       </div>
     </div>
     <div class="footer">
@@ -57,6 +60,7 @@ interface Props {
   folder?: string
   date: number
   costTime: number
+  tagList: string[]
 }
 
 const props = defineProps<Props>()
@@ -77,6 +81,14 @@ const isSelected = computed(() => {
   }
 })
 
+const tagValueList = computed(() => {
+  const ids = props.tagList || []
+  if (props.tagList.length > 0) {
+    return tagStore.tags.filter(t => ids.indexOf(t.id) !== -1)
+  }
+  return []
+})
+
 const isHighlightedMultiple = computed(() => {
   if (snippetStore.selectedMultiple && snippetStore.isContextState) {
     return snippetStore.selectedMultiple?.some(i => i.id === props.id)
@@ -91,7 +103,7 @@ onClickOutside(itemRef, () => {
 
 const onClickSnippet = (e: MouseEvent) => {
 
-  console.log(folderStore.selectedAlias);
+  console.log("aaaaaaaa",props.tagList);
 
   if (e.shiftKey) {
     if (snippetStore.selectedIndex < props.index) {
@@ -135,7 +147,7 @@ const onClickContextMenu = async () => {
     name: props.name,
     costTime: props.costTime,
     type: folderStore.selectedAlias ?? 'folder',
-    selectedCount: snippetStore.selectedMultiple.length
+    selectedCount: snippetStore.selectedMultiple.length,
   })
 
   const moveToTrash = async (alias?: SystemFolderAlias) => {
@@ -350,6 +362,17 @@ const onDragEnd = () => {
   }
   .cost {
     font-size: 11px;
+  }
+  .tag-view {
+    background-color: rgb(225,236,244);
+    box-sizing: border-box;
+    color: rgb(57,115,157);
+    display: inline-block;
+    padding-left: 4px;
+    padding-right: 4px;
+    border-radius: 4px;
+    font-size: 12px;
+    margin-right: 2px;
   }
 }
 .footer {

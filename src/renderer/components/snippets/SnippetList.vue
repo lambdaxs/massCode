@@ -21,6 +21,7 @@
           :date="i.updatedAt"
           :name="i.name"
           :cost-time="i.costTime"
+          :tag-list="i.tagsIds || []"
         />
       </PerfectScrollbar>
     </div>
