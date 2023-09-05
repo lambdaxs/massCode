@@ -1,7 +1,7 @@
 import { useApi } from '@/composable'
 import { store } from '@/electron'
 import { flatToNested } from '@/utils'
-import type { Folder, FolderTree } from '@shared/types/main/db'
+import type { Folder, FolderTree, Snippet } from '@shared/types/main/db'
 import { defineStore } from 'pinia'
 import type { State } from '@shared/types/renderer/store/folders'
 import { nestedToFlat } from '../../main/utils'
@@ -25,12 +25,24 @@ export const useFolderStore = defineStore('folders', {
   },
 
   actions: {
+    async getSnippetList() {
+      const { data } = await useApi('/snippets/embed-folder').get().json()
+      return  data.value || [];
+    },
     async getFolders () {
       const { data } = await useApi<Folder[]>('/folders').get().json()
       this.folders = data.value || [];
+
+      const snippetList = await this.getSnippetList();
+
+      data.value = data.value.map((v:Folder) => {
+        v.count = snippetList.filter((i:Snippet)=>i.folderId==v.id && !i.isDeleted && !i.isDone).length
+        return v;
+      })
+
       this.foldersTree = flatToNested(this.folders.filter(i => !i.isSystem))
 
-      console.log('getFolders', this.foldersTree);
+      console.log('getFolders', this.foldersTree, snippetList);
     },
     async addNewFolder () {
       const snippetStore = useSnippetStore()

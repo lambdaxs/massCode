@@ -75,6 +75,7 @@
             <TheFolder
               :id="node.id"
               :name="node.name"
+              :count="node.count"
             />
           </SidebarListItem>
         </template>

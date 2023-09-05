@@ -152,6 +152,9 @@ const onClickDone = async ()=>{
 
   await snippetStore.getSnippetsByFolderIds(folderStore.selectedIds!)
   snippetStore.selected = snippetStore.snippets[0]
+
+  //刷新folders
+  await folderStore.getFolders();
 }
 
 const onClickMoyu = async()=>{

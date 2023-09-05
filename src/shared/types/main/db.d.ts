@@ -9,6 +9,7 @@ export interface Folder {
   isSystem: boolean
   createdAt: number
   updatedAt: number
+  count: number
 }
 
 export interface FolderTree extends Folder {

@@ -27,6 +27,9 @@ export const onAddNewSnippet = async () => {
     snippetStore.setSnippetsByAlias('inbox')
   }
 
+  //刷新folders
+  await folderStore.getFolders()
+
   emitter.emit('snippet:focus-name', true)
   track('snippets/add-new')
 }

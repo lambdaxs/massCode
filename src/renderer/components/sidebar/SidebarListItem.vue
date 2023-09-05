@@ -112,6 +112,7 @@ const onClickContextMenu = async () => {
     if (action === 'delete') {
       snippetStore.emptyTrash()
       await snippetStore.getSnippets()
+      await folderStore.getFolders()
       track('app/empty-trash')
 
       if (folderStore.selectedAlias === 'trash') {

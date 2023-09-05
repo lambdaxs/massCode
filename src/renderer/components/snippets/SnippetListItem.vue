@@ -21,8 +21,8 @@
         <span class="cost" v-if="costTime && costTime > 0">
             {{ `耗时:${formatSecond(costTime || 0)}` || '' }}
         </span>
-        <div v-if="tagValueList && tagValueList.length > 0">
-          <span v-for="i in tagValueList" class="tag-view">{{i.name}}</span>
+        <div v-if="tagValueList && tagValueList.length > 0" v-for="i in tagValueList">
+          <span class="tag-view">{{i.name}}</span>
         </div>
       </div>
     </div>
@@ -169,6 +169,9 @@ const onClickContextMenu = async () => {
       await snippetStore.getSnippets()
       snippetStore.setSnippetsByAlias(alias)
     }
+
+    //刷新folders
+    await folderStore.getFolders()
   }
 
   if (action === 'delete') {
@@ -191,6 +194,9 @@ const onClickContextMenu = async () => {
       await snippetStore.getSnippets()
       snippetStore.setSnippetsByAlias(type)
     }
+
+    //刷新folders
+    await folderStore.getFolders()
   }
 
   if (action === 'duplicate') {
@@ -205,6 +211,9 @@ const onClickContextMenu = async () => {
       await snippetStore.getSnippets()
       snippetStore.setSnippetsByAlias(type)
     }
+
+    //刷新folders
+    await folderStore.getFolders()
   }
 
   if (action === 'favorites') {
@@ -290,6 +299,9 @@ const onDragStart = (e: DragEvent) => {
 
 const onDragEnd = () => {
   folderStore.hoveredId = ''
+
+  //刷新folders
+  folderStore.getFolders().then(_=>'');
 }
 </script>
 

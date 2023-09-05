@@ -17,6 +17,9 @@
       type="text"
     >
   </div>
+  <span class="count">
+      {{count}}
+    </span>
 </template>
 
 <script setup lang="ts">
@@ -28,6 +31,7 @@ import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 interface Props {
   id: string
   name: string
+  count: number
 }
 
 const props = defineProps<Props>()
@@ -83,4 +87,13 @@ onUnmounted(() => {
 .name {
   user-select: none;
 }
+
+.count {
+  display: inline;
+  padding-right: 8px;
+  font-size: 11px;
+}
+
+
+
 </style>
