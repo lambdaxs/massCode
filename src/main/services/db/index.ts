@@ -277,7 +277,8 @@ export const migrateFromSnippetsLabOld = (path: string) => {
       isOpen: false,
       isSystem: false,
       createdAt: new Date().valueOf(),
-      updatedAt: new Date().valueOf()
+      updatedAt: new Date().valueOf(),
+      count: 0,
     })
   })
 
@@ -391,7 +392,8 @@ export const migrateFromSnippetsLabNew = (path: string) => {
         isOpen: false,
         isSystem: false,
         defaultLanguage: 'markdown',
-        parentId
+        parentId,
+        count: 0,
       }
 
       db.folders.push(_folder)
