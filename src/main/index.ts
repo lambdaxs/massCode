@@ -46,6 +46,12 @@ function createWindow () {
   mainWindow.on('resize', () => storeBounds(mainWindow))
   mainWindow.on('move', () => storeBounds(mainWindow))
 
+  mainWindow.on('close', event => {
+    event.preventDefault()
+    // 点击关闭时触发close事件，我们按照之前的思路在关闭时，隐藏窗口，隐藏任务栏窗口
+    mainWindow.minimize()
+  })
+
   // mainWindow.webContents.setBackgroundThrottling(true);
 
   // checkForUpdateWithInterval()
