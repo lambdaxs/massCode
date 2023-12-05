@@ -13,6 +13,8 @@ import { checkForUpdateWithInterval } from './services/update-check'
 const isDev = process.env.NODE_ENV === 'development'
 const isMac = process.platform === 'darwin'
 
+let isQuitting = false
+
 createDb()
 const apiServer = new ApiServer()
 
@@ -30,7 +32,7 @@ function createWindow () {
       preload: path.resolve(__dirname, 'preload.js'),
       nodeIntegration: true,
       contextIsolation: true,
-      webSecurity: false,
+      webSecurity: false
     }
   })
 
@@ -46,10 +48,26 @@ function createWindow () {
   mainWindow.on('resize', () => storeBounds(mainWindow))
   mainWindow.on('move', () => storeBounds(mainWindow))
 
-  mainWindow.on('close', event => {
-    event.preventDefault()
-    // 点击关闭时触发close事件，我们按照之前的思路在关闭时，隐藏窗口，隐藏任务栏窗口
-    mainWindow.minimize()
+  mainWindow.on('close', function (event) {
+    if (!isQuitting) {
+      event.preventDefault()
+      mainWindow.hide()
+    }
+  })
+
+  app.on('before-quit', function () {
+    isQuitting = true
+  })
+
+  app.on('window-all-closed', function () {
+    if (isQuitting) {
+      app.quit()
+    }
+  })
+
+  // 监听activate事件，在macos下点击dock栏会触发这个事件
+  app.on('activate', function () {
+    mainWindow.show()
   })
 
   // mainWindow.webContents.setBackgroundThrottling(true);
