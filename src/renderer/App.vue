@@ -33,6 +33,7 @@ import { createToast, destroyAllToasts } from 'vercel-toast'
 import { useRoute } from 'vue-router'
 import type { Snippet } from '@shared/types/main/db'
 import { addDays, isSameDay } from 'date-fns'
+import './assets/fonts/font.css'
 
 // По какой то причине необходимо явно установить роут в '/'
 // для корректного поведения в продакшен сборке
@@ -235,6 +236,7 @@ body {
 #app {
   height: 100vh;
   overflow: hidden;
+  font-family: 'crjk';
 }
 .app {
   &-title-bar {
@@ -264,6 +266,10 @@ body {
   -webkit-text-fill-color: transparent;
   background-size: 200% auto;
   animation: shine 3s ease infinite;
+}
+
+.ace_content {
+  font-family: crjk;
 }
 
 @keyframes shine {

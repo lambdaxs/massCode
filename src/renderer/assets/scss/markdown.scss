@@ -56,7 +56,7 @@
   kbd,
   pre,
   samp {
-    font-family: monospace, monospace;
+    font-family: cjrk, monospace, monospace;
     font-size: 1em;
   }
 
@@ -75,7 +75,7 @@
   }
 
   body {
-    font-family: 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans,
+    font-family:crjk, 'Helvetica Neue', Helvetica, 'Segoe UI', Arial, freesans,
       sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
     font-size: 14px;
     line-height: 1.6;
@@ -178,7 +178,7 @@
 
   tt,
   code {
-    font-family: Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-family:crjk, Consolas, 'Liberation Mono', Menlo, Courier, monospace;
     font-size: 12px;
   }
 
@@ -501,45 +501,45 @@
     pre {
       background-color: rgba(0, 0, 0, 0.15);
     }
-  
+
     a,
     a:visited {
       color: var(--color-primary);
     }
-  
+
     a:hover,
     a:active {
       color: var(--color-primary);
     }
-  
+
     h1,
     h2 {
       border-bottom-color: rgba(255, 255, 255, 0.1);
     }
-  
+
     h6 {
       color: rgba(255, 255, 255, 0.5);
     }
-  
+
     hr {
       background-color: rgba(255, 255, 255, 0.1);
     }
-  
+
     blockquote {
       color: rgba(255, 255, 255, 0.5);
       border-left-color: rgba(255, 255, 255, 0.1);
     }
-  
+
     table tr {
       background-color: transparent;
     }
-  
+
     table tr,
     table th,
     table td {
       border-color: rgba(255, 255, 255, 0.1);
     }
-  
+
     .toc {
       background-color: rgba(255, 255, 255, 0.05);
       border: none;

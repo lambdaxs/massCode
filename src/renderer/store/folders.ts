@@ -41,8 +41,6 @@ export const useFolderStore = defineStore('folders', {
       })
 
       this.foldersTree = flatToNested(this.folders.filter(i => !i.isSystem))
-
-      console.log('getFolders', this.foldersTree, snippetList);
     },
     async addNewFolder () {
       const snippetStore = useSnippetStore()
