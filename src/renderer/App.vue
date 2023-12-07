@@ -269,7 +269,7 @@ body {
 }
 
 .ace_content {
-  font-family: crjk;
+  font-family: monospace, crjk;
 }
 
 @keyframes shine {
