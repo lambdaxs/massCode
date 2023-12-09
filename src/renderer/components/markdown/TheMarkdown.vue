@@ -32,14 +32,15 @@ const preTagBg = computed(() =>
 )
 
 const init = () => {
+  hljs.highlightAll()
   const renderer: marked.RendererObject = {
     code (code: string, lang: string) {
       if (lang === 'mermaid') {
         return `<div class="mermaid">${code}</div><br>`
       } else {
         const language = hljs.getLanguage(lang) ? lang : 'plaintext'
-        return `<pre><code class="language-${lang}">${
-          hljs.highlight(code, { language }).value
+        return `<pre><code class="language-${language}">${
+          hljs.highlight(code, { language: language }).value
         }</code></pre>`
       }
     },
@@ -48,7 +49,16 @@ const init = () => {
     }
   }
 
-  marked.use({ renderer })
+  marked.use({
+    renderer,
+    pedantic: false,
+    gfm: true,
+    breaks: false,
+    sanitize: false,
+    smartLists: true,
+    smartypants: false,
+    xhtml: false
+  })
 }
 
 const initMermaid = () => {
@@ -67,6 +77,7 @@ onMounted(() => {
 })
 
 const getRenderer = () => {
+  console.log('pppp', props)
   const raw = marked.parse(props.value)
   const html = sanitizeHtml(raw, {
     allowedTags: [
@@ -226,4 +237,5 @@ window.addEventListener('resize', () => {
     background-color: v-bind(preTagBg);
   }
 }
+
 </style>
