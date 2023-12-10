@@ -20,7 +20,7 @@
         </select>
       </span>
       <span>
-        {{snippetStore.selected?.costTime?`任务耗时:${formatSecond(snippetStore.selected?.costTime)}`:''}}
+        {{ snippetStore.selected?.costTime?`任务耗时:${formatSecond(snippetStore.selected?.costTime)}`:'' }}
       </span>
       <span>
         Line {{ cursorPosition.row + 1 }}, Column
@@ -42,7 +42,7 @@ import { useSnippetStore } from '@/store/snippets'
 import { ipc, track } from '@/electron'
 import { emitter } from '@/composable'
 import { useFolderStore } from '@/store/folders'
-import {formatSecond} from '@/utils'
+import { formatSecond } from '@/utils'
 
 interface Props {
   lang: Language
@@ -108,6 +108,28 @@ const editorHeight = computed(() => {
 
 const footerHeight = computed(() => appStore.sizes.editor.footerHeight + 'px')
 
+const handlePaste = (event: ClipboardEvent) => {
+  console.log('123')
+  // 阻止默认粘贴行为
+  event.preventDefault()
+  // 获取粘贴的内容
+  const items = (event.clipboardData || event.originalEvent.clipboardData).items
+  // 遍历粘贴的内容
+  for (const index in items) {
+    const item = items[index]
+    // 判断是否是图片
+    if (item.kind === 'file' && item.type.includes('image')) {
+      const blob = item.getAsFile()
+      // 处理粘贴的图片
+      handlePastedImage(blob)
+    }
+  }
+}
+
+const handlePastedImage = (img: Blob) => {
+  console.log('===========', img)
+}
+
 const init = async () => {
   editor = ace.edit(editorRef.value, {
     theme: `ace/theme/${appStore.editor.theme}`,
@@ -119,7 +141,8 @@ const init = async () => {
     wrap: appStore.editor.wrap,
     showInvisibles: appStore.editor.showInvisibles,
     highlightGutterLine: appStore.editor.highlightGutter,
-    highlightActiveLine: appStore.editor.highlightLine
+    highlightActiveLine: appStore.editor.highlightLine,
+    autoScrollEditorIntoView: true
   })
 
   setValue()
@@ -127,8 +150,8 @@ const init = async () => {
 
   // Удаляем некторые шорткаты
   // @ts-ignore
-  editor.commands.removeCommand('find')
-  editor.commands.removeCommand('gotoline')
+  // editor.commands.removeCommand('find')
+  // editor.commands.removeCommand('gotoline')
   editor.commands.removeCommand('showSettingsMenu')
 
   // События
@@ -145,6 +168,10 @@ const init = async () => {
       await snippetStore.setSnippetsByFolderIds()
       emitter.emit('scroll-to:snippet', snippetStore.selectedId!)
     }
+  })
+
+  editor.on('paste', (value) => {
+    // 粘贴图片
   })
 
   // Фиксированный размер для колонки чисел строк
@@ -168,6 +195,13 @@ const setValue = () => {
 }
 
 const format = async () => {
+  // format json
+  const r = editor.getSession().getSelection().getRange()
+  const t = editor.getSession().getTextRange(r)
+  const n = JSON.stringify(JSON.parse(t), null, 2)
+  editor.getSession().replace(r, n)
+  return
+  // todo other format
   const availableLang: Language[] = [
     'css',
     'dockerfile',

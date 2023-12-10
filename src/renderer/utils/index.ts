@@ -30,7 +30,7 @@ export const formatSecond = (second: number)=> {
   const minutes = Math.floor(((second % 86400) % 3600) / 60);
   const seconds = Math.floor(((second % 86400) % 3600) % 60);
 
-  console.log(days,hours, minutes, seconds);
+  // console.log(days,hours, minutes, seconds);
 
   const hourStr = PrefixZero(hours, 2);
   const minuteStr = PrefixZero(minutes, 2);

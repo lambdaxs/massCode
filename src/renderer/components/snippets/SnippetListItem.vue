@@ -103,8 +103,6 @@ onClickOutside(itemRef, () => {
 
 const onClickSnippet = (e: MouseEvent) => {
 
-  console.log("aaaaaaaa",props.tagList);
-
   if (e.shiftKey) {
     if (snippetStore.selectedIndex < props.index) {
       snippetStore.selectedMultiple = snippetStore.snippets.slice(
