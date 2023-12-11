@@ -8,4 +8,5 @@ export type EmitterEvents = {
   'scroll-to:snippet': string
   'search:focus': boolean
   'snippet:click':string
+  'snippet:paste-image': boolean
 }

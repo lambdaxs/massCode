@@ -43,6 +43,7 @@ type MainMenuAction =
   | 'search'
   | 'sort-snippets'
   | 'sync-data'
+  | 'paste-image'
 
 type MainAction =
   | 'restart'

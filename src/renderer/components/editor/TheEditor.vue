@@ -170,9 +170,9 @@ const init = async () => {
     }
   })
 
-  editor.on('paste', (value) => {
-    // 粘贴图片
-  })
+  // editor.on('paste', (value) => {
+  //   // 粘贴图片
+  // })
 
   // Фиксированный размер для колонки чисел строк
   // @ts-ignore

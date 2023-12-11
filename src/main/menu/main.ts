@@ -334,6 +334,15 @@ const editorMenu: MenuItemConstructorOptions[] = [
     }
   },
   {
+    label: 'PasteImage',
+    accelerator: 'Shift+CommandOrControl+V',
+    click: () => {
+      BrowserWindow.getFocusedWindow()?.webContents.send(
+        'main-menu:paste-image'
+      )
+    }
+  },
+  {
     label: 'Preview Markdown',
     accelerator: 'CommandOrControl+M',
     click: () => {

@@ -212,6 +212,10 @@ ipc.on('main-menu:format-snippet', () => {
   emitter.emit('snippet:format', true)
 })
 
+ipc.on('main-menu:paste-image', () => {
+  emitter.emit('snippet:paste-image', true)
+})
+
 ipc.on('main-menu:search', () => {
   emitter.emit('search:focus', true)
 })
