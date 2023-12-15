@@ -116,9 +116,10 @@ const handlePaste = (event: ClipboardEvent) => {
   // 阻止默认粘贴行为
   event.preventDefault()
   // 获取粘贴的内容
-  const items = (event.clipboardData || event.originalEvent.clipboardData).items
+  const items = event.clipboardData?.items
   // 遍历粘贴的内容
   for (const index in items) {
+    // @ts-ignore
     const item = items[index]
     // 判断是否是图片
     if (item.kind === 'file' && item.type.includes('image')) {
@@ -140,33 +141,6 @@ const readFileAsBinaryString = (file: File) => {
 }
 
 const handlePastedImage = async (img: File) => {
-
-  // const imageTypes = img.type.split('/')
-  // let imageType = ''
-  // if (imageTypes.length === 2) {
-  //   imageType = imageTypes[1]
-  // }
-  //
-  // console.log(img.type, imageTypes, imageTypes.length, imageType)
-  // const blobData = await readFileAsBinaryString(img)
-  // // 上传图片
-  // axios.post('http://127.0.0.1:8090/upload', blobData, {
-  //   headers: {
-  //     'Content-Type': 'application/octet-stream',
-  //     'X-IMAGE-TYPE': imageType
-  //   }
-  // }).then(rs => {
-  //   const { data } = rs
-  //   const imageUrl = `![image](http://127.0.0.1:8090/${data})`
-  //   editor.getSession().insert(editor.getSession().getSelection().getCursor(), imageUrl)
-  //   console.log(rs)
-  // }).catch(e => {
-  //   console.log(e)
-  // })
-  // // 插入图片连接
-  // console.log('===========', img)
-
-
   const formData = new FormData()
   formData.append('image', img)
   axios.post('http://127.0.0.1:8091/upload', formData, {
@@ -174,7 +148,6 @@ const handlePastedImage = async (img: File) => {
       'Content-Type': 'multipart/form-data'
     }
   }).then(rs => {
-      console.log('111111', rs)
       const { data } = rs
       const imageUrl = `![image](http://127.0.0.1:8091/${data})`
       editor.getSession().insert(editor.getSession().getSelection().getCursor(), imageUrl)

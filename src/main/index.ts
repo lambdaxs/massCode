@@ -14,7 +14,6 @@ import fs from 'fs'
 import { v4 as uuidv4 } from 'uuid'
 import formidable from 'formidable'
 
-
 const isDev = process.env.NODE_ENV === 'development'
 const isMac = process.platform === 'darwin'
 
@@ -46,10 +45,14 @@ function createWindow () {
   Menu.setApplicationMenu(mainMenu)
 
   if (isDev) {
-    const rendererPort = process.argv[2]
-    mainWindow.loadURL(`http://localhost:${rendererPort}`)
+    startImageServerV2(() => {
+      const rendererPort = process.argv[2]
+      mainWindow.loadURL(`http://localhost:${rendererPort}`)
+    })
   } else {
-    mainWindow.loadFile(path.resolve(app.getAppPath(), 'renderer/index.html'))
+    startImageServerV2(() => {
+      mainWindow.loadFile(path.resolve(app.getAppPath(), 'renderer/index.html'))
+    })
   }
 
   mainWindow.on('resize', () => storeBounds(mainWindow))
@@ -94,7 +97,6 @@ app.whenReady().then(async () => {
     focusWin && focusWin.webContents.toggleDevTools()
   })
 
-
   app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
@@ -104,7 +106,7 @@ app.whenReady().then(async () => {
   })
 })
 
-const startImageServerV2 = () => {
+const startImageServerV2 = (callback: Function) => {
   http.createServer(async (req, res) => {
     if (req.method === 'POST' && req.url === '/upload') {
       const form = formidable({
@@ -141,7 +143,7 @@ const startImageServerV2 = () => {
         // @ts-ignore
         if (mineTypeMap[extName]) {
           // @ts-ignore
-          res.setHeader('Content-Type', mineTypeMap[extName]);
+          res.setHeader('Content-Type', mineTypeMap[extName])
         }
         const stream = fs.createReadStream(filePath)
         stream.pipe(res)
@@ -150,75 +152,10 @@ const startImageServerV2 = () => {
         res.end('not found')
       }
     }
-  }).listen('8091')
+  }).listen('8091', () => {
+    callback()
+  })
 }
-
-startImageServerV2()
-
-const startImageServer = () => {
-  http.createServer((req, res) => {
-    if (req.method === 'POST' && req.url === '/upload') {
-      let body = ''
-      req.on('data', chunk => {
-        body += chunk
-      })
-      req.on('end', () => {
-        const imageType = req.headers['x-image-type'] || 'png'
-        // 从请求中获取文件数据并保存到服务器
-        const imageData = Buffer.from(body, 'binary')
-        const fileName = `${uuidv4()}.${imageType}`
-        fs.writeFile(defaultPath + '/' + fileName, imageData, 'binary', err => {
-          if (err) {
-            res.statusCode = 500
-            res.end('文件上传失败')
-          } else {
-            res.statusCode = 200
-            res.end(fileName)
-          }
-        })
-      })
-    } else {
-      const fileName = req.url?.replace('/', '') || ''
-      const filePath = defaultPath + '/' + fileName
-      const extName = path.extname(fileName).substr(1) || ''
-
-      if (fs.existsSync(filePath)) {
-        const mineTypeMap = {
-          html: 'text/html;charset=utf-8',
-          htm: 'text/html;charset=utf-8',
-          xml: 'text/xml;charset=utf-8',
-          png: 'image/png',
-          jpg: 'image/jpeg',
-          jpeg: 'image/jpeg',
-          gif: 'image/gif',
-          css: 'text/css;charset=utf-8',
-          txt: 'text/plain;charset=utf-8',
-          mp3: 'audio/mpeg',
-          mp4: 'video/mp4',
-          ico: 'image/x-icon',
-          tif: 'image/tiff',
-          svg: 'image/svg+xml',
-          zip: 'application/zip',
-          ttf: 'font/ttf',
-          woff: 'font/woff',
-          woff2: 'font/woff2'
-        }
-        // @ts-ignore
-        if (mineTypeMap[extName]) {
-          // @ts-ignore
-          res.setHeader('Content-Type', mineTypeMap[extName]);
-        }
-        const stream = fs.createReadStream(filePath)
-        stream.pipe(res)
-      } else {
-        res.statusCode = 404
-        res.end('not found')
-      }
-    }
-  }).listen('8090')
-}
-
-// startImageServer()
 
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit()
