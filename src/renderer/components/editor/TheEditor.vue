@@ -1,9 +1,11 @@
 <template>
   <div class="editor">
-    <div
-      ref="editorRef"
-      class="main"
-    />
+    <div @paste="handlePaste">
+      <div
+        ref="editorRef"
+        class="main"
+      />
+    </div>
     <div class="footer">
       <span>
         <select
@@ -43,6 +45,7 @@ import { ipc, track } from '@/electron'
 import { emitter } from '@/composable'
 import { useFolderStore } from '@/store/folders'
 import { formatSecond } from '@/utils'
+import axios from 'axios'
 
 interface Props {
   lang: Language
@@ -126,8 +129,56 @@ const handlePaste = (event: ClipboardEvent) => {
   }
 }
 
-const handlePastedImage = (img: Blob) => {
-  console.log('===========', img)
+const readFileAsBinaryString = (file: File) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      resolve(reader.result)
+    }
+    reader.readAsBinaryString(file)
+  })
+}
+
+const handlePastedImage = async (img: File) => {
+
+  // const imageTypes = img.type.split('/')
+  // let imageType = ''
+  // if (imageTypes.length === 2) {
+  //   imageType = imageTypes[1]
+  // }
+  //
+  // console.log(img.type, imageTypes, imageTypes.length, imageType)
+  // const blobData = await readFileAsBinaryString(img)
+  // // 上传图片
+  // axios.post('http://127.0.0.1:8090/upload', blobData, {
+  //   headers: {
+  //     'Content-Type': 'application/octet-stream',
+  //     'X-IMAGE-TYPE': imageType
+  //   }
+  // }).then(rs => {
+  //   const { data } = rs
+  //   const imageUrl = `![image](http://127.0.0.1:8090/${data})`
+  //   editor.getSession().insert(editor.getSession().getSelection().getCursor(), imageUrl)
+  //   console.log(rs)
+  // }).catch(e => {
+  //   console.log(e)
+  // })
+  // // 插入图片连接
+  // console.log('===========', img)
+
+
+  const formData = new FormData()
+  formData.append('image', img)
+  axios.post('http://127.0.0.1:8091/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  }).then(rs => {
+      console.log('111111', rs)
+      const { data } = rs
+      const imageUrl = `![image](http://127.0.0.1:8091/${data})`
+      editor.getSession().insert(editor.getSession().getSelection().getCursor(), imageUrl)
+  })
 }
 
 const init = async () => {
@@ -192,6 +243,10 @@ const setValue = () => {
   if (snippetStore.searchQuery) {
     findAll(snippetStore.searchQuery)
   }
+}
+
+const pasteImage = async () => {
+  console.log('paste Image')
 }
 
 const format = async () => {
@@ -317,9 +372,13 @@ watch(
 
 emitter.on('snippet:format', () => format())
 
+emitter.on('snippet:paste-image', () => pasteImage())
+
 onUnmounted(() => {
   emitter.off('snippet:format')
+  emitter.off('snippet:paste-image')
 })
+
 
 window.addEventListener('resize', () => {
   forceRefresh.value = Math.random()

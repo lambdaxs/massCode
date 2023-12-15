@@ -362,17 +362,19 @@
   }
 
   img {
-    max-width: 100%;
-    box-sizing: content-box;
+    //max-width: 100%;
+    //box-sizing: content-box;
+    width: 80%;
+    padding-left: 10%;
   }
 
-  img[align='right'] {
-    padding-left: 20px;
-  }
-
-  img[align='left'] {
-    padding-right: 20px;
-  }
+  //img[align='right'] {
+  //  padding-left: 20px;
+  //}
+  //
+  //img[align='left'] {
+  //  padding-right: 20px;
+  //}
 
   code,
   tt {
