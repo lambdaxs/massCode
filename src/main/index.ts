@@ -32,6 +32,8 @@ function createWindow () {
   const mainWindow = new BrowserWindow({
     width: 1000,
     height: 600,
+    // alwaysOnTop: true,
+    // visibleOnAllWorkspaces: true,
     ...bounds,
     titleBarStyle: isMac ? 'hidden' : 'default',
     webPreferences: {
