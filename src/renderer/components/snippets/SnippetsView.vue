@@ -7,6 +7,7 @@
   >
     <template v-if="snippetStore.selected">
       <SnippetHeader />
+      <BlockEditor />
       <TheEditor
         v-if="
           !snippetStore.isMarkdownPreview && !snippetStore.isScreenshotPreview
@@ -47,7 +48,6 @@
 import { useSnippetStore } from '@/store/snippets'
 import { useDebounceFn } from '@vueuse/core'
 import { computed } from 'vue'
-
 const snippetStore = useSnippetStore()
 
 const snippet = computed({
