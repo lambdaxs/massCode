@@ -87,6 +87,9 @@ export function useDB() {
         icon TEXT,
         createdAt INTEGER NOT NULL,
         updatedAt INTEGER NOT NULL,
+        syncId TEXT UNIQUE,
+        serverVersion INTEGER DEFAULT 1,
+        deletedAt INTEGER,
         FOREIGN KEY(parentId) REFERENCES folders(id)
       )
     `)
@@ -102,6 +105,9 @@ export function useDB() {
         isFavorites INTEGER NOT NULL,
         createdAt INTEGER NOT NULL,
         updatedAt INTEGER NOT NULL,
+        syncId TEXT UNIQUE,
+        serverVersion INTEGER DEFAULT 1,
+        deletedAt INTEGER,
         FOREIGN KEY(folderId) REFERENCES folders(id)
       )
     `)
@@ -124,7 +130,10 @@ export function useDB() {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
         createdAt INTEGER NOT NULL,
-        updatedAt INTEGER NOT NULL
+        updatedAt INTEGER NOT NULL,
+        syncId TEXT UNIQUE,
+        serverVersion INTEGER DEFAULT 1,
+        deletedAt INTEGER
       )
     `)
 
@@ -138,6 +147,28 @@ export function useDB() {
         FOREIGN KEY(tagId) REFERENCES tags(id)
       )
     `)
+
+    // Sync state table
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS sync_state (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        lastSyncTimestamp INTEGER NOT NULL DEFAULT 0,
+        userId TEXT,
+        apiKey TEXT,
+        syncEnabled INTEGER NOT NULL DEFAULT 0,
+        serverUrl TEXT NOT NULL DEFAULT 'http://localhost:8080'
+      )
+    `)
+
+    // Initialize sync state if not exists
+    const syncStateCount = db
+      .prepare('SELECT COUNT(*) as count FROM sync_state')
+      .get() as { count: number }
+    if (syncStateCount.count === 0) {
+      db.prepare(
+        'INSERT INTO sync_state (id, lastSyncTimestamp, syncEnabled, serverUrl) VALUES (1, 0, 0, ?)',
+      ).run('http://localhost:8080')
+    }
 
     return db
   }

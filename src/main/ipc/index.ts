@@ -4,6 +4,7 @@ import { registerDBHandlers } from './handlers/db'
 import { registerDialogHandlers } from './handlers/dialog'
 import { registerFsHandlers } from './handlers/fs'
 import { registerPrettierHandlers } from './handlers/prettier'
+import { registerSyncHandlers } from './handlers/sync'
 import { registerSystemHandlers } from './handlers/system'
 
 export function send(channel: Channel) {
@@ -16,4 +17,5 @@ export function registerIPC() {
   registerSystemHandlers()
   registerPrettierHandlers()
   registerFsHandlers()
+  registerSyncHandlers()
 }
