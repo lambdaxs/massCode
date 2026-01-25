@@ -75,5 +75,39 @@
       "label": "API Port",
       "description": "Port number for the API server (requires app restart to take effect). Valid range: 1024-65535."
     }
+  },
+  "sync": {
+    "label": "Sync",
+    "serverUrl": "Server URL",
+    "serverUrlPlaceholder": "https://your-sync-server.com",
+    "token": "Access Token",
+    "tokenPlaceholder": "Enter your access token",
+    "autoSync": "Auto Sync",
+    "syncOnStartup": "Sync on Startup",
+    "debounceDelay": "Sync Delay",
+    "lastSyncAt": "Last Sync",
+    "never": "Never",
+    "testConnection": "Test Connection",
+    "syncNow": "Sync Now",
+    "fullSync": "Full Sync (Overwrite Local)",
+    "syncing": "Syncing...",
+    "testing": "Testing...",
+    "notConfigured": "Not configured",
+    "status": {
+      "success": "Sync completed successfully",
+      "failed": "Sync failed",
+      "connectionSuccess": "Connection successful",
+      "connectionFailed": "Connection failed"
+    },
+    "confirm": {
+      "fullSync": "This will overwrite all local data with server data. This action cannot be undone. Are you sure?"
+    },
+    "stats": {
+      "pushed": "Pushed",
+      "pulled": "Pulled",
+      "folders": "folders",
+      "snippets": "snippets",
+      "tags": "tags"
+    }
   }
 }

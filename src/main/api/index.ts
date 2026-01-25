@@ -6,6 +6,7 @@ import { store } from '../store'
 import { importEsm } from '../utils'
 import folders from './routes/folders'
 import snippets from './routes/snippets'
+import sync from './routes/sync'
 import tags from './routes/tags'
 
 export async function initApi() {
@@ -31,6 +32,7 @@ export async function initApi() {
     .use(snippets)
     .use(folders)
     .use(tags)
+    .use(sync)
     .listen(port)
 
   // eslint-disable-next-line no-console

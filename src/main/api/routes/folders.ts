@@ -1,6 +1,7 @@
 import type { FoldersResponse, FoldersTree } from '../dto/folders'
 import { Elysia } from 'elysia'
 import { useDB } from '../../db'
+import { recordDeletionForSync, syncScheduler } from '../../services/sync'
 import { commonAddResponse } from '../dto/common/response'
 import { foldersDTO } from '../dto/folders'
 
@@ -127,6 +128,8 @@ app
         now,
         newOrder,
       )
+
+      syncScheduler.notifyChange()
 
       return { id: lastInsertRowid }
     },
@@ -289,6 +292,8 @@ app
 
       transaction()
 
+      syncScheduler.notifyChange()
+
       return { message: 'Folder updated' }
     },
     {
@@ -343,6 +348,11 @@ app
         const subfolderIds = findAllSubfolders(Number(id))
         const allFolderIds = [Number(id), ...subfolderIds]
 
+        // Record deletions for sync before actually deleting
+        for (const folderId of allFolderIds) {
+          recordDeletionForSync('folders', folderId)
+        }
+
         // Мягкое удаление сниппетов во всех папках, а также удаляем связь с папками
         db.prepare(
           `
@@ -371,6 +381,8 @@ app
       })
 
       transaction()
+
+      syncScheduler.notifyChange()
 
       return { message: 'Folder deleted' }
     },

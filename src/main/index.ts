@@ -7,6 +7,7 @@ import { startAutoBackup } from './db'
 import { migrateJsonToSqlite } from './db/migrate'
 import { registerIPC } from './ipc'
 import { mainMenu } from './menu/main'
+import { syncScheduler } from './services/sync'
 import { store } from './store'
 import { checkForUpdates } from './updates'
 import { log } from './utils'
@@ -68,6 +69,11 @@ function createWindow() {
 
     mainWindow.destroy()
   })
+
+  // Initialize sync scheduler and handle blur event
+  mainWindow.on('blur', () => {
+    syncScheduler.flushSync()
+  })
 }
 
 if (!gotTheLock) {
@@ -110,6 +116,15 @@ else {
       log('Error starting auto backup', error)
     }
 
+    // Initialize sync scheduler
+    try {
+      syncScheduler.init(mainWindow)
+      syncScheduler.start()
+    }
+    catch (error) {
+      log('Error initializing sync scheduler', error)
+    }
+
     if (store.app.get('isAutoMigratedFromJson')) {
       return
     }
@@ -130,8 +145,15 @@ else {
     mainWindow.show()
   })
 
-  app.on('before-quit', () => {
-    isQuitting = true
+  app.on('before-quit', async (event) => {
+    if (!isQuitting) {
+      event.preventDefault()
+      isQuitting = true
+      // Flush sync before quitting
+      await syncScheduler.flushSync()
+      syncScheduler.stop()
+      app.quit()
+    }
   })
 
   app.on('window-all-closed', () => {

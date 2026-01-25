@@ -1,6 +1,7 @@
 import type { TagsResponse } from '../dto/tags'
 import Elysia from 'elysia'
 import { useDB } from '../../db'
+import { recordDeletionForSync, syncScheduler } from '../../services/sync'
 import { tagsDTO } from '../dto/tags'
 
 const app = new Elysia({ prefix: '/tags' })
@@ -36,6 +37,8 @@ app
 
       const { lastInsertRowid } = stmt.run(body.name, now, now)
 
+      syncScheduler.notifyChange()
+
       return { id: lastInsertRowid as number }
     },
     {
@@ -63,6 +66,9 @@ app
         return status(404, { message: 'Tag not found' })
       }
 
+      // Record deletion for sync before actually deleting
+      recordDeletionForSync('tags', Number(params.id))
+
       const transaction = db.transaction(() => {
         db.prepare(
           `
@@ -75,6 +81,8 @@ app
       })
 
       transaction()
+
+      syncScheduler.notifyChange()
 
       return { message: 'Tag deleted' }
     },

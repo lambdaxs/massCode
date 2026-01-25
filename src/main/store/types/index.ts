@@ -43,6 +43,17 @@ export interface BackupSettings {
   lastBackupTime?: number
 }
 
+export interface SyncSettings {
+  serverUrl: string
+  token: string
+  lastSyncAt: number
+  deviceId: string
+  autoSync: boolean
+  syncOnStartup: boolean
+  debounceDelay: number
+  idleInterval: number
+}
+
 export interface PreferencesStore {
   storagePath: string
   apiPort: number
@@ -51,6 +62,7 @@ export interface PreferencesStore {
   editor: EditorSettings
   markdown: MarkdownSettings
   backup: BackupSettings
+  sync: SyncSettings
 }
 
 export interface Store {

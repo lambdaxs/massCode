@@ -1,6 +1,7 @@
 import type { SnippetsCountsResponse, SnippetsResponse } from '../dto/snippets'
 import Elysia from 'elysia'
 import { useDB } from '../../db'
+import { syncScheduler } from '../../services/sync'
 import { commonAddResponse } from '../dto/common/response'
 import { snippetsDTO } from '../dto/snippets'
 
@@ -193,6 +194,8 @@ app
         now,
       )
 
+      syncScheduler.notifyChange()
+
       return { id: lastInsertRowid }
     },
     {
@@ -210,13 +213,19 @@ app
       const db = useDB()
       const { id } = params
       const { label, value, language } = body
+      const now = Date.now()
 
       const stmt = db.prepare(`
-      INSERT INTO snippet_contents (snippetId, label, value, language)
-      VALUES (?, ?, ?, ?)
+      INSERT INTO snippet_contents (snippetId, label, value, language, createdAt, updatedAt)
+      VALUES (?, ?, ?, ?, ?, ?)
     `)
 
-      const result = stmt.run(id, label, value || null, language)
+      const result = stmt.run(id, label, value || null, language, now, now)
+
+      // Update snippet's updatedAt
+      db.prepare('UPDATE snippets SET updatedAt = ? WHERE id = ?').run(now, id)
+
+      syncScheduler.notifyChange()
 
       return { id: result.lastInsertRowid }
     },
@@ -286,6 +295,8 @@ app
         return status(404, { message: 'Snippet not found' })
       }
 
+      syncScheduler.notifyChange()
+
       return { message: 'Snippet updated' }
     },
     {
@@ -301,6 +312,7 @@ app
     ({ params, body, status }) => {
       const db = useDB()
       const { id, contentId } = params
+      const now = Date.now()
 
       const updateFields: string[] = []
       const updateParams: any[] = []
@@ -324,6 +336,10 @@ app
         return status(400, { message: 'Need at least one field to update' })
       }
 
+      // Always update updatedAt for snippet_contents
+      updateFields.push('updatedAt = ?')
+      updateParams.push(now)
+
       updateParams.push(contentId)
 
       const contentsStmt = db.prepare(`
@@ -344,13 +360,14 @@ app
           UPDATE snippets SET updatedAt = ? WHERE id = ?
         `)
 
-        const now = new Date().getTime()
         const snippetResult = snippetsStmt.run(now, id)
 
         if (!snippetResult.changes) {
           return status(404, { message: 'Snippet not found' })
         }
       }
+
+      syncScheduler.notifyChange()
 
       return { message: 'Snippet content updated' }
     },
@@ -403,6 +420,8 @@ app
       )
 
       stmt.run(id, tagId)
+
+      syncScheduler.notifyChange()
 
       return { message: 'Tag added to snippet' }
     },
@@ -461,6 +480,8 @@ app
         })
       }
 
+      syncScheduler.notifyChange()
+
       return { message: 'Tag removed from snippet' }
     },
     {
@@ -512,6 +533,8 @@ app
       })
 
       transaction()
+
+      syncScheduler.notifyChange()
 
       return { message: 'Snippet deleted' }
     },
@@ -569,6 +592,8 @@ app
 
       const deletedCount = transaction()
 
+      syncScheduler.notifyChange()
+
       return {
         message: `Successfully emptied trash: ${deletedCount} snippet(s) deleted`,
       }
@@ -597,6 +622,8 @@ app
       if (!result.changes) {
         return status(404, { message: 'Snippet content not found' })
       }
+
+      syncScheduler.notifyChange()
 
       return { message: 'Snippet content deleted' }
     },

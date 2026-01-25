@@ -1,4 +1,5 @@
 import type { PreferencesStore } from '../types'
+import { randomUUID } from 'node:crypto'
 import { homedir, platform } from 'node:os'
 import Store from 'electron-store'
 import { EDITOR_DEFAULTS } from '../constants'
@@ -26,6 +27,16 @@ export default new Store<PreferencesStore>({
       enabled: true,
       interval: 6,
       maxBackups: 5,
+    },
+    sync: {
+      serverUrl: '',
+      token: '',
+      lastSyncAt: 0,
+      deviceId: randomUUID(),
+      autoSync: false,
+      syncOnStartup: true,
+      debounceDelay: 3000,
+      idleInterval: 300000,
     },
   },
 })

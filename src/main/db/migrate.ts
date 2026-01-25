@@ -29,8 +29,8 @@ export function migrateJsonToSqlite(jsonData: JSONDB) {
       `)
 
       const insertSnippetContentStmt = db.prepare(`
-        INSERT INTO snippet_contents (snippetId, label, value, language)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO snippet_contents (snippetId, label, value, language, createdAt, updatedAt)
+        VALUES (?, ?, ?, ?, ?, ?)
       `)
 
       const insertSnippetTagStmt = db.prepare(`
@@ -98,12 +98,15 @@ export function migrateJsonToSqlite(jsonData: JSONDB) {
           snippetIdMap[snippet.id] = newSnippetId
 
           // Устанавливаем содержимое сниппета
+          const now = Date.now()
           snippet.content.forEach((content) => {
             insertSnippetContentStmt.run(
               newSnippetId,
               content.label || null,
               content.value || null,
               content.language || null,
+              snippet.createdAt || now,
+              snippet.updatedAt || now,
             )
           })
 

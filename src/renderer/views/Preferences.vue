@@ -34,6 +34,10 @@ const nav = [
     label: i18n.t('preferences:api.label'),
     name: RouterName.preferencesAPI,
   },
+  {
+    label: i18n.t('preferences:sync.label'),
+    name: RouterName.preferencesSync,
+  },
 ]
 
 provide(preferencesKeys, {

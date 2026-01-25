@@ -5,6 +5,7 @@ import { loadWASM } from 'onigasm'
 import onigasmFile from 'onigasm/lib/onigasm.wasm?url'
 import { Toaster } from 'vue-sonner'
 import { loadGrammars } from './components/editor/grammars'
+import SyncStatus from './components/sync/SyncStatus.vue'
 import { registerIPCListeners } from './ipc'
 import { notifications } from './services/notifications'
 
@@ -33,6 +34,7 @@ init()
     {{ i18n.t("messages:special.unsponsored") }}
   </div>
   <RouterView />
+  <SyncStatus />
   <Toaster style="--width: 356px; --offset: 12px" />
 </template>
 

@@ -150,6 +150,61 @@ export interface TagsAddResponse {
   id: number;
 }
 
+// Sync types
+export interface SyncSettings {
+  serverUrl: string;
+  token: string;
+  autoSync: boolean;
+  lastSyncAt: number;
+  deviceId: string;
+}
+
+export interface SyncSettingsUpdate {
+  serverUrl?: string;
+  token?: string;
+  autoSync?: boolean;
+}
+
+export interface SyncStatus {
+  configured: boolean;
+  serverUrl: string;
+  lastSyncAt: number;
+  autoSync: boolean;
+  deviceId: string;
+}
+
+export interface SyncTestConnectionResponse {
+  success: boolean;
+  message: string;
+  serverTime?: number;
+}
+
+export interface SyncStats {
+  pushed: {
+    folders: number;
+    snippets: number;
+    snippetContents: number;
+    tags: number;
+    snippetTags: number;
+    deletions: number;
+  };
+  pulled: {
+    folders: number;
+    snippets: number;
+    snippetContents: number;
+    tags: number;
+    snippetTags: number;
+    deletions: number;
+  };
+}
+
+export interface SyncResult {
+  success: boolean;
+  message: string;
+  syncedAt?: number;
+  stats?: SyncStats;
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -761,6 +816,99 @@ export class Api<
       this.request<void, any>({
         path: `/tags/${id}`,
         method: "DELETE",
+        ...params,
+      }),
+  };
+  sync = {
+    /**
+     * Get sync status
+     *
+     * @tags Sync
+     * @name GetSyncStatus
+     * @request GET:/sync/status
+     */
+    getSyncStatus: (params: RequestParams = {}) =>
+      this.request<SyncStatus, any>({
+        path: `/sync/status`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * Test connection to sync server
+     *
+     * @tags Sync
+     * @name PostSyncTestConnection
+     * @request POST:/sync/test-connection
+     */
+    postSyncTestConnection: (params: RequestParams = {}) =>
+      this.request<SyncTestConnectionResponse, any>({
+        path: `/sync/test-connection`,
+        method: "POST",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * Perform incremental sync
+     *
+     * @tags Sync
+     * @name PostSyncIncremental
+     * @request POST:/sync/incremental
+     */
+    postSyncIncremental: (params: RequestParams = {}) =>
+      this.request<SyncResult, any>({
+        path: `/sync/incremental`,
+        method: "POST",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * Perform full sync (overwrite local with server data)
+     *
+     * @tags Sync
+     * @name PostSyncFull
+     * @request POST:/sync/full
+     */
+    postSyncFull: (params: RequestParams = {}) =>
+      this.request<SyncResult, any>({
+        path: `/sync/full`,
+        method: "POST",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * Update sync settings
+     *
+     * @tags Sync
+     * @name PutSyncSettings
+     * @request PUT:/sync/settings
+     */
+    putSyncSettings: (data: SyncSettingsUpdate, params: RequestParams = {}) =>
+      this.request<{ success: boolean }, any>({
+        path: `/sync/settings`,
+        method: "PUT",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * Get sync settings
+     *
+     * @tags Sync
+     * @name GetSyncSettings
+     * @request GET:/sync/settings
+     */
+    getSyncSettings: (params: RequestParams = {}) =>
+      this.request<SyncSettings, any>({
+        path: `/sync/settings`,
+        method: "GET",
+        format: "json",
         ...params,
       }),
   };

@@ -39,6 +39,43 @@ function tableExists(db: Database.Database, table: string): boolean {
   return !!row
 }
 
+function columnExists(
+  db: Database.Database,
+  table: string,
+  column: string,
+): boolean {
+  const columns = db.prepare(`PRAGMA table_info(${table})`).all() as {
+    name: string
+  }[]
+  return columns.some(col => col.name === column)
+}
+
+function runSyncMigrations(db: Database.Database) {
+  // Add createdAt and updatedAt to snippet_contents if missing
+  if (tableExists(db, 'snippet_contents')) {
+    if (!columnExists(db, 'snippet_contents', 'createdAt')) {
+      db.exec(
+        `ALTER TABLE snippet_contents ADD COLUMN createdAt INTEGER NOT NULL DEFAULT 0`,
+      )
+      // Update existing rows with current timestamp
+      const now = Date.now()
+      db.prepare(
+        `UPDATE snippet_contents SET createdAt = ? WHERE createdAt = 0`,
+      ).run(now)
+    }
+    if (!columnExists(db, 'snippet_contents', 'updatedAt')) {
+      db.exec(
+        `ALTER TABLE snippet_contents ADD COLUMN updatedAt INTEGER NOT NULL DEFAULT 0`,
+      )
+      // Update existing rows with current timestamp
+      const now = Date.now()
+      db.prepare(
+        `UPDATE snippet_contents SET updatedAt = ? WHERE updatedAt = 0`,
+      ).run(now)
+    }
+  }
+}
+
 export function useDB() {
   if (db)
     return db
@@ -114,8 +151,41 @@ export function useDB() {
         label TEXT,
         value TEXT,
         language TEXT,
+        createdAt INTEGER NOT NULL DEFAULT 0,
+        updatedAt INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY(snippetId) REFERENCES snippets(id)
       )
+    `)
+
+    // Sync: ID mapping table (local_id <-> server_id)
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS sync_id_map (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tableName TEXT NOT NULL,
+        localId INTEGER NOT NULL,
+        serverId TEXT NOT NULL,
+        UNIQUE(tableName, localId),
+        UNIQUE(tableName, serverId)
+      )
+    `)
+    db.exec(`
+      CREATE INDEX IF NOT EXISTS idx_sync_id_map_server 
+      ON sync_id_map(tableName, serverId)
+    `)
+
+    // Sync: Deletion records table (for syncing hard deletes)
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS sync_deletions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tableName TEXT NOT NULL,
+        serverId TEXT NOT NULL,
+        deletedAt INTEGER NOT NULL,
+        synced INTEGER NOT NULL DEFAULT 0
+      )
+    `)
+    db.exec(`
+      CREATE INDEX IF NOT EXISTS idx_sync_deletions_synced 
+      ON sync_deletions(synced)
     `)
 
     // Таблица для тегов
@@ -138,6 +208,9 @@ export function useDB() {
         FOREIGN KEY(tagId) REFERENCES tags(id)
       )
     `)
+
+    // Run migrations for sync feature (add missing columns to existing tables)
+    runSyncMigrations(db)
 
     return db
   }
@@ -190,6 +263,9 @@ export function clearDB() {
         // Остальные таблицы можно удалить в любом порядке
         'tags',
         'folders',
+        // Sync tables
+        'sync_id_map',
+        'sync_deletions',
       ]
 
       for (const table of tables) {
