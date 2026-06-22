@@ -130,7 +130,7 @@
     "@antfu/eslint-config": "^3.16.0",
     "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
-    "@electron/rebuild": "^4.0.4",
+    "@electron/rebuild": "^3.7.1",
     "@tailwindcss/postcss": "^4.0.9",
     "@tailwindcss/vite": "^4.0.9",
     "@types/better-sqlite3": "^7.6.12",
