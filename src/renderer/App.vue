@@ -26,10 +26,15 @@ import { registerIPCListeners } from './ipc'
 const { isAppLoading, isSponsored } = useApp()
 const route = useRoute()
 
+const isTaskTimerFloat = computed(
+  () => route.name === RouterName.taskTimerFloat,
+)
 const showLoader = ref(false)
 
 const isMainRoute = computed(() => route.name === RouterName.main)
-const isLoaderVisible = computed(() => isMainRoute.value && isAppLoading.value)
+const isLoaderVisible = computed(
+  () => !isTaskTimerFloat.value && isMainRoute.value && isAppLoading.value,
+)
 
 watch(
   isLoaderVisible,
@@ -157,6 +162,10 @@ function restoreSavedSpace() {
 }
 
 async function init() {
+  if (isTaskTimerFloat.value) {
+    return
+  }
+
   registerIPCListeners()
   ipc.send('system:renderer-ready', null, () => {})
   restoreSavedSpace()
@@ -175,7 +184,7 @@ init()
 </script>
 
 <template>
-  <Tooltip.TooltipProvider>
+  <Tooltip.TooltipProvider v-if="!isTaskTimerFloat">
     <div
       v-if="isMac"
       data-title-bar
@@ -206,6 +215,12 @@ init()
     </div>
     <Toaster style="--width: 356px; --offset: 12px" />
   </Tooltip.TooltipProvider>
+  <div
+    v-else
+    class="h-full w-full overflow-hidden"
+  >
+    <RouterView />
+  </div>
 </template>
 
 <style>

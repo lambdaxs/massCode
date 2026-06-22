@@ -71,6 +71,12 @@ export default defineConfig({
     outDir: path.resolve(__dirname, 'build/renderer'),
     emptyOutDir: true,
     target: 'es2022',
+    rollupOptions: {
+      input: {
+        main: path.resolve(rootRenderer, 'index.html'),
+        taskTimerFloat: path.resolve(rootRenderer, 'task-timer-float.html'),
+      },
+    },
   },
   optimizeDeps: {
     esbuildOptions: {

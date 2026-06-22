@@ -10,6 +10,7 @@ import {
   refreshFiatRatesForced,
 } from '../../currencyRates'
 import { activateLicense } from '../../license'
+import { focusMainWindow, getMainWindow } from '../../mainWindow'
 import {
   getHttpPaths,
   getHttpRuntimeCache,
@@ -31,6 +32,15 @@ import {
 } from '../../storage/providers/markdown/runtime/moveVault'
 import { getVaultPath } from '../../storage/providers/markdown/runtime/paths'
 import { store } from '../../store'
+import {
+  getTaskTimerState,
+  pauseTaskTimer,
+  resumeTaskTimer,
+  startTaskTimer,
+  stopTaskTimer,
+  updateTaskTimerTitle,
+} from '../../taskTimer'
+import { setTaskTimerFloatBackgroundColor } from '../../taskTimer/floatWindow'
 
 export function registerSystemHandlers() {
   ipcMain.handle('system:activate-license', (_, payload: { key: string }) => {
@@ -171,6 +181,56 @@ export function registerSystemHandlers() {
       shell.showItemInFolder(folderAbsolutePath)
 
       return true
+    },
+  )
+
+  ipcMain.handle('system:task-timer-get-state', () => {
+    return getTaskTimerState()
+  })
+
+  ipcMain.handle(
+    'system:task-timer-start',
+    (_, payload: { noteId: number, title: string }) => {
+      return startTaskTimer(payload.noteId, payload.title)
+    },
+  )
+
+  ipcMain.handle('system:task-timer-pause', () => {
+    return pauseTaskTimer()
+  })
+
+  ipcMain.handle('system:task-timer-resume', () => {
+    return resumeTaskTimer()
+  })
+
+  ipcMain.handle('system:task-timer-stop', () => {
+    return stopTaskTimer()
+  })
+
+  ipcMain.handle(
+    'system:task-timer-update-title',
+    (_, payload: { title: string }) => {
+      return updateTaskTimerTitle(payload.title)
+    },
+  )
+
+  ipcMain.handle('system:task-timer-open-main', () => {
+    const state = getTaskTimerState()
+    focusMainWindow()
+
+    if (state.noteId !== null) {
+      getMainWindow()?.webContents.send('system:task-timer-open-note', {
+        noteId: state.noteId,
+      })
+    }
+
+    return true
+  })
+
+  ipcMain.handle(
+    'system:task-timer-set-background',
+    (_, payload: { isDark: boolean }) => {
+      setTaskTimerFloatBackgroundColor(payload.isDark)
     },
   )
 }

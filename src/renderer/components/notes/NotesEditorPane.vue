@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import * as Select from '@/components/ui/shadcn/select'
 import {
+  isTaskNote,
   useDonations,
   useEditableField,
   useNavigationHistory,
   useNotes,
   useNotesApp,
   useNoteUpdate,
+  useTaskTimer,
 } from '@/composables'
 import { i18n, ipc } from '@/electron'
 import { navigateBack, navigateForward } from '@/ipc/listeners/deepLinks'
 import { router, RouterName } from '@/router'
-import { getEntryNameConflictMessage } from '@/utils'
+import { getEntryNameConflictMessage, isMac } from '@/utils'
 import { refDebounced, useClipboard } from '@vueuse/core'
 import {
   BookOpen,
@@ -22,7 +24,9 @@ import {
   Network,
   PanelLeftClose,
   PanelLeftOpen,
+  Pause,
   Pencil,
+  Play,
   Presentation,
 } from 'lucide-vue-next'
 import {
@@ -66,6 +70,60 @@ const {
   showNotesPresentation,
   toggleNotesSidebar,
 } = useNotesApp()
+const taskTimer = useTaskTimer()
+
+const isSelectedTask = computed(() => isTaskNote(selectedNote.value))
+const isTaskTimerVisible = computed(() => isMac && isSelectedTask.value)
+const isTaskTimerActive = computed(() => {
+  const noteId = selectedNote.value?.id
+  return noteId ? taskTimer.isForNote(noteId) : false
+})
+const isTaskTimerRunning = computed(() => {
+  const noteId = selectedNote.value?.id
+  return noteId ? taskTimer.isRunningForNote(noteId) : false
+})
+const taskTimerActionTooltip = computed(() => {
+  if (isTaskTimerRunning.value) {
+    return i18n.t('notes.tasks.timer.pause')
+  }
+
+  if (isTaskTimerActive.value) {
+    return i18n.t('notes.tasks.timer.start')
+  }
+
+  return i18n.t('notes.tasks.timer.start')
+})
+
+async function onTaskTimerClick() {
+  const note = selectedNote.value
+  if (!note || !isTaskNote(note)) {
+    return
+  }
+
+  if (taskTimer.isRunningForNote(note.id)) {
+    await taskTimer.pause()
+    return
+  }
+
+  if (taskTimer.isPausedForNote(note.id)) {
+    await taskTimer.resume()
+    return
+  }
+
+  await taskTimer.start(note.id, note.name)
+}
+
+watch(
+  () => selectedNote.value?.name,
+  (name) => {
+    const note = selectedNote.value
+    if (!note || !name || !taskTimer.isForNote(note.id)) {
+      return
+    }
+
+    void taskTimer.updateTitle(name)
+  },
+)
 
 const sidebarActionTooltip = computed(() =>
   isNotesSidebarHidden.value
@@ -319,6 +377,27 @@ onBeforeUnmount(() => {
           </div>
         </div>
         <div class="ml-2 flex h-7 items-center">
+          <UiActionButton
+            v-if="isTaskTimerVisible"
+            class="mr-1"
+            :class="
+              isTaskTimerActive
+                ? 'bg-accent text-accent-foreground hover:bg-accent hover:text-accent-foreground'
+                : undefined
+            "
+            :tooltip="taskTimerActionTooltip"
+            :active="isTaskTimerActive"
+            @click="onTaskTimerClick"
+          >
+            <Pause
+              v-if="isTaskTimerRunning"
+              class="h-3 w-3"
+            />
+            <Play
+              v-else
+              class="h-3 w-3"
+            />
+          </UiActionButton>
           <UiActionButton
             class="mr-1"
             :tooltip="sidebarActionTooltip"

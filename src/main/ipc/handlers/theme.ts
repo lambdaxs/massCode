@@ -500,4 +500,16 @@ export function registerThemeHandlers() {
     startThemeWatcher()
     return createThemeTemplate()
   })
+
+  ipcMain.handle('theme:broadcast-preferences', (event) => {
+    const senderId = event.sender.id
+
+    BrowserWindow.getAllWindows().forEach((window) => {
+      if (window.isDestroyed() || window.webContents.id === senderId) {
+        return
+      }
+
+      window.webContents.send('theme:preferences-changed')
+    })
+  })
 }

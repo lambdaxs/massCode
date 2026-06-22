@@ -195,7 +195,11 @@ function fallbackToAuto(): void {
   applyBuiltInTheme('auto')
 }
 
-async function setTheme(id: string): Promise<void> {
+function readStoredThemeId(): string {
+  return String(store.preferences.get('appearance.theme') || 'auto')
+}
+
+async function applyThemeById(id: string): Promise<void> {
   if (isBuiltInTheme(id)) {
     applyBuiltInTheme(id)
     return
@@ -206,6 +210,35 @@ async function setTheme(id: string): Promise<void> {
   if (!isApplied) {
     fallbackToAuto()
   }
+}
+
+async function syncThemeFromPreferences(): Promise<void> {
+  const selectedId = readStoredThemeId()
+  currentThemeId.value = selectedId
+
+  if (isBuiltInTheme(selectedId)) {
+    applyBuiltInTheme(selectedId)
+    return
+  }
+
+  const exists = customThemes.value.some(theme => theme.id === selectedId)
+
+  if (!exists) {
+    fallbackToAuto()
+    return
+  }
+
+  await applyThemeById(selectedId)
+}
+
+function broadcastThemePreferences(): void {
+  void ipc.invoke('theme:broadcast-preferences', null).catch(() => {})
+}
+
+async function setTheme(id: string): Promise<void> {
+  currentThemeId.value = id
+  await applyThemeById(id)
+  broadcastThemePreferences()
 }
 
 async function loadCustomThemes(): Promise<void> {
@@ -223,21 +256,7 @@ async function loadCustomThemes(): Promise<void> {
 
 async function handleThemesChanged(): Promise<void> {
   await loadCustomThemes()
-
-  const selectedId = currentThemeId.value
-
-  if (isBuiltInTheme(selectedId)) {
-    return
-  }
-
-  const exists = customThemes.value.some(theme => theme.id === selectedId)
-
-  if (!exists) {
-    fallbackToAuto()
-    return
-  }
-
-  await setTheme(selectedId)
+  await syncThemeFromPreferences()
 }
 
 async function processThemeReloadQueue(): Promise<void> {
@@ -279,7 +298,11 @@ const editorThemeName = computed(() => {
 
 async function initTheme(): Promise<void> {
   await loadCustomThemes()
-  await setTheme(currentThemeId.value)
+  await syncThemeFromPreferences()
+}
+
+function onThemePreferencesChanged() {
+  void syncThemeFromPreferences()
 }
 
 function onThemeChanged() {
@@ -291,6 +314,10 @@ watch(
   () => {
     if (isBuiltInTheme(currentThemeId.value)) {
       resolvedThemeType.value = getBuiltInThemeType(currentThemeId.value)
+
+      if (currentThemeId.value === 'auto') {
+        broadcastThemePreferences()
+      }
     }
   },
 )
@@ -300,6 +327,7 @@ export function useTheme() {
     isInitialized = true
 
     ipc.on('theme:changed', onThemeChanged)
+    ipc.on('theme:preferences-changed', onThemePreferencesChanged)
     void initTheme()
   }
 

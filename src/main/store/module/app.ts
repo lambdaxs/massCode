@@ -148,6 +148,9 @@ const APP_STORE_DEFAULTS: AppStore = {
     activeDrawingId: null,
     viewport: {},
   },
+  taskTimer: {
+    floatPosition: null,
+  },
   activeSpaceId: 'code',
 }
 
@@ -218,6 +221,27 @@ function getLegacyNotesLayoutMode(
   }
 
   return source.isListHidden === true ? 'editor-only' : 'list-editor'
+}
+
+function sanitizeTaskTimerSettings(value: unknown): AppStore['taskTimer'] {
+  const source = asRecord(value)
+  const positionSource = asRecord(source.floatPosition)
+
+  if (
+    typeof positionSource.x === 'number'
+    && typeof positionSource.y === 'number'
+    && Number.isFinite(positionSource.x)
+    && Number.isFinite(positionSource.y)
+  ) {
+    return {
+      floatPosition: {
+        x: positionSource.x,
+        y: positionSource.y,
+      },
+    }
+  }
+
+  return APP_STORE_DEFAULTS.taskTimer
 }
 
 function sanitizeDonations(value: unknown): DonationsState {
@@ -728,6 +752,7 @@ function sanitizeAppStore(value: unknown): AppStore {
           : APP_STORE_DEFAULTS.drawings.activeDrawingId,
       viewport: sanitizeDrawingViewports(asRecord(source.drawings).viewport),
     },
+    taskTimer: sanitizeTaskTimerSettings(source.taskTimer),
     activeSpaceId: readEnum(
       source,
       'activeSpaceId',

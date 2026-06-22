@@ -379,6 +379,12 @@
         "low": "Low",
         "medium": "Medium",
         "high": "High"
+      },
+      "timer": {
+        "start": "Start",
+        "pause": "Pause",
+        "stop": "Stop",
+        "expand": "Show in main window"
       }
     },
     "dashboard": {

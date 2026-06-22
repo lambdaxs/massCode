@@ -7,11 +7,13 @@ import { initApi } from './api'
 import { registerIPC } from './ipc'
 import { startThemeWatcher, stopThemeWatcher } from './ipc/handlers/theme'
 import { validateStoredLicense } from './license'
+import { registerMainWindow } from './mainWindow'
 import { createMainMenu } from './menu/main'
 import { isQuitting, setQuitting } from './quitState'
 import { startMarkdownWatcher, stopMarkdownWatcher } from './storage'
 import { ensureFlatSpacesLayout } from './storage/providers/markdown/runtime/spaces'
 import { store } from './store'
+import { configureTaskTimer, disposeTaskTimer } from './taskTimer'
 import { isSqliteFile, log } from './utils'
 import { DEFAULT_WINDOW_BOUNDS, normalizeWindowBounds } from './windowBounds'
 
@@ -87,6 +89,8 @@ function createWindow() {
     },
   })
 
+  registerMainWindow(mainWindow)
+
   Menu.setApplicationMenu(createMainMenu())
 
   if (isDev) {
@@ -131,6 +135,7 @@ if (!gotTheLock) {
 }
 else {
   app.whenReady().then(async () => {
+    configureTaskTimer({ isDev })
     protocol.handle('masscode', async (request) => {
       const url = new URL(request.url)
 
@@ -278,6 +283,7 @@ else {
     flushWindowBoundsSave()
     stopThemeWatcher()
     stopMarkdownWatcher()
+    disposeTaskTimer()
   })
 
   app.on('window-all-closed', () => {

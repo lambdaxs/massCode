@@ -39,6 +39,7 @@ export const RouterName = {
   notesDashboard: 'notes-space/dashboard',
   notesGraph: 'notes-space/graph',
   notesPresentation: 'notes-space/presentation',
+  taskTimerFloat: 'task-timer-float',
 } as const
 
 const routes = [
@@ -255,6 +256,11 @@ const routes = [
     path: '/notes/presentation',
     name: RouterName.notesPresentation,
     component: () => import('@/views/NotesPresentation.vue'),
+  },
+  {
+    path: '/task-timer-float',
+    name: RouterName.taskTimerFloat,
+    component: () => import('@/views/TaskTimerFloat.vue'),
   },
 ]
 

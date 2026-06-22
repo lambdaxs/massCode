@@ -22,7 +22,7 @@ import {
 import { i18n, ipc } from '@/electron'
 import { router, RouterName } from '@/router'
 import { getActiveSpaceId } from '@/spaceDefinitions'
-import { handleDeepLink } from './deepLinks'
+import { handleDeepLink, openNoteDeepLink } from './deepLinks'
 
 const { state, isCodeSpaceInitialized } = useApp()
 const { isHttpSpaceInitialized } = useHttpApp()
@@ -165,6 +165,18 @@ export function registerSystemListeners() {
   ipc.on('system:storage-synced', () => {
     scheduleStorageSyncRefresh()
   })
+
+  ipc.on(
+    'system:task-timer-open-note',
+    async (_, payload: { noteId: number }) => {
+      try {
+        await openNoteDeepLink(payload.noteId)
+      }
+      catch (error) {
+        console.error('Failed to open task timer note:', error)
+      }
+    },
+  )
 
   ipc.on('system:error', (_, payload) => {
     console.error(`[system][${payload.context}]`, payload)

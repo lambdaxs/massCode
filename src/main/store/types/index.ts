@@ -177,6 +177,9 @@ export interface AppStore {
     activeDrawingId: string | null
     viewport: Record<string, DrawingViewportState>
   }
+  taskTimer: {
+    floatPosition: { x: number, y: number } | null
+  }
   activeSpaceId: SpaceId
 }
 
