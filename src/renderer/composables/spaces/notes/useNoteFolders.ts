@@ -167,10 +167,9 @@ function clearFolderSelection() {
   isApplyingFolderSelection = true
   selectedFolderIds.value = []
   notesState.folderId = undefined
-  // noteId намеренно не сбрасывается: иначе заголовок и редактор мигают
-  // пустым состоянием при переходах Library/Tags, пока загружается список.
-  // Вызывающие реселектят через selectFirstNote/selectNote либо чистят
-  // выбор через clearNotesState.
+  // noteId 故意不重置：否则 Library/Tags 切换时列表加载期间标题与编辑器会
+  // 闪空白。调用方通过 selectFirstNote/selectNote 重选，
+  // 或通过 clearNotesState 清空。
   lastSelectedFolderId.value = undefined
   isApplyingFolderSelection = false
 }
@@ -473,10 +472,9 @@ async function selectNoteFolder(
     applySingleFolderSelection(folderId)
     notesState.libraryFilter = undefined
     notesState.tagId = undefined
-    // noteId намеренно не сбрасывается: иначе заголовок и редактор мигают
-    // пустым состоянием, пока загружается список новой папки. Все вызывающие
-    // либо делают selectFirstNote/selectNote после загрузки списка, либо
-    // чистят выбор через clearNotesState.
+    // noteId 故意不重置：否则新文件夹列表加载期间标题与编辑器会闪空白。
+    // 调用方在列表加载后 selectFirstNote/selectNote，
+    // 或通过 clearNotesState 清空。
   }
 
   if (folders.value?.length && shouldEnsureVisibility) {

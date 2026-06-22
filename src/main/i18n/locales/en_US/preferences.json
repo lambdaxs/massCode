@@ -206,6 +206,17 @@
       "description": "Verify SSL certificates when sending HTTPS requests. Turn off to allow invalid or self-signed certificates."
     }
   },
+  "aiPrototype": {
+    "label": "Prototype Design",
+    "apiKey": {
+      "label": "API Key",
+      "description": "Your gpt-image-2 API key for the domestic provider. Stored locally on this device only."
+    },
+    "defaultAspectRatio": {
+      "label": "Default Aspect Ratio",
+      "description": "Default image size for new generations, for example 1024x1024."
+    }
+  },
   "api": {
     "label": "API",
     "port": {

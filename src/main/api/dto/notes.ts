@@ -54,8 +54,8 @@ const noteItem = t.Object({
   content: t.String(),
 })
 
-// Список не содержит контента заметок: контент выбранной заметки
-// загружается отдельным GET /notes/:id.
+// 列表不含 note content：选中 note 的 content
+// 单独加载 GET /notes/:id.
 const noteListItem = t.Object(noteItemBase)
 
 const notesResponse = t.Array(noteListItem)

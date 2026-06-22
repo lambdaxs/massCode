@@ -120,7 +120,7 @@ function onCopyNoteLink() {
 
 async function onCopyNoteContent() {
   try {
-    // Список не содержит контента — он загружается по id.
+    // 列表不含 content——按 id 加载。
     const { data } = await api.notes.getNotesById(String(props.note.id))
     copy(data.content)
     useDonations().incrementCopy('notes')

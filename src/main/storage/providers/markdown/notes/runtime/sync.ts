@@ -279,10 +279,9 @@ export function syncNoteFileWithDisk(
   if (!noteIndexItem) {
     let noteId = readNoteIdFromFrontmatter(noteAbsolutePath)
 
-    // Внешнее перемещение (mv A.md → B.md) может прислать add нового пути
-    // раньше unlink старого: если frontmatter-id принадлежит записи, файла
-    // которой уже нет на диске, это та же заметка — перенацеливаем запись,
-    // сохраняя id, вместо аллокации нового.
+    // 外部移动（mv A.md → B.md）可能先 add 新路径再 unlink 旧路径：
+    // 若 frontmatter-id 属于某条记录而文件已不在磁盘，视为同一 note——
+    // 保留 id 重定向记录，而非分配新 id。
     if (noteId) {
       const ownerEntry = state.notes.find(entry => entry.id === noteId)
 

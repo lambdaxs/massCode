@@ -5,7 +5,7 @@ import { useNotes, useNoteTags } from '@/composables'
 const { selectedNote, addTagToNote, deleteTagFromNote } = useNotes()
 const { tags, addNoteTag, getNoteTags, isNoteTagsLoaded } = useNoteTags()
 
-// Инициализация спейса уже загружает теги — не дублируем запрос на маунт.
+// space init 已加载标签——mount 时不重复请求。
 if (!isNoteTagsLoaded.value) {
   void getNoteTags()
 }

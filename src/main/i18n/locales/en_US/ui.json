@@ -210,6 +210,43 @@
       "notFound": "Drawing not found",
       "noSelected": "No drawing selected"
     },
+    "aiPrototype": {
+      "label": "Prototype",
+      "tooltip": "AI prototype design",
+      "title": "Prototype Design",
+      "sessionList": "Sessions",
+      "newSession": "New session",
+      "noSession": "No session selected",
+      "promptPlaceholder": "Describe the UI you want to generate…",
+      "send": "Send",
+      "statsSummary": "{{messages}} generations · {{succeeded}} succeeded · {{failed}} failed",
+      "sessionMeta": "{{messages}} generations · {{succeeded}} succeeded",
+      "status": {
+        "pending": "Waiting",
+        "submitting": "Submitting",
+        "running": "Generating",
+        "succeeded": "Done",
+        "failed": "Failed",
+        "violation": "Content policy violation"
+      },
+      "errors": {
+        "API_KEY_MISSING": "Add your API key in Preferences → Prototype Design.",
+        "VAULT_NOT_READY": "Storage is not ready yet.",
+        "UPLOAD_TOO_LARGE": "Image upload is too large.",
+        "TASK_ID_MISSING": "The provider did not return a task id.",
+        "GENERATE_FAILED": "Image generation failed.",
+        "RESULT_FAILED": "Failed to fetch generation result.",
+        "DOWNLOAD_FAILED": "Failed to download the generated image.",
+        "violation": "The request was blocked by content policy."
+      },
+      "image": {
+        "preview": "Image preview",
+        "download": "Download",
+        "copy": "Copy to clipboard",
+        "copyFailed": "Failed to copy image to clipboard.",
+        "downloadFailed": "Failed to download image."
+      }
+    },
     "http": {
       "label": "HTTP",
       "tooltip": "HTTP client",

@@ -2,8 +2,7 @@ import { Buffer } from 'node:buffer'
 import { createPublicKey, verify } from 'node:crypto'
 import { store } from '../store'
 
-// Публичный ключ Ed25519 (SPKI DER, base64). Парный приватный ключ хранится
-// только у мейнтейнера и используется скриптом scripts/license/issue.js.
+// Ed25519 公钥（SPKI DER，base64）。配对私钥仅维护者持有，供脚本使用 scripts/license/issue.js.
 const LICENSE_PUBLIC_KEY
   = 'MCowBQYDK2VwAyEA50TFZklSS8Q64UeasAngOrgKnQe2COfVkqiuS9YPIdo='
 
@@ -77,7 +76,7 @@ export function activateLicense(key: string): LicenseStatus {
   return { active: true, name, email: payload.email }
 }
 
-// Страховка от ручной правки store-файла: невалидный ключ сбрасывается.
+// 防止手动篡改 store 文件：无效 key 会被重置.
 export function validateStoredLicense() {
   const key = store.app.get('license.key')
 

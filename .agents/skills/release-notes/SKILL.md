@@ -1,93 +1,92 @@
 ---
 name: release-notes
-description: Use when generating massCode release notes for a GitHub release. Writes the notes to a gitignored file `docs/releases/<tag>.md` for the user to paste into the GitHub release. Use when summarizing merged PRs of a version into a consistent release notes structure.
+description: 为 GitHub release 生成 massCode release notes 时使用。写入 gitignore 文件 docs/releases/<tag>.md 供用户粘贴到 GitHub release。
 ---
 
 # Release Notes
 
-## Overview
+## 概述
 
-Этот skill генерирует release notes одного релиза `vX.Y.Z` для вставки в GitHub release. Цель — единая повторяемая структура от релиза к релизу.
+本 skill 生成单个版本 `vX.Y.Z` 的 release notes，用于 GitHub release。目标是版本间结构一致、可重复。
 
-Не трогай `docs/website/download/latest-release.md` — это отдельная repo-страница со своим форматом.
+不要修改 `docs/website/download/latest-release.md`，那是独立 repo 页面格式。
 
-## Source Of Truth
+## Source of Truth
 
-- Содержимое выводи из merged PR между предыдущим и новым тегом, не из памяти.
-- Список изменений бери так:
-  `git log --first-parent --oneline <prev-tag>..<new-tag>` (например `v5.5.0..v5.6.0`).
-- Если новый тег ещё не создан, используй `<prev-tag>..HEAD` и спроси/подтверди номер новой версии.
-- Поведение значимых фич проверяй в коде или в `docs/website/documentation`, прежде чем формулировать, если оно неочевидно из заголовка PR.
+- 内容来自**上一 tag 到新 tag 之间 merged PR**，不要凭记忆。
+- 列变更：`git log --first-parent --oneline <prev-tag>..<new-tag>`（如 `v5.5.0..v5.6.0`）。
+- 新 tag 尚未创建时用 `<prev-tag>..HEAD`，并确认新版本号。
+- 重要行为在代码或 `docs/website/documentation` 中核对后再写（若 PR 标题不够清楚）。
 
-## Output
+## 输出
 
-- Записывай результат в файл `docs/releases/<new-tag>.md` (например `docs/releases/v5.6.0.md`). Папка `docs/releases` в `.gitignore`, это рабочий буфер, а не часть репозитория.
-- Пиши именно в файл, а не выводом в терминал: так пользователь копирует чистый markdown без переносов строк, которые добавляет терминал.
-- После записи коротко сообщи путь к файлу и при необходимости покажи итог. Не коммить файл.
+- 写入 `docs/releases/<new-tag>.md`（如 `docs/releases/v5.6.0.md`）。`docs/releases` 在 `.gitignore`，是工作缓冲，非仓库内容。
+- **写文件**，不要只在终端输出：避免终端换行破坏复制。
+- 完成后简短说明路径；必要时展示摘要。**不要 commit** 该文件。
 
-## Format
+## 格式
 
-Файл содержит один markdown-блок в этой структуре и порядке:
+单个 markdown 块，结构如下：
 
 ```
 ## <Feature Name>
 
-<1-2 абзаца: что это и что даёт пользователю.>
+<1-2 段：是什么、对用户有何用。>
 
 ## <Another Feature Name>
 
-<1-2 абзаца.>
+<1-2 段。>
 
 ## Workflow Improvements
 
-- <мелкое улучшение>
-- <мелкое улучшение>
+- <小改进>
+- <小改进>
 
 ## Fixes
 
-- <исправление>
-- <исправление>
+- <修复>
+- <修复>
 
 **Full Changelog**: https://github.com/massCodeIO/massCode/compare/<prev-tag>...<new-tag>
 ```
 
-Правила структуры:
+结构规则：
 
-- Начинай прямо с тематических `##`-разделов. Не добавляй заголовок версии `# vX.Y.Z` (его даёт сам GitHub release), frontmatter или `<AssetsDownload />` — это артефакты repo-страницы.
-- Один `##`-раздел на каждую значимую фичу или связную группу фич.
-- `## Workflow Improvements` и `## Fixes` включай только если для них есть содержимое.
-- Compare-ссылка всегда последней строкой, с актуальными предыдущим и новым тегами.
+- 直接从主题 `##` 开始。不要加 `# vX.Y.Z`（GitHub release 自带）、frontmatter 或 `<AssetsDownload />`。
+- 每个重要功能或功能组一个 `##`。
+- `## Workflow Improvements` 与 `## Fixes` 仅在有内容时出现。
+- Compare 链接始终最后一行，tag 必须正确。
 
-## What To Include
+## 应包含
 
-- User-facing изменения: новые spaces и фичи, заметные улучшения workflow, видимые исправления.
-- Крупную фичу выноси в отдельный `##`-раздел с 1-2 абзацами о пользе для пользователя.
-- Мелкие улучшения собирай в `## Workflow Improvements` буллетами.
-- Исправления собирай в `## Fixes` буллетами, по одному на исправление.
+- User-facing 变更：新 space/功能、明显 workflow 改进、可见修复。
+- 大功能单独 `##`，1-2 段说明用户价值。
+- 小改进 bullet 放在 `## Workflow Improvements`。
+- 修复 bullet 放在 `## Fixes`，一条一修复。
 
-## What To Omit
+## 应省略
 
-- Чисто внутренние коммиты: `ci`, `build`, `chore`, рефакторинг, bump зависимостей, релизные служебные коммиты (`build: release vX.Y.Z`).
-- Исключение: выноси платформенные изменения, заметные пользователю (например code signing и notarization на macOS), в `## Workflow Improvements`.
-- Не описывай детали реализации; пиши о результате для пользователя.
+- 纯内部 commit：`ci`、`build`、`chore`、重构、依赖 bump、发布 housekeeping（`build: release vX.Y.Z`）。
+- 例外：对用户可见的平台变更（如 macOS code signing/notarization）可放 `## Workflow Improvements`。
+- 不要写实现细节；写用户结果。
 
-## Writing Style
+## 写作风格
 
-- Английский, спокойный фактический тон. Что делает фича и зачем она пользователю, без маркетинговых превосходных степеней.
-- Никаких em dash. Это общее правило репозитория.
-- Имена spaces пиши консистентно: `Code`, `Notes`, `Math Notebook`, `Drawings`, `HTTP`, `Tools`. Не смешивай `Code` и `Snippets` как имя пространства.
-- `snippet` — единица контента внутри пространства Code, а не имя пространства. В Fixes допустимо «snippet fences», «snippet sync», но пространство всё равно называется Code.
-- Code identifiers, расширения файлов и токены оборачивай в backticks (`` `.excalidraw` ``, `` `@` ``, `` `Esc` ``).
-- Shortcuts указывай как в интерфейсе; macOS и Windows/Linux варианты различай, если они отличаются.
+- **英文**，平静、事实语气。说明功能做什么、为何有用，不要营销腔。
+- 不要用 em dash（仓库通用规则）。
+- Space 名称一致：`Code`、`Notes`、`Math Notebook`、`Drawings`、`HTTP`、`Tools`。不要混用 `Code` 与 `Snippets` 作为 space 名。
+- `snippet` 是 Code space 内的内容单元，不是 space 名。Fixes 里可写 “snippet fences”，space 仍叫 Code。
+- 代码标识、扩展名、token 用反引号（`` `.excalidraw` ``、`` `@` ``、`` `Esc` ``）。
+- 快捷键与 UI 一致；macOS 与 Windows/Linux 不同时分别写。
 
-## Common Mistakes
+## 常见错误
 
-- Перечислять коммиты дословно вместо группировки в user-facing разделы.
-- Включать `ci` / `build` / `chore` шум, который не виден пользователю.
-- Добавлять `# vX.Y.Z`, frontmatter или `<AssetsDownload />` (это формат repo-страницы, а не GitHub release).
-- Выводить нотис простыней в терминал вместо файла `docs/releases/<new-tag>.md` (терминал ломает переносы строк при копировании).
-- Коммитить файл из `docs/releases` — это игнорируемый рабочий буфер.
-- Смешивать имена пространств (`Code` против `Snippets`) внутри одного документа.
-- Описывать детали реализации вместо пользы для пользователя.
-- Забыть обновить compare-ссылку на актуальные теги.
-- Использовать em dash вопреки правилу репозитория.
+- 逐条抄 commit 而非 grouped user-facing 段落。
+- 纳入用户不可见的 `ci` / `build` / `chore` 噪音。
+- 加 `# vX.Y.Z`、frontmatter 或 `<AssetsDownload />`。
+- 只在终端输出长文而非写 `docs/releases/<new-tag>.md`。
+- Commit `docs/releases` 下的文件。
+- 同一文档混用 space 名称（`Code` vs `Snippets`）。
+- 写实现细节而非用户价值。
+- Compare 链接 tag 错误。
+- 使用 em dash。

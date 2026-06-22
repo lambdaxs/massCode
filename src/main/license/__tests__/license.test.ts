@@ -15,7 +15,7 @@ vi.mock('../../store', () => ({
   },
 }))
 
-// Подпись чужим ключом: валидна криптографически, но не нашим публичным ключом.
+// 用他人密钥签名：密码学有效，但不是我们的公钥.
 function makeForeignKey(payload: object) {
   const { privateKey } = generateKeyPairSync('ed25519')
   const payloadBase64 = Buffer.from(JSON.stringify(payload)).toString(
@@ -28,12 +28,12 @@ function makeForeignKey(payload: object) {
   return `${payloadBase64}.${signature}`
 }
 
-// Выпущены скриптом scripts/license/issue.js парным приватным ключом.
+// 由 scripts/license/issue.js 用配对私钥签发.
 const VALID_KEY
   = 'eyJuYW1lIjoiVGVzdCBVc2VyIiwiZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIiwiaXNzdWVkQXQiOiIyMDI2LTA2LTEyIn0.C7HJmtCZI6KRGSFF1WmwAVDys2t_dP-jWBDXLGOiqjI6tQCMIqZIUFfZm5kOwR1lf1KHtzfv3NnB5sFV6H5TCQ'
 const EMAIL_ONLY_KEY
   = 'eyJlbWFpbCI6Im9ubHlAZXhhbXBsZS5jb20iLCJpc3N1ZWRBdCI6IjIwMjYtMDYtMTIifQ.xtJVJrjHSIgaTaD47cKV_kmUbxvdGcEZNklOe1phE670m52XkBjTSba8IglWdpW1TL87UwoUQg2cw2QBR0aiDQ'
-// Подписан нашим ключом, но в payload нет обязательного email.
+// 用我们的密钥签名，但 payload 缺少必填 email.
 const NAME_ONLY_KEY
   = 'eyJuYW1lIjoiTm8gRW1haWwiLCJpc3N1ZWRBdCI6IjIwMjYtMDYtMTIifQ.h3nngjQxRxc5RzhvrzBCbCoBDrTCKwbyiNf4fkoIjIBlf4hXhu3I3L5yb8MVwSMmAaInscj-lZk99sQGwFuKDA'
 

@@ -212,14 +212,10 @@ body {
 }
 
 /*
- * vue-virtual-scroller задаёт item-wrapper высоту ровно N×item-size с
- * overflow: hidden, из-за чего у последнего элемента списка обрезается нижняя
- * часть highlight-обводки (outline с -outline-offset при открытии контекстного
- * меню). Полностью отключать клиппинг нельзя: scroller паркует осиротевшие
- * item-view из пула за пределами контента, и без клиппинга они наслаиваются на
- * видимый список при быстром переключении папок. overflow: clip сохраняет
- * клиппинг, а небольшой clip-margin даёт запас, чтобы обводка отрисовалась
- * целиком.
+ * vue-virtual-scroller 将 item-wrapper 高度设为 N×item-size 且 overflow: hidden，
+ * 导致列表最后一项的 highlight 描边（上下文菜单打开时的 outline/-outline-offset）被裁切。
+ * 不能完全关闭裁剪：scroller 会把池中孤儿 item-view 放到内容区外，无裁剪时快速切换文件夹会叠在可见列表上。
+ * overflow: clip 保留裁剪，少量 clip-margin 为描边留出空间。
  */
 .vue-recycle-scroller__item-wrapper {
   overflow: clip;
@@ -227,10 +223,9 @@ body {
 }
 
 /*
- * item-view создаёт собственный stacking context (will-change: transform),
- * поэтому z-index внутреннего элемента не влияет на наложение между соседними
- * элементами списка. Поднимаем сам item-view, когда внутри активна
- * highlight-обводка, чтобы соседний selected/focused элемент её не перекрывал.
+ * item-view 自带 stacking context（will-change: transform），
+ * 内部 z-index 无法影响相邻列表项叠放。内部 highlight 激活时提升 item-view，
+ * 避免相邻 selected/focused 项遮挡描边。
  */
 .vue-recycle-scroller__item-view:has(.is-highlighted) {
   z-index: 1;

@@ -3,17 +3,15 @@ import { api } from '~/renderer/services/api'
 
 type ConflictGroup = VaultDoctorResponse['conflictGroups'][number]
 
-// Стабильный id sonner-уведомления о конфликтах: позволяет убрать висящее
-// уведомление о прежнем vault при смене на другой.
+// 冲突 sonner 通知的稳定 id：切换 vault 时可移除旧 vault 的残留通知。
 export const VAULT_DOCTOR_NOTICE_ID = 'vault-doctor-conflicts'
 
-// Эвристика конфликтных копий cloud-sync: Dropbox "(conflicted copy)",
-// Яндекс.Диск / macOS "— копия", generic "copy". Используется только для
-// визуальной подсказки и предвыбора canonical, не влияет на backend.
+// 云同步冲突副本启发式：Dropbox "(conflicted copy)"、
+//  macOS "— copy"、通用 "copy"。仅用于 UI 提示与 canonical 预选，不影响 backend。
 const COPY_RE = /(?:—|-)\s*копия|\bкопия\b|\bcopy\b|conflict/i
 
-// Module-level shared state: один отчёт переиспользуется между startup-проверкой
-// (App.vue) и секцией Vault Doctor (Storage.vue), чтобы не сканировать дважды.
+// Module 级共享状态：启动检查（App.vue）与 Vault Doctor（Storage.vue）
+// 复用同一份报告，避免重复扫描。
 const report = shallowRef<VaultDoctorResponse | null>(null)
 const decisionByGroupId = reactive<Record<string, string>>({})
 const isScanning = ref(false)
@@ -32,8 +30,8 @@ function isCopyPath(path: string): boolean {
   return COPY_RE.test(splitPath(path).name)
 }
 
-// Рекомендуемый canonical: первый файл без признаков копии, иначе самый
-// короткий по имени (вероятный оригинал), иначе первый в группе.
+// 推荐 canonical：第一个无副本特征的文件，否则取名称最短者（可能是原件），
+// 否则取组内第一个。
 function getCanonicalPath(group: ConflictGroup): string {
   const original = group.items.find(item => !isCopyPath(item.path))
   if (original) {
@@ -116,8 +114,7 @@ export function useVaultDoctor() {
     return group.id.split(':').at(-1) ?? group.id
   }
 
-  // Возвращает отчёт. Ошибки пробрасываются — вызывающий решает, как их
-  // показать (тихо на startup, через sonner в настройках).
+  // 返回报告。错误向上抛出——由调用方决定如何展示（启动时静默，设置页用 sonner）。
   async function scan(): Promise<VaultDoctorResponse | null> {
     if (isScanning.value || isApplying.value) {
       return report.value
@@ -137,8 +134,7 @@ export function useVaultDoctor() {
     }
   }
 
-  // Сбрасывает отчёт и решения. Нужно при смене vault: старый отчёт относится
-  // к прежнему пути и к новому vault неприменим.
+  // 重置报告与决策。切换 vault 时需要：旧报告对应旧路径，不适用于新 vault。
   function reset() {
     report.value = null
     resetDecisions()

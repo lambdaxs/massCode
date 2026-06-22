@@ -48,8 +48,8 @@ const {
 
 let editor: CodeMirror.Editor | null = null
 let currentSearchOverlay: any = null
-// id фрагмента, чьё тело сейчас отображается в редакторе: пока полная запись
-// сниппета загружается, selectedSnippetContent содержит только метаданные.
+// 当前编辑器显示的 fragment body 所属 id：完整记录加载期间
+// selectedSnippetContent 仅含元数据。
 let lastAppliedContentId: number | undefined
 
 const previewHandleRef = ref<HTMLElement>()
@@ -149,9 +149,8 @@ async function init() {
       return
 
     const content = selectedSnippetContent.value
-    // Сохраняем только когда тело загружено и редактор отображает именно
-    // этот фрагмент — иначе в момент переключения можно перезаписать
-    // сниппет чужим текстом.
+    // 仅在 body 已加载且编辑器显示当前 fragment 时保存，
+    // 否则切换时可能用错误文本覆盖 snippet。
     if (
       !content
       || content.value === undefined
@@ -194,7 +193,7 @@ async function init() {
         const arrayBuffer = await file.arrayBuffer()
         const buffer = Array.from(new Uint8Array(arrayBuffer))
 
-        // Вызываем IPC хендлер для сохранения файла из буфера
+        // 调用 IPC handler 从 buffer 保存文件
         const relativePath = await ipc.invoke('fs:assets', {
           buffer,
           fileName: file.name,
@@ -203,7 +202,7 @@ async function init() {
         cm.replaceSelection(`![${file.name}](./${relativePath})`)
       }
       catch (error) {
-        console.error('Ошибка при добавлении изображения:', error)
+        console.error('添加图片失败:', error)
       }
     }
   })
@@ -218,15 +217,13 @@ async function init() {
 
   watch(selectedSnippetContent, (v) => {
     nextTick(() => {
-      // Полная запись выбранного сниппета ещё загружается — не очищаем
-      // редактор промежуточным состоянием (метаданные без value).
+      // 选中 snippet 完整记录仍在加载——不以中间态（无 value 元数据）清空编辑器。
       if (selectedSnippet.value && (!v || v.value === undefined)) {
         return
       }
 
-      // Сравниваем с последним реально отображённым фрагментом, а не с
-      // предыдущим значением computed: между сниппетами проскакивает
-      // metadata-only состояние с тем же id.
+      // 与最后实际显示的 fragment 比较，而非 computed 旧值：
+      // snippet 间会闪过同 id 的仅元数据状态。
       const isNewValue = v?.id !== lastAppliedContentId
       const isSameContent = v?.id === lastAppliedContentId
       const snippetId = selectedSnippet.value?.id
@@ -249,7 +246,7 @@ async function init() {
         }
       }
 
-      // Не сохраняем вьюпорт при смене фрагмента/сниппета
+      // 切换 fragment/snippet 时不保存 viewport
       setValue(nextValue, true, !isNewValue)
       lastAppliedContentId = contentId
       nextTick(() => {
@@ -419,11 +416,10 @@ function onCopySnippetMenu() {
 
 ipc.on('main-menu:format', format)
 
-// Спейсы пересоздаются при переключении: без снятия listeners каждый цикл
-// добавляет обработчик и удерживает мёртвый инстанс CodeMirror от GC.
-// removeListeners по каналу, т.к. contextBridge оборачивает функцию в новый
-// прокси и removeListener по ссылке не срабатывает; владелец каналов — только
-// этот компонент.
+// 切换 space 时组件重建：不移除 listener 则每轮都会新增处理器
+// 并持有已失效的 CodeMirror 实例以免 GC。
+// 按 channel removeListeners：contextBridge 将函数包成新 proxy，
+// 按引用 removeListener 无效；channel 所有者仅为本组件。
 onBeforeUnmount(() => {
   ipc.removeListeners('main-menu:format')
   ipc.removeListeners('main-menu:copy-snippet')

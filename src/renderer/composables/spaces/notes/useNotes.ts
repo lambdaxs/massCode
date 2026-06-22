@@ -40,13 +40,12 @@ interface NoteRecord {
   updatedAt: number
 }
 
-// Полная запись заметки (GET /notes/:id): список контент не содержит.
+// note 完整记录（GET /notes/:id）：列表不含 content。
 export interface NoteFullRecord extends NoteRecord {
   content: string
 }
 
-// Выбранная заметка: пока полная запись загружается, метаданные берутся из
-// списка и content временно отсутствует.
+// 选中 note：完整记录加载期间使用列表元数据，content 暂时为空。
 export type SelectedNoteView = NoteRecord & { content?: string }
 
 type NotesResponse = NoteRecord[]
@@ -93,8 +92,7 @@ const lastSelectedNoteId = ref<number | undefined>()
 
 export const notes = shallowRef<NotesResponse>()
 
-// Список отдаёт только метаданные, поэтому полная запись выбранной заметки
-// (с контентом) загружается отдельно по id.
+// 列表只返回元数据，因此选中 note 的完整记录（含 content）需按 id 单独加载。
 export const selectedNoteRecord = shallowRef<NoteFullRecord | undefined>()
 let selectedNoteRequestToken = 0
 let notesRequestToken = 0
@@ -112,8 +110,7 @@ const selectedNote = computed<SelectedNoteView | undefined>(() => {
     return selectedNoteRecord.value
   }
 
-  // Пока полная запись загружается, метаданные берутся из списка,
-  // чтобы заголовок и layout не мигали.
+  // 完整记录加载期间，标题与 layout 使用列表中的元数据，避免闪烁。
   const source = isSearch.value ? notesBySearch.value : notes.value
   return source?.find(n => n.id === notesState.noteId)
 })
@@ -382,7 +379,7 @@ async function getNoteNamesForCreate(
 
 export async function getNotes(query?: NotesQuery) {
   return withNotesLoading(async () => {
-    // Защита от гонки ответов: применяется только самый свежий запрос.
+    // 防止响应竞态：仅应用最新一次请求的结果。
     const requestToken = ++notesRequestToken
     const forSearch = isSearch.value
     const resolvedQuery = {
@@ -493,7 +490,7 @@ async function createNoteWithPayloadAndSelect(payload?: CreateNotePayload) {
   await focusNoteNameInput()
 }
 
-// Поля, влияющие на состав текущего списка: после их изменения нужен refetch.
+// 影响当前列表组成的字段：变更后需要 refetch。
 function isNoteListMembershipAffecting(data: NotesUpdate) {
   return (
     data.folderId !== undefined
@@ -553,7 +550,7 @@ async function updateNote(noteId: number, data: NotesUpdate) {
     return
   }
 
-  // Переименование/описание не меняют состав списка — обновляем точечно.
+  // 重命名/描述不改变列表组成——局部更新即可。
   patchNoteInCollections(noteId, data)
 }
 

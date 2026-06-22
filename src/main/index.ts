@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import { app, BrowserWindow, ipcMain, Menu, protocol, screen } from 'electron'
+import { disposeAiPrototypeTasks } from './aiPrototype/taskRunner'
 import { initApi } from './api'
 import { registerIPC } from './ipc'
 import { startThemeWatcher, stopThemeWatcher } from './ipc/handlers/theme'
@@ -186,10 +187,9 @@ else {
             || path.join(storagePath, 'markdown-vault')
         ensureFlatSpacesLayout(vaultPath)
 
-        // Авто-миграция из SQLite выполняется только один раз. Флаг
-        // storage.sqliteMigrated персистентно блокирует повтор, иначе ручная
-        // очистка vault при сохранившемся massCode.db триггерила бы миграцию
-        // заново и возвращала удалённые данные.
+        // SQLite 自动迁移只执行一次。标志
+        // storage.sqliteMigrated 持久化阻止重复执行，否则在 massCode.db 仍存在时
+        // 手动清空 vault 会再次触发迁移并恢复已删除的数据。
         const alreadyMigrated
           = store.preferences.get('storage.sqliteMigrated') === true
 
@@ -219,9 +219,8 @@ else {
             }
           }
 
-          // Помечаем миграцию как выполненную в обоих случаях: после успешной
-          // миграции и как backfill для пользователей, уже мигрировавших в
-          // прошлых версиях (vault с данными, но без флага).
+          // 在两种情况下都将迁移标记为已完成：成功迁移后，以及为已在旧版本
+          // 完成迁移但缺少标志的用户做 backfill（vault 有数据但没有标志）。
           store.preferences.set('storage.sqliteMigrated', true)
         }
       }
@@ -284,6 +283,7 @@ else {
     stopThemeWatcher()
     stopMarkdownWatcher()
     disposeTaskTimer()
+    disposeAiPrototypeTasks()
   })
 
   app.on('window-all-closed', () => {

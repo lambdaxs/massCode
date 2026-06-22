@@ -164,7 +164,7 @@ function onCopySnippetLink() {
 
 async function onCopySnippetContent() {
   try {
-    // Список не содержит тел фрагментов — контент загружается по id.
+    // 列表不含 fragment body——content 按 id 加载。
     const { data } = await api.snippets.getSnippetsById(
       String(props.snippet.id),
     )

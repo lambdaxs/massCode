@@ -19,8 +19,7 @@ let inFlightRequest: Promise<void> | null = null
 
 // --- CRUD ---
 
-// Параллельные вызовы (init спейса + маунт компонентов) деду­плицируются
-// в один запрос.
+// 并行调用（space init + 组件 mount）去重合并为一次请求。
 function getNoteTags(): Promise<void> {
   if (inFlightRequest) {
     return inFlightRequest

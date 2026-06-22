@@ -67,15 +67,15 @@ function mapStorageError(status: unknown, error: unknown): never {
 
 app
   .use(snippetsDTO)
-  // Получение списка сниппетов c возможностью фильтрации
+  // 获取可过滤的 snippet 列表
   .get(
     '/',
     ({ query }) => {
       const storage = useStorage()
       const result = storage.snippets.getSnippets(query)
 
-      // Тела фрагментов не сериализуются в список: контент выбранного
-      // сниппета загружается через GET /snippets/:id.
+      // fragment body 不序列化进列表：选中项 content
+      // snippet 通过以下方式加载 GET /snippets/:id.
       return result.map(snippet => ({
         ...snippet,
         contents: snippet.contents.map(({ id, label, language }) => ({
@@ -93,7 +93,7 @@ app
       },
     },
   )
-  // Получение кол-ва сниппетов
+  // 获取 snippet 数量
   .get(
     '/counts',
     () => {
@@ -129,7 +129,7 @@ app
       },
     },
   )
-  // Создание сниппета
+  // 创建 snippet
   .post(
     '/',
     ({ body, status }) => {
@@ -151,7 +151,7 @@ app
       },
     },
   )
-  // Добавление содержимого сниппета
+  // 添加 snippet 内容
   .post(
     '/:id/contents',
     ({ params, body, status }) => {
@@ -176,7 +176,7 @@ app
       },
     },
   )
-  // Обновление сниппета
+  // 更新 snippet
   .patch(
     '/:id',
     ({ params, body, status }) => {
@@ -208,7 +208,7 @@ app
       },
     },
   )
-  // Обновление содержимого сниппета
+  // 更新 snippet 内容
   .patch(
     '/:id/contents/:contentId',
     ({ params, body, status }) => {
@@ -241,7 +241,7 @@ app
       },
     },
   )
-  // Добавление тега к сниппету
+  // 为 snippet 添加标签
   .post(
     '/:id/tags/:tagId',
     ({ params, status }) => {
@@ -267,7 +267,7 @@ app
       },
     },
   )
-  // Удаление тега из сниппета
+  // 从 snippet 移除标签
   .delete(
     '/:id/tags/:tagId',
     ({ params, status }) => {
@@ -300,7 +300,7 @@ app
       },
     },
   )
-  // Удаление сниппета
+  // 删除 snippet
   .delete(
     '/:id',
     ({ params, status }) => {
@@ -319,7 +319,7 @@ app
       },
     },
   )
-  // Удаление всех сниппетов в корзине
+  // 删除回收站中所有 snippet
   .delete(
     '/trash',
     ({ status }) => {
@@ -340,7 +340,7 @@ app
       },
     },
   )
-  // Удаление содержимого сниппета
+  // 删除 snippet 内容
   .delete(
     '/:id/contents/:contentId',
     ({ params, status }) => {

@@ -1,37 +1,37 @@
 ---
 name: development-workflow
-description: Use when following massCode repo workflow rules, especially for scoped lint and test commands, or when changes require required follow-up commands like code generation or locale sync.
+description: 遵循 massCode 仓库 workflow 时使用，尤其是 scoped lint/test，或变更后需要 code generation、locale sync 等 follow-up 命令。
 ---
 
-# Development Workflow
+# 开发 Workflow
 
-## Overview
+## 概述
 
-В massCode workflow rules считаются частью качества изменений. Для локальной задачи команды должны быть точечными, а изменения source-of-truth файлов должны сопровождаться обязательными follow-up шагами.
+massCode 的 workflow 规则是变更质量的一部分。本地任务应使用精准命令；修改 source-of-truth 文件后必须执行规定的 follow-up。
 
-## Linting Rules
+## Lint 规则
 
-- Всегда запускай lint только по затронутым файлам или директориям.
-- Никогда не запускай lint по всему проекту во время локальной задачи.
-- Используй scoped commands вроде:
+- 仅对**受影响文件或目录**运行 lint。
+- 本地任务**不要**全项目 lint。
+- 示例：
   - `pnpm lint <path>`
   - `pnpm lint:fix <path>`
 
-## Testing Rules
+## 测试规则
 
-- Всегда запускай тесты только по затронутым файлам или директориям.
-- Никогда не запускай весь test suite без явной необходимости.
-- Используй scoped commands вроде:
+- 仅对**受影响文件或目录**运行测试。
+- 无明确必要不要跑全量 test suite。
+- 示例：
   - `pnpm test <path>`
   - `pnpm test:watch <path>`
 
-## Required Follow-Up Commands
+## 必须的 Follow-up 命令
 
-- Изменил API DTO/routes → `pnpm api:generate`
-- Изменил locale-файлы → `pnpm i18n:copy`
+- 改了 API DTO/routes → `pnpm api:generate`
+- 改了 locale 文件 → `pnpm i18n:copy`
 
-## Common Mistakes
+## 常见错误
 
-- Прогонять весь lint/test suite для маленькой точечной правки.
-- Менять source-of-truth файлы и забывать generation/sync шаг.
-- Запускать “на всякий случай” широкие команды вместо минимального релевантного набора.
+- 小改动却跑全量 lint/test。
+- 改了 source-of-truth 却忘记 generation/sync。
+- “以防万一”跑宽命令，而非最小相关集合。

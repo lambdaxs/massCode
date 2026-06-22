@@ -236,9 +236,9 @@ export async function fetchInternalLinkEntity(
   }
 }
 
-// Резолв по title собирается в один batch-запрос на все ссылки документа:
-// все запросы одного тика (build-проход по видимым ссылкам) уходят одним
-// POST /internal-links/resolve вместо пакета из 5 запросов на ссылку.
+// 按 title 解析合并为文档内所有链接的一次 batch 请求：
+// 同一 tick 内所有请求（可见链接 build 遍历）合并为一次
+// POST /internal-links/resolve，而非每条链接 5 次请求。
 interface PendingTitleResolution {
   title: string
   resolvers: ((entity: CachedEntity) => void)[]

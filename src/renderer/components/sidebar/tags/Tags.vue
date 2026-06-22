@@ -20,7 +20,7 @@ const {
 } = useSnippets()
 const { clearFolderSelection } = useFolders()
 
-// Инициализация спейса уже загружает теги — не дублируем запрос на маунт.
+// space init 已加载标签——mount 时不重复请求。
 if (!isTagsLoaded.value) {
   void getTags()
 }

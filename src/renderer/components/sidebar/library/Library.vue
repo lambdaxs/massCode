@@ -121,7 +121,7 @@ async function onFolderDrag({
   position: 'before' | 'after' | 'center'
 }) {
   try {
-    // Фильтруем узлы, исключая целевой, чтобы избежать перемещения папки в себя
+    // 过滤节点并排除目标，避免文件夹移入自身
     const movableNodes = nodes.filter(node => node.id !== target.id)
 
     if (!movableNodes.length) {
@@ -129,7 +129,7 @@ async function onFolderDrag({
     }
 
     if (position === 'center') {
-      // Перемещение внутрь целевой папки
+      // 移入目标文件夹内部
       const destinationParentId = Number(target.id)
       let orderIndex = target.children?.length || 0
 
@@ -144,7 +144,7 @@ async function onFolderDrag({
       return
     }
 
-    // Перемещение до или после целевой папки
+    // 移到目标文件夹前或后
     for (const node of movableNodes) {
       const isDraggingUp = node.orderIndex > target.orderIndex
 
@@ -152,7 +152,7 @@ async function onFolderDrag({
       let newOrderIndex: number
 
       if (node.parentId === target.parentId) {
-        // Если перемещаем внутри одного списка, корректируем по направлению и позиции
+        // 同一列表内移动时按方向与位置校正
         if (position === 'after') {
           newOrderIndex = isDraggingUp
             ? target.orderIndex + 1
@@ -165,7 +165,7 @@ async function onFolderDrag({
         }
       }
       else {
-        // Если перемещение в другой родительский элемент
+        // 移到其他父节点下
         newOrderIndex
           = position === 'after' ? target.orderIndex + 1 : target.orderIndex
       }

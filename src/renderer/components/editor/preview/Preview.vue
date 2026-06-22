@@ -73,8 +73,8 @@ function generateHtmlPreview(save = false) {
   `
 }
 
-// Превью замораживается на время загрузки тел фрагментов (value === undefined
-// в metadata-состоянии), чтобы iframe не мигал дефолтной заглушкой.
+// fragment body 加载期间冻结预览（value === undefined
+// 的 metadata 状态），避免 iframe 闪默认占位。
 const isContentLoading = computed(() =>
   Boolean(
     selectedSnippet.value

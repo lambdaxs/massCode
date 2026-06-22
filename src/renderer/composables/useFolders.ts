@@ -106,8 +106,8 @@ function sortFolderIdsByTreeOrder(ids: number[]) {
 }
 
 function syncSelectedFoldersWithTree() {
-  // Если выбрана системная папка (Inbox, Favorites, All, Trash),
-  // selectedFolderIds пуст — не нужно назначать fallback
+  // 选中系统文件夹（Inbox、Favorites、All、Trash）时
+  // selectedFolderIds 为空——无需 fallback
   if (state.libraryFilter) {
     return
   }
@@ -164,10 +164,9 @@ function clearFolderSelection() {
   isApplyingFolderSelection = true
   selectedFolderIds.value = []
   state.folderId = undefined
-  // snippetId намеренно не сбрасывается: иначе заголовок и редактор мигают
-  // пустым состоянием при переходах Library/Tags, пока загружается список.
-  // Вызывающие реселектят через selectFirstSnippet/selectSnippet либо чистят
-  // выбор через clearSnippetsState.
+  // snippetId 故意不重置：否则 Library/Tags 切换时列表加载期间标题与编辑器会
+  // 闪空白状态。调用方通过 selectFirstSnippet/selectSnippet 重选，
+  // 或通过 clearSnippetsState 清空选择。
   lastSelectedFolderId.value = undefined
   isApplyingFolderSelection = false
 }
@@ -488,10 +487,9 @@ async function selectFolder(
     applySingleFolderSelection(folderId)
     state.libraryFilter = undefined
     state.tagId = undefined
-    // snippetId намеренно не сбрасывается: иначе заголовок и редактор
-    // мигают пустым состоянием, пока загружается список новой папки.
-    // Все вызывающие либо делают selectFirstSnippet/selectSnippet после
-    // загрузки списка, либо чистят выбор через clearSnippetsState.
+    // snippetId 故意不重置：否则新文件夹列表加载期间标题与编辑器会闪空白。
+    // 调用方在列表加载后 selectFirstSnippet/selectSnippet，
+    // 或通过 clearSnippetsState 清空。
   }
 
   if (folders.value?.length && shouldEnsureVisibility) {

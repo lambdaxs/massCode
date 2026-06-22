@@ -147,10 +147,9 @@ function clearFolderSelection() {
   isApplyingFolderSelection = true
   selectedFolderIds.value = []
   httpState.folderId = undefined
-  // requestId намеренно не сбрасывается: иначе список и редактор запроса
-  // мигают пустым состоянием при переходах Library, пока загружается список.
-  // Вызывающие реселектят через selectFirstRequest/selectHttpRequest либо
-  // чистят выбор явно (resetHttpRequestsState, deleteSelectedHttpFolders).
+  // requestId 故意不重置：否则 Library 切换时列表加载期间请求列表与编辑器会闪空白。
+  // 调用方通过 selectFirstRequest/selectHttpRequest 重选，
+  // 或显式清空（resetHttpRequestsState、deleteSelectedHttpFolders）。
   lastSelectedFolderId.value = undefined
   isApplyingFolderSelection = false
 }
@@ -395,8 +394,8 @@ async function deleteSelectedHttpFolders(fallbackFolderId?: number) {
   await Promise.all(targetIds.map(id => deleteHttpFolder(id, false)))
   await getHttpFolders(false)
 
-  // Выбранный запрос мог принадлежать удалённой папке: выбор чистится явно,
-  // т.к. selectHttpFolder/clearFolderSelection его больше не сбрасывают.
+  // 选中请求可能属于已删文件夹：显式清空选择，
+  // 因 selectHttpFolder/clearFolderSelection 不再自动重置。
   httpState.requestId = undefined
 
   const fallbackId = selectedFolderIds.value[0]
@@ -429,9 +428,8 @@ async function selectHttpFolder(
   }
   else {
     applySingleFolderSelection(folderId)
-    // requestId намеренно не сбрасывается: иначе список и редактор запроса
-    // мигают пустым состоянием, пока загружается список новой папки.
-    // Вызывающие реселектят после загрузки списка.
+    // requestId 故意不重置：否则新文件夹列表加载期间会闪空白。
+    // 调用方在列表加载后重选。
   }
 
   if (folders.value.length && shouldEnsureVisibility) {

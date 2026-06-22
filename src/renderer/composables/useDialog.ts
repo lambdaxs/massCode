@@ -86,7 +86,7 @@ export function useDialog() {
                 'open': isOpen.value,
                 'onUpdate:open': (open: boolean) => {
                   isOpen.value = open
-                  // Если диалог закрывается через UI, вызываем onCancel
+                  // 通过 UI 关闭对话框时调用 onCancel
                   if (!open && isDialogActive) {
                     onCancel()
                   }

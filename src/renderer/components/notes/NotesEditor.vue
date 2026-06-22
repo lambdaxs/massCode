@@ -61,8 +61,8 @@ const editorContainer = ref<HTMLElement>()
 let view: EditorView | null = null
 let isApplyingExternalContent = false
 let unregisterNavigationNoteUIState: (() => void) | undefined
-// Последняя строка, отправленная редактором в модель: позволяет пропускать
-// echo-обновления без материализации всего документа на каждый keystroke.
+// 编辑器写入模型的最后一行：用于跳过
+// echo 更新，避免每次按键 materialize 全文。
 let lastEmittedContent: string | null = null
 let lastAppliedNoteId: number | undefined
 
@@ -294,22 +294,22 @@ function applyExternalState(doc: string) {
   isApplyingExternalContent = false
 }
 
-// noteId и content меняются согласованно (NotesEditorPane обновляет их
-// вместе, когда контент заметки загружен), поэтому один watcher.
+// noteId 与 content 同步变更（NotesEditorPane 在
+// note content 加载后一起更新），故用一个 watcher。
 watch([() => props.noteId, content], ([noteId, val]) => {
   if (!view)
     return
 
-  // Смена заметки: пересоздание EditorState сбрасывает undo-историю,
-  // но переиспользует EditorView и DOM (раньше компонент пересоздавался
-  // целиком через :key).
+  // 切换 note：重建 EditorState 会清空 undo，
+  // 但复用 EditorView 与 DOM（此前整组件用
+  // :key 重建）。
   if (noteId !== lastAppliedNoteId) {
     lastAppliedNoteId = noteId
     applyExternalState(val)
     return
   }
 
-  // Echo собственного ввода: материализовать документ не нужно.
+  // 自有输入 echo：无需 materialize 文档。
   if (val === lastEmittedContent)
     return
 
@@ -317,8 +317,8 @@ watch([() => props.noteId, content], ([noteId, val]) => {
   if (currentValue === val)
     return
 
-  // Внешнее обновление той же заметки: dispatch вместо пересоздания
-  // состояния — сохраняет undo-историю, selection и расширения.
+  // 同一 note 的外部更新：dispatch 而非重建
+  // state——保留 undo、选区与扩展。
   isApplyingExternalContent = true
   view.dispatch({
     changes: { from: 0, to: view.state.doc.length, insert: val },

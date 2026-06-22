@@ -46,7 +46,7 @@ function updateDropdownPosition() {
     if (containerRef.value && suggestionsRef.value) {
       const rect = containerRef.value.getBoundingClientRect()
 
-      const availableHeight = window.innerHeight - rect.bottom - 10 // 10px - отступ снизу
+      const availableHeight = window.innerHeight - rect.bottom - 10 // 10px 底部边距
       const maxHeight = Math.min(240, availableHeight)
 
       dropdownStyle.value = {
@@ -101,14 +101,14 @@ function removeLastTag() {
     const lastIndex = tags.value.length - 1
 
     if (warningTagIndex.value === lastIndex) {
-      // Второе нажатие backspace - удаляем тег
+      // 第二次 backspace：删除标签
       const tagToRemove = tags.value[lastIndex]
       tags.value.pop()
       warningTagIndex.value = null
       emit('deleteTag', tagToRemove)
     }
     else {
-      // Первое нажатие backspace - показываем предупреждение
+      // 第一次 backspace：显示警告
       warningTagIndex.value = lastIndex
     }
   }
@@ -127,7 +127,7 @@ function handleKeydown(e: KeyboardEvent) {
   if (filteredSuggestions.value.length > 0) {
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      // Переход на следующий элемент или в начало списка
+      // 下一项或列表开头
       selectedSuggestionIndex.value
         = (selectedSuggestionIndex.value + 1) % filteredSuggestions.value.length
 
@@ -135,7 +135,7 @@ function handleKeydown(e: KeyboardEvent) {
     }
     else if (e.key === 'ArrowUp') {
       e.preventDefault()
-      // Переход на предыдущий элемент или в конец списка
+      // 上一项或列表末尾
       selectedSuggestionIndex.value
         = selectedSuggestionIndex.value <= 0
           ? filteredSuggestions.value.length - 1
@@ -190,11 +190,11 @@ function ensureSelectedSuggestionVisible() {
         const selectedRect = selectedItem.getBoundingClientRect()
 
         if (selectedRect.top < containerRect.top) {
-          // Элемент выше видимой области
+          // 元素在可见区域上方
           scrollContainer.scrollTop -= containerRect.top - selectedRect.top
         }
         else if (selectedRect.bottom > containerRect.bottom) {
-          // Элемент ниже видимой области
+          // 元素在可见区域下方
           scrollContainer.scrollTop
             += selectedRect.bottom - containerRect.bottom
         }

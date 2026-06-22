@@ -10,6 +10,7 @@ export const RouterName = {
   preferencesNotesEditor: 'preferences/notes-editor',
   preferencesMath: 'preferences/math',
   preferencesHttp: 'preferences/http',
+  preferencesAiPrototype: 'preferences/ai-prototype',
   preferencesAPI: 'preferences/api',
   preferencesUpdates: 'preferences/updates',
   preferencesSupporter: 'preferences/supporter',
@@ -35,6 +36,7 @@ export const RouterName = {
   mathNotebook: 'math-notebook',
   httpSpace: 'http-space',
   drawingsSpace: 'drawings-space',
+  aiPrototypeSpace: 'ai-prototype-space',
   notesSpace: 'notes-space',
   notesDashboard: 'notes-space/dashboard',
   notesGraph: 'notes-space/graph',
@@ -91,6 +93,11 @@ const routes = [
         path: 'http',
         name: RouterName.preferencesHttp,
         component: () => import('@/components/preferences/Http.vue'),
+      },
+      {
+        path: 'ai-prototype',
+        name: RouterName.preferencesAiPrototype,
+        component: () => import('@/components/preferences/AiPrototype.vue'),
       },
       {
         path: 'api',
@@ -234,6 +241,11 @@ const routes = [
     path: '/drawings',
     name: RouterName.drawingsSpace,
     component: () => import('@/views/DrawingsSpace.vue'),
+  },
+  {
+    path: '/ai-prototype',
+    name: RouterName.aiPrototypeSpace,
+    component: () => import('@/views/AiPrototypeSpace.vue'),
   },
   {
     path: '/notes',

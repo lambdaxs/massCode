@@ -26,8 +26,8 @@ const name = computed({
   set(v: string) {
     const content = selectedSnippetContent.value
 
-    // value === undefined: тело фрагмента ещё не загружено, переименование
-    // отправило бы пустой контент.
+    // value === undefined：fragment body 未加载，重命名
+    // 会提交空 content。
     if (!selectedSnippet.value || !content || content.value === undefined) {
       return
     }

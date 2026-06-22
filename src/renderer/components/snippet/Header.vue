@@ -55,8 +55,8 @@ onBeforeUnmount(() => {
   ipc.removeListeners('main-menu:find')
 })
 
-// Без debounce каждый символ порождает full-text запрос, смену выбранного
-// сниппета и перезагрузку документа в редакторе.
+// 无 debounce 时每个字符都会 full-text 搜索、切换选中
+// snippet 并重载编辑器文档。
 const searchDebounced = useDebounceFn(() => {
   if (searchQuery.value) {
     search()

@@ -57,7 +57,6 @@ export async function normalizeCodeSelectionState() {
     selectFirstSnippet()
   }
 
-  // Список содержит только метаданные: полная запись выбранного сниппета
-  // загружается отдельно (boot и refresh после внешнего sync).
+  // 列表仅含元数据：选中 snippet 的完整记录单独加载（启动及外部 sync 后 refresh）。
   await refreshSelectedSnippet()
 }

@@ -1,6 +1,6 @@
 interface SyncableSelectedNote {
   id: number
-  // content отсутствует, пока полная запись выбранной заметки загружается
+  // 选中 note 完整记录加载前 content 为空
   content?: string
 }
 

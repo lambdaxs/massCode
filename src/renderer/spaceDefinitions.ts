@@ -9,9 +9,17 @@ import {
   Notebook,
   PenTool,
   Send,
+  Sparkles,
 } from 'lucide-vue-next'
 
-export type SpaceId = 'code' | 'tools' | 'math' | 'notes' | 'http' | 'drawings'
+export type SpaceId =
+  | 'code'
+  | 'tools'
+  | 'math'
+  | 'notes'
+  | 'http'
+  | 'drawings'
+  | 'ai-prototype'
 
 export interface SpaceDefinition {
   id: SpaceId
@@ -89,6 +97,14 @@ export function getSpaceDefinitions(): SpaceDefinition[] {
       icon: PenTool,
       to: { name: RouterName.drawingsSpace },
       isActive: routeName => routeName === RouterName.drawingsSpace,
+    },
+    {
+      id: 'ai-prototype',
+      label: i18n.t('spaces.aiPrototype.label'),
+      tooltip: i18n.t('spaces.aiPrototype.tooltip'),
+      icon: Sparkles,
+      to: { name: RouterName.aiPrototypeSpace },
+      isActive: routeName => routeName === RouterName.aiPrototypeSpace,
     },
     {
       id: 'tools',

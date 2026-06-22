@@ -57,7 +57,7 @@ function mapStorageError(status: unknown, error: unknown): never {
 
 app
   .use(foldersDTO)
-  // Получение списка папок
+  // 获取文件夹列表
   .get(
     '/',
     () => {
@@ -73,7 +73,7 @@ app
       },
     },
   )
-  // Получение папок в виде древовидной структуры
+  // 以树形结构获取文件夹
   .get(
     '/tree',
     (): any => {
@@ -88,7 +88,7 @@ app
       },
     },
   )
-  // Добавление папки
+  // 添加文件夹
   .post(
     '/',
     ({ body, status }) => {
@@ -110,7 +110,7 @@ app
       },
     },
   )
-  // Обновление папки
+  // 更新文件夹
   .patch(
     '/:id',
     ({ params, body, status }) => {
@@ -142,7 +142,7 @@ app
       },
     },
   )
-  // Удаление папки
+  // 删除文件夹
   .delete(
     '/:id',
     ({ params, status }) => {

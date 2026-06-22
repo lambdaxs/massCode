@@ -1,35 +1,35 @@
 ---
 name: github-workflow
-description: Use when working with massCode issues, branches, commits, pull requests, or merge preparation in GitHub.
+description: 处理 massCode 的 issue、分支、commit、pull request 或 GitHub merge 准备时使用。
 ---
 
-# github-workflow
+# GitHub Workflow
 
 ## Issue
 
-Если работа идёт по issue, читать его через `gh`:
+若按 issue 工作，用 `gh` 阅读：
 
 ```bash
 gh issue view <number> -R massCodeIO/massCode
 ```
 
-Если issue описывает bug, не считай его автоматически подтверждённым.
+若 issue 描述 bug，**不要**自动视为已确认。
 
-Сначала:
+顺序：
 
-1. понять ожидаемое поведение;
-2. проверить текущее поведение в коде или воспроизвести проблему;
-3. подтвердить bug или явно зафиксировать, что он не подтверждается;
-4. только после этого переходить к ветке, фиксу и PR.
+1. 理解预期行为；
+2. 在代码中核对或复现；
+3. 确认 bug 或明确无法确认；
+4. 再开分支、修复、提 PR。
 
-Если bug не воспроизводится или issue описан неясно:
+若无法复现或描述不清：
 
-- не начинать слепую реализацию;
-- сначала сообщить, что проблема не подтверждена, и уточнить условия или шаги воспроизведения.
+- 不要盲改；
+- 先说明未确认，并澄清复现条件。
 
 ## Branch
 
-Создавай ветку от `main` с префиксом по типу изменения (`feat/`, `fix/`, `chore/`, `refactor/`) и коротким описанием. Если работа идёт по issue — уместно добавить номер в конец.
+从 `main` 创建分支，前缀按类型（`feat/`、`fix/`、`chore/`、`refactor/`）+ 短描述；关联 issue 时可在末尾加编号。
 
 ```bash
 git checkout main && git pull
@@ -38,23 +38,23 @@ git checkout -b feat/<short-description> main
 
 ## PR
 
-Заголовок PR — conventional commits:
+PR 标题用 conventional commits：
 
 ```text
 type: description
 ```
 
-Перед созданием PR предложи заголовок пользователю на подтверждение.
+创建 PR 前请用户确认标题。
 
-Если PR закрывает существующий issue, в описании добавляй:
+若 PR 关闭已有 issue，描述中加：
 
 ```text
 closes #123
 ```
 
-Перед PR убедись, что релевантные проверки и тесты для затронутой области действительно прогнаны.
+PR 前确保受影响区域的相关检查与测试已跑。
 
-Создание:
+创建：
 
 ```bash
 gh pr create \
@@ -65,15 +65,15 @@ gh pr create \
   --assignee @me
 ```
 
-Если issue нет — в `--body` кратко опиши суть изменений без служебного AI-хвоста.
+无 issue 时在 `--body` 简要说明变更，不要 AI 套话。
 
-После создания PR предложи пользователю смерджить его в `main`:
+创建后建议用户 merge 到 `main`：
 
 ```bash
 gh pr merge <pr_number> -R massCodeIO/massCode --squash --delete-branch
 ```
 
-После merge синхронизируй локальную ветку:
+Merge 后同步本地：
 
 ```bash
 git checkout main && git pull
@@ -82,6 +82,6 @@ git branch -d <branch-name>
 
 ## Commit
 
-- Только однострочный заголовок conventional commit.
-- Используй подходящий scope для коммитов и PR (`feat(notes):`, 'fix(math):).
-- Без тела, без `Co-Authored-By`.
+- 仅单行 conventional commit 标题。
+- 使用合适 scope（`feat(notes):`、`fix(math):` 等）。
+- 不要 body，不要 `Co-Authored-By`。

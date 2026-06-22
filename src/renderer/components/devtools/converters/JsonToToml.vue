@@ -50,8 +50,8 @@ function convertTomlToJson(tomlString: string): string {
 }
 
 /**
- * Простая функция для конвертации объекта в TOML строку
- * Поскольку библиотека toml не имеет stringify, реализуем базовую версию
+ * 将 object 转为 TOML 字符串的简单函数
+ * toml 库无 stringify，此处实现基础版本
  */
 function tomlStringify(obj: any, prefix = ''): string {
   let result = ''
@@ -63,20 +63,20 @@ function tomlStringify(obj: any, prefix = ''): string {
       continue
     }
     else if (typeof value === 'object' && !Array.isArray(value)) {
-      // Объект - создаем секцию
+      // 对象 — 创建 section
       result += `\n[${fullKey}]\n`
       result += tomlStringify(value, fullKey)
     }
     else if (Array.isArray(value)) {
-      // Массив
+      // 数组
       result += `${key} = ${JSON.stringify(value)}\n`
     }
     else if (typeof value === 'string') {
-      // Строка
+      // 字符串
       result += `${key} = "${value}"\n`
     }
     else {
-      // Число, булево значение
+      // 数字、布尔值
       result += `${key} = ${value}\n`
     }
   }

@@ -271,7 +271,7 @@ function resolveFakerMethod(type: string, rowIndex: number): any {
     const fakerModule = (faker as any)[module]
     if (fakerModule && typeof fakerModule[method] === 'function') {
       const result = fakerModule[method]()
-      // Преобразуем даты в ISO строки
+      // 将日期转为 ISO 字符串
       if (result instanceof Date) {
         return result.toISOString()
       }

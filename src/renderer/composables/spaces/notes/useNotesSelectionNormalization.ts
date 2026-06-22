@@ -57,7 +57,6 @@ export async function normalizeNotesSelectionState() {
     selectFirstNote()
   }
 
-  // Список содержит только метаданные: полная запись выбранной заметки
-  // загружается отдельно (boot и refresh после внешнего sync).
+  // 列表仅含元数据：选中 note 的完整记录单独加载（启动及外部 sync 后 refresh）。
   await refreshSelectedNote()
 }

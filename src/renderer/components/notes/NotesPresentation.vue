@@ -42,8 +42,8 @@ const noteIds = computed(
   () => displayedNotes.value?.map(note => note.id) ?? [],
 )
 
-// id и контент слайда обновляются атомарно, когда контент заметки загружен:
-// иначе при листании слайд мигает пустым состоянием.
+// note content 加载后原子更新 slide 的 id 与 content：
+// 否则翻页时 slide 会闪空白。
 const presentationNoteId = ref<number | undefined>()
 const presentationContent = ref('')
 

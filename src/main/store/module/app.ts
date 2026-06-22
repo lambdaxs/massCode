@@ -151,6 +151,9 @@ const APP_STORE_DEFAULTS: AppStore = {
   taskTimer: {
     floatPosition: null,
   },
+  aiPrototype: {
+    activeSessionId: null,
+  },
   activeSpaceId: 'code',
 }
 
@@ -389,6 +392,7 @@ function sanitizeCommandPaletteRecent(
     'notes',
     'http',
     'drawings',
+    'ai-prototype',
   ] satisfies SpaceId[]
   const entries: CommandPaletteRecentEntry[] = []
   const seen = new Set<string>()
@@ -753,10 +757,24 @@ function sanitizeAppStore(value: unknown): AppStore {
       viewport: sanitizeDrawingViewports(asRecord(source.drawings).viewport),
     },
     taskTimer: sanitizeTaskTimerSettings(source.taskTimer),
+    aiPrototype: {
+      activeSessionId:
+        typeof asRecord(source.aiPrototype).activeSessionId === 'string'
+          ? String(asRecord(source.aiPrototype).activeSessionId)
+          : APP_STORE_DEFAULTS.aiPrototype.activeSessionId,
+    },
     activeSpaceId: readEnum(
       source,
       'activeSpaceId',
-      ['code', 'tools', 'math', 'notes', 'http', 'drawings'] as const,
+      [
+        'code',
+        'tools',
+        'math',
+        'notes',
+        'http',
+        'drawings',
+        'ai-prototype',
+      ] as const,
       APP_STORE_DEFAULTS.activeSpaceId,
     ) as SpaceId,
   }

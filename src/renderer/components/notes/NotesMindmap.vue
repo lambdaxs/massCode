@@ -16,8 +16,8 @@ const transformer = new Transformer()
 let mm: Markmap | null = null
 
 async function update() {
-  // Контент выбранной заметки ещё загружается — оставляем предыдущую карту,
-  // без мигания через "# Empty".
+  // 选中 note content 仍在加载——保留上一张导图，
+  // 不通过 "# Empty" 闪烁。
   if (selectedNote.value && selectedNote.value.content === undefined) {
     return
   }
@@ -92,8 +92,8 @@ onUnmounted(() => {
   mm = null
 })
 
-// Контент приходит позже id (полная запись загружается отдельно),
-// поэтому отслеживаются оба: карта обновится, когда контент будет готов.
+// content 晚于 id 到达（完整记录单独加载），
+// 故同时监听两者：content 就绪后更新导图。
 watch(
   () => [selectedNote.value?.id, selectedNote.value?.content],
   () => {

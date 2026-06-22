@@ -43,7 +43,7 @@ function resizeCanvas() {
   canvas.height
     = (window.innerHeight - props.offsetBottom) * window.devicePixelRatio
 
-  // Устанавливаем CSS размеры
+  // 设置 CSS 尺寸
   canvas.style.width = `${window.innerWidth}px`
   canvas.style.height = `${window.innerHeight - props.offsetBottom}px`
 
@@ -150,15 +150,15 @@ function updateStrokes() {
     if (stroke.points.length === 0)
       return false
 
-    // Вычисляем возраст самой старой точки в штрихе
+    // 计算笔画中最老点的 age
     const oldestPoint = Math.min(...stroke.points.map(p => p.timestamp))
     const age = now - oldestPoint
 
     if (age > FADE_DURATION) {
-      return false // Удаляем полностью исчезнувшие штрихи
+      return false // 移除已完全消失的笔画
     }
 
-    // Обновляем прозрачность на основе возраста
+    // 按 age 更新透明度
     stroke.opacity = Math.max(0, 1 - age / FADE_DURATION)
 
     return true
@@ -166,7 +166,7 @@ function updateStrokes() {
 
   drawCanvas()
 
-  // Продолжаем анимацию если есть штрихи
+  // 仍有笔画时继续动画
   if (strokes.value.length > 0) {
     animationId = requestAnimationFrame(updateStrokes)
   }
@@ -204,7 +204,7 @@ function onMouseUp() {
   stopDrawing()
 }
 
-// Обработчики событий касания для мобильных устройств
+// 触控事件处理（移动端）
 function onTouchStart(event: TouchEvent) {
   event.preventDefault()
   const touch = event.touches[0]
@@ -241,7 +241,7 @@ onUnmounted(() => {
   }
 })
 
-// Очищаем штрихи когда указка выключается и принудительно ресайзим при включении
+// 关闭激光笔时清空笔画；开启时强制 resize
 watch(
   () => props.isActive,
   (newValue) => {

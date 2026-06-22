@@ -7,7 +7,7 @@ export const languages: LanguageOption[] = [
     grammar: () => import('./textmate/abap.tmLanguage.json'),
     scopeName: 'source.abap',
   },
-  // Возможно несоответствие
+  // 可能不一致
   {
     name: 'ABC',
     value: 'abc',
@@ -326,7 +326,7 @@ export const languages: LanguageOption[] = [
     grammar: () => import('./textmate/handlebars.tmLanguage.json'),
     scopeName: 'text.html.handlebars',
   },
-  // Возможно несоответствие
+  // 可能不一致
   {
     name: 'Haskell Cabal',
     value: 'haskell_cabal',
@@ -417,7 +417,7 @@ export const languages: LanguageOption[] = [
     grammar: () => import('./textmate/jsp.tmLanguage.json'),
     scopeName: 'text.html.jsp',
   },
-  // TODO: сделать общими стилизованые (.jsx, tsx) грамматики
+  // TODO: 统一 (.jsx, .tsx) 样式化 grammar
   {
     name: 'JSX',
     value: 'jsx',
@@ -996,7 +996,7 @@ export const languages: LanguageOption[] = [
   },
 ]
 
-// Маппинг с версии v1
+// 自 v1 起的映射
 export const oldLanguageMap: Record<any, Language> = {
   'azcli': 'plain_text',
   'bat': 'sh',

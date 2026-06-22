@@ -13,8 +13,8 @@ const app = new Elysia({ prefix: '/internal-links' })
 app.use(internalLinksDTO).post(
   '/resolve',
   ({ body }) => {
-    // Один batch-запрос вместо пакета из 5 запросов на каждую ссылку:
-    // резолв и данные превью собираются в main по runtime-кэшу.
+    // 单次 batch 请求替代每条链接 5 次请求：
+    // 解析与预览数据在 main 中按 runtime 缓存组装。
     const titles = [
       ...new Set(body.titles.map(t => t.trim()).filter(Boolean)),
     ]

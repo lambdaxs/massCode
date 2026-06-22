@@ -559,8 +559,8 @@ function getRevealInFileManagerLabel() {
 }
 
 function hasSnippetContentAction(result: CommandPaletteResult) {
-  // Список не содержит тел фрагментов: непустоту контента без запроса
-  // не определить, действие доступно для любого сниппета.
+  // 列表不含 fragment body：不请求无法判断是否非空，
+  // 操作对任意 snippet 可用。
   return (
     result.type === 'snippet'
     || (result.type === 'recent' && result.recent.target === 'snippet')
@@ -637,7 +637,7 @@ function getSnippetContentValue(snippet: SnippetContentSource) {
 }
 
 async function getSnippet(result: CommandPaletteResult) {
-  // Список не содержит тел фрагментов — полная запись загружается по id.
+  // 列表不含 fragment body——完整记录按 id 加载。
   if (result.type === 'snippet') {
     const { data } = await api.snippets.getSnippetsById(String(result.item.id))
 
@@ -668,7 +668,7 @@ async function copySnippetContent(result: CommandPaletteResult) {
 }
 
 async function copyNoteContent(result: CommandPaletteResult) {
-  // Список не содержит контента заметок — он загружается по id.
+  // 列表不含 note content——按 id 加载。
   if (result.type === 'note') {
     const { data } = await api.notes.getNotesById(String(result.item.id))
     copyToClipboard(data.content)

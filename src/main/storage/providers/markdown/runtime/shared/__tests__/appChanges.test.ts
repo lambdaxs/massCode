@@ -32,13 +32,12 @@ describe('app file change echo suppression', () => {
     fs.writeFileSync(filePath, 'own content', 'utf8')
     rememberAppFileChange(filePath)
 
-    // Внешняя правка того же файла в окне TTL меняет сигнатуру (размер) —
-    // событие должно быть обработано, а не проглочено как эхо.
+    // TTL 窗口内对同一文件的外部修改会改变签名（大小）——
+    // 事件应被处理而非当作 echo 吞掉。
     fs.writeFileSync(filePath, 'external content with different size', 'utf8')
 
     expect(wasRecentAppFileChange(filePath)).toBe(false)
-    // Запись о собственном изменении сброшена: повторные события тоже
-    // не считаются эхом.
+    // 自有变更记录已清除：后续事件也不视为 echo。
     expect(wasRecentAppFileChange(filePath)).toBe(false)
   })
 

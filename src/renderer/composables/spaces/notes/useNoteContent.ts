@@ -5,8 +5,7 @@ import { notesBySearch } from './useNoteSearch'
 
 // --- Module-level state ---
 
-// Очереди не нужны в реактивности: на них никто не подписан, а операции
-// выполняются на каждый keystroke.
+// 队列无需 reactive：无人订阅，且操作在每次按键时执行。
 const contentUpdateQueue = new Map<number, string>()
 const contentUpdateTimers = new Map<number, ReturnType<typeof setTimeout>>()
 const inFlightContentUpdateIds = new Set<number>()
@@ -18,9 +17,9 @@ const CONTENT_UPDATE_DEBOUNCE_MS = 500
 function updateLocalNoteContent(noteId: number, content: string) {
   const now = Date.now()
 
-  // Контент хранится только в полной записи выбранной заметки.
-  // Мутация без замены объекта: редактор уже содержит этот текст,
-  // реактивный каскад на каждый keystroke не нужен.
+  // content 仅存在于选中 note 的完整记录中。
+  // 原地 mutate 不替换对象：编辑器已有该文本，
+  // 无需每次按键触发 reactive 级联。
   const record = selectedNoteRecord.value
   if (record?.id === noteId) {
     record.content = content

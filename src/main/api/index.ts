@@ -23,8 +23,8 @@ import system from './routes/system'
 import tags from './routes/tags'
 
 export async function initApi() {
-  // поскольку @elysiajs/node использует crossws, который работает только в ESM среде,
-  // то делаем хак с динамическим импортом
+  // 因 @elysiajs/node 使用 crossws，且 crossws 仅在 ESM 环境工作，
+  // 故使用动态 import 变通。
   const { node } = await importEsm('@elysiajs/node')
 
   const app = new Elysia({ adapter: node() })

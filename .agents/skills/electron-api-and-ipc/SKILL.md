@@ -1,53 +1,51 @@
 ---
 name: electron-api-and-ipc
-description: Use when changing massCode API routes, DTOs, IPC handlers, Electron bridges, or any renderer-to-main communication and storage-access boundaries.
+description: 修改 massCode API routes、DTO、IPC handlers、Electron 桥接，或 renderer 与 main 通信及存储访问边界时使用。
 ---
 
-# Electron API And IPC
+# Electron API 与 IPC
 
-## Overview
+## 概述
 
-Все backend-возможности massCode живут в main process. Renderer получает доступ к данным и системным операциям только через Elysia API или IPC channels.
+massCode 的后端能力均在 main process。Renderer 仅通过 Elysia API 或 IPC channel 访问数据与系统操作。
 
-## Renderer Access Rules
+## Renderer 访问规则
 
-- В renderer для данных используй `import { api } from '~/renderer/services/api'`.
-- В renderer для системных операций используй `ipc.invoke('channel:action', payload)`.
-- Electron API из renderer доступен только через `src/renderer/electron.ts`.
-- Никогда не импортируй storage internals или backend-модули напрямую в renderer.
+- 数据：`import { api } from '~/renderer/services/api'`。
+- 系统操作：`ipc.invoke('channel:action', payload)`。
+- Electron API 在 renderer 仅通过 `src/renderer/electron.ts`。
+- **不要**在 renderer 直接 import storage internals 或 backend 模块。
 
-## New API Endpoints
+## 新增 API Endpoint
 
-При добавлении нового endpoint:
+1. 在 `src/main/api/dto/` 创建 DTO；
+2. 在 `src/main/api/routes/` 添加 route；
+3. 运行 `pnpm api:generate` 更新客户端。
 
-1. создай DTO в `src/main/api/dto/`;
-2. добавь route в `src/main/api/routes/`;
-3. запусти `pnpm api:generate`, чтобы обновить клиент.
+不要使 API client 与 route/DTO 变更不同步。
 
-Не оставляй API-клиент рассинхронизированным с route/DTO изменениями.
+## IPC 约定
 
-## IPC Conventions
-
-- Для filesystem и system ops используй `ipc.invoke(...)`.
-- Каналы должны укладываться в семейства:
+- 文件系统与系统操作用 `ipc.invoke(...)`。
+- Channel 归属族：
   - `fs:*`
   - `system:*`
-  - `db:*` — legacy или migration flows, не основной путь для новой функциональности
+  - `db:*` — legacy 或 migration，非新功能主路径
   - `main-menu:*`
   - `prettier:*`
   - `spaces:*`
   - `theme:*`
 
-## Good Boundaries
+## 良好边界
 
-- Renderer формирует intent и payload.
-- Main/API работает с данными приложения, файловой системой и system APIs.
-- Ответ возвращается обратно в renderer в виде DTO или IPC result, а не через shared mutable backend module.
+- Renderer 表达 intent 与 payload。
+- Main/API 处理应用数据、文件系统、系统 API。
+- 响应以 DTO 或 IPC result 回到 renderer，而非共享可变 backend module。
 
-## Common Mistakes
+## 常见错误
 
-- Тянуть backend-модуль напрямую в renderer ради “удобства”.
-- Менять DTO/route без `pnpm api:generate`.
-- Добавлять system/file behavior в renderer вместо IPC handler.
-- Добавлять новые `db:*` flows там, где задача должна идти через текущую API/IPC модель приложения.
-- Создавать ad-hoc каналы, которые не укладываются в существующие channel families.
+- 为“方便”在 renderer 直接 import backend 模块。
+- 改 DTO/route 却不跑 `pnpm api:generate`。
+- 在 renderer 做本应在 IPC handler 里的 system/file 行为。
+- 本可走 API/IPC 却新增 `db:*` flow。
+- 创建不符合现有 channel 族的 ad-hoc channel。

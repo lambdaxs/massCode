@@ -52,7 +52,7 @@ function init() {
     readOnly: true,
   })
 
-  // Отключаем выделение текста
+  // 禁用文本选择
   editor.on('mousedown', (e) => {
     // @ts-expect-error some
     e.preventDefault()
@@ -60,7 +60,7 @@ function init() {
 
   watch(selectedSnippetContent, (v) => {
     nextTick(() => {
-      // Тело фрагмента ещё загружается — не мигаем пустым изображением.
+      // fragment body 仍在加载——不闪空白图。
       if (v && v.value === undefined) {
         return
       }
@@ -128,7 +128,7 @@ function initInteract() {
         showDimensions.value = true
       },
       move(event) {
-        // Учитываем эффект центрирования, удваивая изменение размера
+        // 居中效果：尺寸变化加倍处理
         let newWidth = width.value + event.deltaRect.width * 2
 
         newWidth = Math.max(MIN_WIDTH, Math.min(newWidth, containerMaxWidth))

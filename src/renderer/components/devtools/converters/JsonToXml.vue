@@ -67,13 +67,13 @@ function convertJsonToXml(jsonString: string): string {
 }
 
 /**
- * Простой парсер XML в JSON объект
- * Использует DOMParser для парсинга XML
+ * 简易 XML → JSON 解析器
+ * 使用 DOMParser 解析 XML
  */
 function xmlElementToObject(element: Element): any {
   const result: any = {}
 
-  // Обработка атрибутов
+  // 处理属性
   if (element.attributes.length > 0) {
     result['@attributes'] = {}
     for (let i = 0; i < element.attributes.length; i++) {
@@ -82,11 +82,11 @@ function xmlElementToObject(element: Element): any {
     }
   }
 
-  // Обработка дочерних элементов
+  // 处理子元素
   const children = Array.from(element.children)
 
   if (children.length === 0) {
-    // Если нет дочерних элементов, возвращаем текстовое содержимое
+    // 无子元素时返回文本内容
     const textContent = element.textContent?.trim()
     if (textContent) {
       if (result['@attributes']) {
@@ -98,7 +98,7 @@ function xmlElementToObject(element: Element): any {
     return result['@attributes'] ? result : null
   }
 
-  // Группировка дочерних элементов по имени тега
+  // 按标签名分组子元素
   const childGroups: { [key: string]: Element[] } = {}
   children.forEach((child) => {
     const tagName = child.tagName
@@ -108,7 +108,7 @@ function xmlElementToObject(element: Element): any {
     childGroups[tagName].push(child)
   })
 
-  // Конвертация групп в объект
+  // 将分组转为对象
   Object.entries(childGroups).forEach(([tagName, elements]) => {
     if (elements.length === 1) {
       result[tagName] = xmlElementToObject(elements[0])
@@ -131,7 +131,7 @@ function convertXmlToJson(xmlString: string): string {
     const parser = new DOMParser()
     const xmlDoc = parser.parseFromString(xmlString, 'text/xml')
 
-    // Проверка на ошибки парсинга
+    // 检查解析错误
     const parseError = xmlDoc.querySelector('parsererror')
     if (parseError) {
       throw new Error('XML parsing error')

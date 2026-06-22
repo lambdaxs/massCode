@@ -1,4 +1,5 @@
 export * from './math-notebook'
+export * from './spaces/aiPrototype'
 export * from './spaces/drawings'
 export * from './spaces/http'
 export * from './spaces/notes'

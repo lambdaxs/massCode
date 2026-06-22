@@ -1,35 +1,35 @@
 ---
 name: api-and-typing
-description: Use when defining or reviewing massCode renderer types that come from generated API clients or DTOs, especially when deciding whether to reuse existing API shapes, derive narrower local types, or introduce a UI-only model.
+description: 定义或审查 massCode renderer 中来自 generated API client 或 DTO 的类型时使用，尤其是决定复用现有 API shape、派生更窄的本地类型，还是引入仅 UI 使用的 model。
 ---
 
-# API And Typing
+# API 与类型
 
-## Overview
+## 概述
 
-Для massCode API types считаются generated-first. Если данные пришли из `~/renderer/services/api/generated` или соответствуют DTO из `src/main/api/dto`, сначала используй существующие типы и utility typing, а не придумывай новый interface рядом с компонентом.
+massCode 的 API 类型以 **generated-first** 为准。若数据来自 `~/renderer/services/api/generated` 或对应 `src/main/api/dto` 中的 DTO，优先使用已有类型与 utility typing，不要在组件旁随意新建 interface。
 
-## Core Rules
+## 核心规则
 
-- Ручные дубли API response types не пиши.
-- Сначала ищи тип в `~/renderer/services/api/generated`.
-- Если прямого export нет, выводи нужный shape через `Pick`, `Omit`, indexed access, `Parameters`, `ReturnType`, `Awaited`, `NonNullable`.
-- Локальный тип допустим только как UI-only model, form model, derived display model или narrow type после нормального data narrowing.
+- 不要手写 API response 类型的重复定义。
+- 先在 `~/renderer/services/api/generated` 中查找类型。
+- 若无直接 export，用 `Pick`、`Omit`、indexed access、`Parameters`、`ReturnType`、`Awaited`、`NonNullable` 推导所需 shape。
+- 本地类型仅适用于：UI-only model、form model、derived display model，或在 data narrowing 之后的 narrow type。
 
-## Good Uses Of Local Types
+## 适合使用本地类型的场景
 
-- Узкий renderer shape после того, как nullable API data уже очищена в одном месте.
-- View-model для dashboard card, graph node, readonly row или editor-side helper, если он не равен transport shape.
-- Тип аргумента, выводимый из существующего composable или API method через `Parameters` / `ReturnType`.
+- nullable API data 已在某处清理后的窄 renderer shape。
+- dashboard card、graph node、readonly row、editor-side helper 等 view-model（且不等于 transport shape）。
+- 通过 `Parameters` / `ReturnType` 从已有 composable 或 API method 推导的参数类型。
 
-## Bad Uses Of Local Types
+## 不适合使用本地类型的场景
 
-- Полный дубль `SnippetsResponse`, `NotesDashboardResponse`, `TagsResponse` и других generated types.
-- Новый interface “для удобства”, если можно взять одну ветку из existing response type.
-- Копирование DTO shape в renderer file, хотя он уже импортируемый.
+- 完整复制 `SnippetsResponse`、`NotesDashboardResponse`、`TagsResponse` 等 generated types。
+- 为“方便”新建 interface，而本可从 existing response type 取某一分支。
+- 在 renderer 文件中复制 DTO shape，而其实已可 import。
 
-## Common Mistakes
+## 常见错误
 
-- Сначала придумать локальный interface, а потом уже искать generated type.
-- Смешать transport shape и UI view-model без явного adapter step.
-- Тащить глубоко в UI сырые nullable API поля вместо одного нормального normalization place.
+- 先写本地 interface，再去找 generated type。
+- 混用 transport shape 与 UI view-model，且没有明确的 adapter 步骤。
+- 把原始 nullable API 字段深传到 UI，而不是在一个 normalization 点处理。

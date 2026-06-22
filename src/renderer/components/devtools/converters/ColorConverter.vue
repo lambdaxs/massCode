@@ -144,7 +144,7 @@ function convertColor(color: string) {
     isUpdating = false
   }
   catch (error) {
-    console.warn('Ошибка конвертации цвета:', error)
+    console.warn('颜色转换失败:', error)
     isUpdating = false
   }
 }

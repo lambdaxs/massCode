@@ -1,4 +1,5 @@
 import type {
+  AiPrototypeSettings,
   EditorSettings,
   HttpSettings,
   MarkdownSettings,
@@ -8,6 +9,11 @@ import type {
 } from '../types'
 import { homedir, platform } from 'node:os'
 import Store from 'electron-store'
+import {
+  AI_PROTOTYPE_DEFAULT_ASPECT_RATIO,
+  AI_PROTOTYPE_DEFAULT_BASE_URL,
+  AI_PROTOTYPE_DEFAULT_POLL_INTERVAL_MS,
+} from '../../../shared/aiPrototype'
 import { EDITOR_DEFAULTS, NOTES_EDITOR_DEFAULTS } from '../constants'
 import {
   asRecord,
@@ -33,6 +39,13 @@ const HTTP_DEFAULTS: HttpSettings = {
   defaultPreviewFormat: 'http',
   autoSwitchToResponse: true,
   skipCertificateVerification: false,
+}
+
+const AI_PROTOTYPE_DEFAULTS: AiPrototypeSettings = {
+  apiKey: '',
+  baseUrl: AI_PROTOTYPE_DEFAULT_BASE_URL,
+  defaultAspectRatio: AI_PROTOTYPE_DEFAULT_ASPECT_RATIO,
+  pollIntervalMs: AI_PROTOTYPE_DEFAULT_POLL_INTERVAL_MS,
 }
 
 const API_INTEGRATIONS_DEFAULTS: PreferencesStore['api']['integrations'] = {
@@ -67,6 +80,7 @@ const PREFERENCES_DEFAULTS: PreferencesStore = {
   },
   math: MATH_DEFAULTS,
   http: HTTP_DEFAULTS,
+  aiPrototype: AI_PROTOTYPE_DEFAULTS,
 }
 
 function sanitizeApiIntegrationsSettings(
@@ -236,6 +250,25 @@ function sanitizeHttpSettings(value: unknown): HttpSettings {
   }
 }
 
+function sanitizeAiPrototypeSettings(value: unknown): AiPrototypeSettings {
+  const source = asRecord(value)
+
+  return {
+    apiKey: readString(source, 'apiKey', AI_PROTOTYPE_DEFAULTS.apiKey),
+    baseUrl: readString(source, 'baseUrl', AI_PROTOTYPE_DEFAULTS.baseUrl),
+    defaultAspectRatio: readString(
+      source,
+      'defaultAspectRatio',
+      AI_PROTOTYPE_DEFAULTS.defaultAspectRatio,
+    ),
+    pollIntervalMs: readNumber(
+      source,
+      'pollIntervalMs',
+      AI_PROTOTYPE_DEFAULTS.pollIntervalMs,
+    ),
+  }
+}
+
 function sanitizePreferences(value: unknown): PreferencesStore {
   const source = asRecord(value)
   const appearanceSource = asRecord(source.appearance)
@@ -257,6 +290,7 @@ function sanitizePreferences(value: unknown): PreferencesStore {
       : asRecord(source.markdown)
   const mathSource = asRecord(source.math)
   const httpSource = asRecord(source.http)
+  const aiPrototypeSource = asRecord(source.aiPrototype)
 
   return {
     appearance: {
@@ -313,6 +347,7 @@ function sanitizePreferences(value: unknown): PreferencesStore {
     },
     math: sanitizeMathSettings(mathSource),
     http: sanitizeHttpSettings(httpSource),
+    aiPrototype: sanitizeAiPrototypeSettings(aiPrototypeSource),
   }
 }
 

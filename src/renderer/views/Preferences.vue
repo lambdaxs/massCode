@@ -16,6 +16,7 @@ import {
   Plug,
   RefreshCw,
   Send,
+  Sparkles,
 } from 'lucide-vue-next'
 import { RouterLink, useRoute } from 'vue-router'
 
@@ -47,6 +48,11 @@ const nav: { label: string, name: string, icon: Component }[] = [
     label: i18n.t('preferences:http.label'),
     name: RouterName.preferencesHttp,
     icon: Send,
+  },
+  {
+    label: i18n.t('preferences:aiPrototype.label'),
+    name: RouterName.preferencesAiPrototype,
+    icon: Sparkles,
   },
   {
     label: i18n.t('preferences:math.label'),

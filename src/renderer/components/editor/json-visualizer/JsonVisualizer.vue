@@ -42,7 +42,7 @@ const vueFlowRef = useTemplateRef('vueFlowRef')
 const { layout } = useLayout()
 
 function updateGraph() {
-  // Тело фрагмента ещё загружается — оставляем предыдущий граф без мигания.
+  // fragment body 仍在加载——保留上一张图避免闪烁。
   if (
     selectedSnippetContent.value
     && selectedSnippetContent.value.value === undefined

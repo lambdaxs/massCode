@@ -172,8 +172,7 @@ function persistNotesSelectionState() {
   store.app.set('notes.selection', JSON.parse(JSON.stringify(notesState)))
 }
 
-// store.app.set — синхронная запись файла на диск: без debounce каждая смена
-// выбранной заметки/папки блокирует main thread renderer.
+// store.app.set 为同步写盘：若不 debounce，每次切换 note/文件夹都会阻塞 renderer 主线程。
 watchDebounced(notesState, persistNotesSelectionState, {
   debounce: 300,
   deep: true,

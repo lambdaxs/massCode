@@ -19,8 +19,8 @@ interface CreateSnippetPayload {
   name?: string
 }
 
-// Список содержит фрагменты без тел, полная запись выбранного сниппета —
-// с телами: value отсутствует, пока полная запись загружается.
+// 列表仅含无内容的 fragment 元数据；选中 snippet 的完整记录（含 body）
+// 单独加载，加载完成前 value 为空。
 interface SnippetContentView {
   id: number
   label: string
@@ -49,8 +49,8 @@ const lastSelectedSnippetId = ref<number | undefined>()
 const snippets = shallowRef<SnippetsResponse>()
 const snippetsBySearch = shallowRef<SnippetsResponse>()
 
-// Список отдаёт только метаданные, поэтому полная запись выбранного
-// сниппета (с телами фрагментов) загружается отдельно по id.
+// 列表只返回元数据，因此选中 snippet 的完整记录（含 fragment body）
+// 需按 id 单独加载。
 const selectedSnippetRecord = shallowRef<SnippetItemResponse | undefined>()
 let selectedSnippetRequestToken = 0
 let snippetsRequestToken = 0
@@ -118,16 +118,14 @@ const selectedSnippet = computed<SnippetView | undefined>(() => {
     return selectedSnippetRecord.value
   }
 
-  // Пока полная запись загружается, метаданные берутся из списка,
-  // чтобы заголовок и layout не мигали.
+  // 完整记录加载期间，标题与 layout 使用列表中的元数据，避免闪烁。
   const source = isSearch.value ? snippetsBySearch.value : snippets.value
   return source?.find(s => s.id === state.snippetId)
 })
 
 const selectedSnippetContent = computed<SnippetContentView | undefined>(() => {
-  // Метаданные фрагмента (label, language) доступны сразу из списка, чтобы
-  // топбар и селектор языка не мигали; value появляется, когда загрузится
-  // полная запись.
+  // fragment 元数据（label、language）立即可从列表读取，避免顶栏与语言选择器闪烁；
+  // value 在完整记录加载后出现。
   return selectedSnippet.value?.contents[state.snippetContentIndex || 0]
 })
 
@@ -254,7 +252,7 @@ const isAvailableToCodePreview = computed(() => {
 })
 
 async function getSnippets(query?: SnippetsQuery) {
-  // Защита от гонки ответов: применяется только самый свежий запрос.
+  // 防止响应竞态：仅应用最新一次请求的结果。
   const requestToken = ++snippetsRequestToken
   const forSearch = isSearch.value
   const resolvedQuery = {
@@ -338,7 +336,7 @@ async function createSnippetAndSelect(payload?: CreateSnippetPayload) {
 
 async function duplicateSnippet(snippetId: number) {
   try {
-    // Список не содержит тел фрагментов — источник копии загружается по id.
+    // 列表不含 fragment body——复制源需按 id 加载。
     const { data: snippet } = await api.snippets.getSnippetsById(
       String(snippetId),
     )
@@ -384,7 +382,7 @@ async function createSnippetContent(snippetId: number) {
       language: folder?.defaultLanguage || 'plain_text',
     })
 
-    // Состав списка не меняется — достаточно обновить выбранную запись.
+    // 列表组成不变——只需更新当前选中项。
     await refreshSelectedSnippet()
 
     return lastContentIndex
@@ -406,7 +404,7 @@ async function addFragment() {
   }
 }
 
-// Поля, влияющие на состав текущего списка: после их изменения нужен refetch.
+// 影响当前列表组成的字段：变更后需要 refetch。
 function isSnippetListMembershipAffecting(data: SnippetsUpdate) {
   return (
     data.folderId !== undefined
@@ -466,7 +464,7 @@ async function updateSnippet(snippetId: number, data: SnippetsUpdate) {
     return
   }
 
-  // Переименование/описание не меняют состав списка — обновляем точечно.
+  // 重命名/描述不改变列表组成——局部更新即可。
   patchSnippetInCollections(snippetId, data)
 }
 
@@ -493,8 +491,7 @@ async function updateSnippetContent(
     data,
   )
 
-  // Тел фрагментов в списке нет — обновляется только выбранная запись,
-  // без перезагрузки списка на каждое сохранение при наборе текста.
+  // 列表无 fragment body——仅更新选中项，输入时不必每次保存都重载列表。
   const record = selectedSnippetRecord.value
   if (record?.id === snippetId) {
     selectedSnippetRecord.value = {
@@ -610,7 +607,7 @@ async function deleteSnippetContent(snippetId: number, contentId: number) {
       String(contentId),
     )
 
-    // Состав списка не меняется — достаточно обновить выбранную запись.
+    // 列表组成不变——只需更新当前选中项。
     await refreshSelectedSnippet()
   }
   catch (error) {

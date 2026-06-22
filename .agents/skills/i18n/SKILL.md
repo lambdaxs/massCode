@@ -1,34 +1,34 @@
 ---
 name: i18n
-description: Use when changing massCode localization, adding user-facing strings, creating locale keys, or wiring text through the project's translation system.
+description: 修改 massCode 本地化、添加面向用户的字符串、创建 locale key，或通过项目翻译系统接线文案时使用。
 ---
 
-# I18n
+# 国际化（i18n）
 
-## Overview
+## 概述
 
-В massCode новый пользовательский текст всегда проходит через localization system. Базовым source of truth для новых ключей считается английская локаль.
+massCode 中新的用户可见文案必须走 localization system。新 key 的 source of truth 是英文 locale。
 
-## Localization Rules
+## 本地化规则
 
-- Базовый язык проекта — English.
-- `en_US` остаётся базовым source of truth для новых ключей.
-- Все новые ключи сначала добавляй в `src/main/i18n/locales/en_US/`.
-- При добавлении нового ключа сразу добавляй его и в русскую локаль, чтобы `ru_RU` не отставала от базового английского набора.
-- Не хардкодь user-facing strings ни в template, ни в script logic.
-- Используй `i18n.t('namespace:key.path')` или сокращённый `i18n.t('key.path')` для default `ui` namespace.
-- Импорт `i18n` делай из `@/electron`.
+- 项目基准语言为 English。
+- `en_US` 是新 key 的 source of truth。
+- 新 key 先加入 `src/main/i18n/locales/en_US/`。
+- 同时加入 `ru_RU`，避免俄语 locale 落后（若项目仍维护该 locale）。
+- 不要在 template 或 script 中硬编码 user-facing 字符串。
+- 使用 `i18n.t('namespace:key.path')`，或 default `ui` namespace 的 `i18n.t('key.path')`。
+- `i18n` 从 `@/electron` import。
 
-## After Locale Changes
+## Locale 变更之后
 
-- После добавления или изменения locale keys запускай `pnpm i18n:copy`.
-- Не оставляй `en_US` и `ru_RU` в несинхронном состоянии.
-- Остальные локали могут догоняться отдельно контрибьюторами и не считаются обязательным блокером для каждой локальной правки.
+- 添加或修改 locale key 后运行 `pnpm i18n:copy`。
+- 保持 `en_US` 与 `ru_RU` 同步（若维护后者）。
+- 其他 locale 可由贡献者后续补齐，非每次小改的必要项。
 
-## Common Mistakes
+## 常见错误
 
-- Хардкодить новый текст “временно”.
-- Добавлять ключи не в `en_US`, а сразу в другой locale.
-- Обновить `en_US`, но забыть сразу добавить тот же ключ в `ru_RU`.
-- Использовать текст напрямую в template, хотя это часть UI.
-- Забывать `pnpm i18n:copy` после изменения locale source-of-truth.
+- “临时”硬编码文案。
+- 新 key 不进 `en_US` 而直接写其他 locale。
+- 只更新 `en_US` 忘记 `ru_RU`。
+- UI 文案直接写在 template 里。
+- 改 locale source-of-truth 后忘记 `pnpm i18n:copy`。

@@ -68,9 +68,9 @@ async function loadDrawingsList() {
   drawings.value = Array.isArray(items) ? items : []
 }
 
-// Полный сброс состояния space при смене vault: очищаем список, активный
-// рисунок и кеши, иначе после переключения остаётся список старого vault,
-// так как init() выходит рано из-за уже взведённого initialized.
+// 切换 vault 时完全重置 space：清空列表、当前
+// 绘图与缓存，否则切换后仍显示旧 vault 列表，
+// 因 initialized 已为 true 时 init() 会提前返回。
 function resetDrawings() {
   drawings.value = []
   activeDrawingId.value = null

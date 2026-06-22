@@ -1,64 +1,69 @@
-# Точка входа для агента massCode
+# massCode Agent 入口
 
-Отвечай всегда на русском.
+始终使用中文与用户交流。
 
-massCode — это приложение на Electron + Vue 3 + TypeScript с TailwindCSS v4 в renderer, API-маршрутами на Elysia в main process, markdown vault как основным хранилищем пользовательского контента в v5 и `store.app` / `store.preferences` для локального UI state и настроек.
+massCode 是基于 Electron + Vue 3 + TypeScript 的应用，renderer 使用 TailwindCSS v4，main process 通过 Elysia 提供 API 路由；v5 以 markdown vault 存储用户内容，`store.app` / `store.preferences` 管理本地 UI 状态与设置。
 
-## Всегда действующие правила
+## 始终生效的规则
 
-- Следуй YAGNI. Предпочитай минимальную корректную реализацию вместо спекулятивных абстракций.
-- Соблюдай границы слоёв: renderer не должен напрямую обращаться к Node.js, filesystem или DB. Используй API или IPC.
-- Никогда не хардкодь пользовательские строки. Используй систему локализации.
-- Не запускай lint или тесты по всему проекту для локальной задачи. Ограничивай команды затронутыми файлами или директориями.
-- После изменений API DTO или routes запускай `pnpm api:generate`.
-- После изменений locale-файлов запускай `pnpm i18n:copy`.
-- Если задача совпадает по теме с одним из skills ниже, загружай этот skill до внесения изменений.
+- 遵循 YAGNI，优先最小且正确的实现，避免 speculative 抽象。
+- 遵守分层边界：renderer 不得直接访问 Node.js、文件系统或 DB，应通过 API 或 IPC。
+- 禁止硬编码面向用户的字符串，使用 i18n。
+- 本地任务不要对整个项目跑 lint 或测试，仅覆盖受影响文件或目录。
+- 修改 API DTO 或 routes 后运行 `pnpm api:generate`。
+- 修改 locale 文件后运行 `pnpm i18n:copy`。
+- 若任务与下方某个 skill 相关，修改前先加载该 skill。
 
 ## Skills
 
 - `.agents/skills/architecture-standards/SKILL.md`
-  Используй первым для общих правил репозитория: архитектура, naming, декомпозиция и выбор следующего skill.
+  仓库通用规则：架构、命名、拆分及 skill 选择。
 - `.agents/skills/vue-renderer-standards/SKILL.md`
-  Используй для работы с Vue renderer: `<script setup lang="ts">`, правила auto-import, composables, shared state и renderer-side паттерны.
+  Vue renderer：`<script setup lang="ts">`、auto-import、composables、共享状态。
 - `.agents/skills/ui-foundations/SKILL.md`
-  Используй для базовых UI-правил: Tailwind v4, typography через `UiText` и согласованных styling decisions для renderer UI.
+  UI 基础：Tailwind v4、`UiText`、renderer 样式一致性。
 - `.agents/skills/ui-primitives/SKILL.md`
-  Используй для component-level UI работы: `Ui*` components, Shadcn imports, `cn`, `cva`, notifications и правил против переизобретения primitives.
+  组件级 UI：`Ui*`、Shadcn、`cn`、`cva`、通知等。
 - `.agents/skills/electron-api-and-ipc/SKILL.md`
-  Используй для API routes, DTO, IPC handlers, renderer-to-main communication и границ Electron-интеграции.
+  API routes、DTO、IPC handlers、Electron 集成边界。
 - `.agents/skills/api-and-typing/SKILL.md`
-  Используй для generated API types, DTO-derived renderer typing и решения, когда локальный UI type оправдан, а когда нужно переиспользовать существующие API types.
+  生成 API 类型、DTO 派生类型、何时使用本地 UI type。
 - `.agents/skills/spaces-architecture/SKILL.md`
-  Используй при изменениях, связанных с `code` / `notes` / `math` / `tools`, markdown-space state, sync behavior или `spaces:*` IPC.
+  `code` / `notes` / `math` / `tools` 等 space、markdown 状态、sync、`spaces:*` IPC。
 - `.agents/skills/i18n/SKILL.md`
-  Используй для правил локализации, размещения locale keys, `i18n.t(...)` и требования не хардкодить строки.
+  本地化规则、locale key 放置、`i18n.t(...)`。
 - `.agents/skills/documentation-workflow/SKILL.md`
-  Используй для добавления или обновления документации, страниц `docs/website/documentation`, sidebar, assets и README-упоминаний фич.
+  文档、`docs/website/documentation`、sidebar、assets、README。
 - `.agents/skills/release-notes/SKILL.md`
-  Используй для генерации release notes нового релиза в игнорируемый файл `docs/releases/<tag>.md` для вставки в GitHub release: группировка merged PR в user-facing разделы и compare-ссылка.
+  生成 release notes 到 `docs/releases/<tag>.md`。
 - `.agents/skills/development-workflow/SKILL.md`
-  Используй для repo-specific workflow rules: scoped lint/test команды и обязательные follow-up шаги после изменений source-of-truth файлов.
+  仓库 workflow：scoped lint/test 及 source-of-truth 变更后的 follow-up。
 - `.agents/skills/github-workflow/SKILL.md`
-  Используй для massCode git и GitHub workflow: issue, ветки, commits, PR и подготовки к merge.
+  git / GitHub：issue、分支、commit、PR、merge。
 
-## Рекомендуемый порядок загрузки
+## 推荐加载顺序
 
-- Широкая или неочевидная задача: начни с `architecture-standards`, затем загрузи профильный skill.
-- Renderer UI задача: `architecture-standards` → `vue-renderer-standards` → `ui-foundations` → `ui-primitives`.
-- API / IPC / Electron задача: `architecture-standards` → `electron-api-and-ipc`.
-- Generated types / renderer typing задача: `architecture-standards` → `api-and-typing`.
-- Spaces задача: `architecture-standards` → `spaces-architecture`.
-- Задача про текст и локализацию: `i18n`.
-- Задача про документацию или README: `documentation-workflow`.
-- Задача про release notes нового релиза: `release-notes`.
-- Workflow-чувствительная задача: `development-workflow`.
-- Задача про git / branch / commit / PR: `github-workflow`.
+- 范围大或不明确：先 `architecture-standards`，再加载对应 skill。
+- Renderer UI：`architecture-standards` → `vue-renderer-standards` → `ui-foundations` → `ui-primitives`。
+- API / IPC / Electron：`architecture-standards` → `electron-api-and-ipc`。
+- 生成类型 / renderer typing：`architecture-standards` → `api-and-typing`。
+- Spaces：`architecture-standards` → `spaces-architecture`。
+- 文案与本地化：`i18n`。
+- 文档或 README：`documentation-workflow`。
+- 新版本 release notes：`release-notes`。
+- Workflow 敏感任务：`development-workflow`。
+- git / 分支 / commit / PR：`github-workflow`。
 
-## Основной стек
+## 技术栈
 
 - Framework: Vue 3, Composition API, `<script setup lang="ts">`
 - Styling: TailwindCSS v4, `tailwind-merge`, `cva`
-- UI: локальные `src/renderer/components/ui`, Shadcn поверх `reka-ui`, `lucide-vue-next`
-- State: composables, без Pinia/Vuex
-- Backend: Electron main, Elysia API, markdown vault для контента и `electron-store` для локального состояния приложения
+- UI: `src/renderer/components/ui`、Shadcn（reka-ui）、`lucide-vue-next`
+- State: composables，无 Pinia/Vuex
+- Backend: Electron main、Elysia API、markdown vault、`electron-store`
 - Utilities: `@vueuse/core`, `vue-sonner`
+
+## 代码注释语言
+
+- 新增或修改代码注释时使用中文。
+- 不要新增俄语注释。

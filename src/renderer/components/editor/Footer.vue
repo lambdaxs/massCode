@@ -19,8 +19,8 @@ function onSelect(value: string) {
 
   const content = selectedSnippetContent.value
 
-  // value === undefined: тело фрагмента ещё не загружено, смена языка
-  // отправила бы пустой контент.
+  // value === undefined：fragment body 未加载，切换语言
+  // 会提交空 content。
   if (!selectedSnippet.value || !content || content.value === undefined) {
     return
   }

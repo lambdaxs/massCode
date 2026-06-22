@@ -1,67 +1,67 @@
 ---
 name: ui-primitives
-description: Use when building or refactoring massCode UI components with local Ui primitives or Shadcn, especially for cn, cva, notifications, and rules against reimplementing basic controls.
+description: 用本地 Ui primitives 或 Shadcn 构建/重构 massCode UI 组件时使用，尤其是 cn、cva、通知，以及避免重复实现基础控件。
 ---
 
 # UI Primitives
 
-## Overview
+## 概述
 
-Базовые UI-элементы в massCode должны собираться из существующих `Ui*` компонентов и Shadcn-паттернов. Этот skill отвечает за component-level usage rules, а не за общую визуальную базу.
+基础 UI 应来自现有 **`Ui*`** 组件与 Shadcn 模式。本 skill 是**组件级**用法，不是整体视觉基础（见 `ui-foundations`）。
 
-## Component Usage
+## 组件用法
 
-- Локальные UI-компоненты доступны через auto-import с префиксом `Ui`.
-- Базовые элементы вроде button, input, checkbox, action button не переизобретай на сыром HTML, если есть готовый `Ui*` вариант.
-- Если нужного элемента нет, сначала создай его в `src/renderer/components/ui/`, потом используй в фиче.
+- 本地 UI 通过 auto-import，前缀 `Ui`。
+- button、input、checkbox、action button 等有现成 `Ui*` 时不要裸 HTML 重写。
+- 缺组件时先在 `src/renderer/components/ui/` 创建，再在 feature 中使用。
 
 ## Buttons
 
-- Primary action должен быть явным и не конкурировать с несколькими равноправными CTA в одном контейнере.
-- Icon-only actions должны быть понятны по контексту и иметь tooltip или другой доступный label path.
-- Loading и pending actions должны использовать существующий button pattern, а не ad-hoc “disabled text swap”.
-- Destructive actions не должны выглядеть как обычные secondary controls.
+- Primary action 应明确，同一容器不要多个同等 CTA 争抢。
+- 仅图标 action 需上下文可懂，并有 tooltip 或其他 accessible label。
+- Loading/pending 用既有 button pattern，不要 ad-hoc “disabled 换文案”。
+- Destructive action 视觉上应区别于普通 secondary。
 
-## Cards And Containers
+## Cards 与容器
 
-- Для автономных panel-like блоков используй существующий `Card` / `Ui*` container pattern, если он уже есть в области.
-- Внутренние muted blocks не нужно пересобирать разными `div`-паттернами в каждой фиче.
-- Repeated panel structure должна переезжать в shared primitive или local feature primitive, а не копироваться markup-в-маркап.
+- 独立 panel-like 块用已有 `Card` / `Ui*` container（若该区域已有）。
+- 内部 muted block 不要每处用不同 `div` 模式重搭。
+- 重复 panel 结构应抽到 shared 或 feature primitive，不要 markup 复制粘贴。
 
-## Readonly And Copyable Content
+## 只读与可复制内容
 
-- Длинный readonly output, generated text, URLs и similar content не показывай как “обычный disabled input”, если это ухудшает чтение.
-- Для copy flows используй существующий copy pattern и уведомления через `useSonner()`.
-- Readonly content должен оставаться визуально читаемым и удобно копируемым.
+- 长 readonly output、生成文本、URL 等不要用“普通 disabled input”展示（若损害可读性）。
+- Copy flow 用既有 copy pattern + `useSonner()` 通知。
+- Readonly 内容须易读、易复制。
 
 ## Styling Helpers
 
-- Для variants используй `cva`.
-- Для склейки классов используй `cn()`.
-- Не делай variants вручную строковыми `if`-цепочками там, где нужен нормальный variant API.
+- Variants 用 **`cva`**。
+- 拼 class 用 **`cn()`**。
+- 需要 variant API 处不要用字符串 `if` 链硬写。
 
-## Shadcn Rules
+## Shadcn 规则
 
-- Shadcn-компоненты импортируй вручную из `@/components/ui/shadcn/*`.
-- Для namespace-based компонентов используй паттерн вроде `import * as Dialog from '@/components/ui/shadcn/dialog'`.
+- Shadcn 从 `@/components/ui/shadcn/*` 手动 import。
+- Namespace 组件示例：`import * as Dialog from '@/components/ui/shadcn/dialog'`。
 
-## Notifications
+## 通知
 
-- Для уведомлений используй `useSonner()`.
-- Не добавляй локальную, параллельную систему toast/notification внутри фичи.
+- 用 **`useSonner()`**。
+- Feature 内不要并行自建 toast 系统。
 
-## Tooltip, Popover, Overlay
+## Tooltip、Popover、Overlay
 
-- Tooltip — для короткого пояснения.
-- Popover — для richer inline content, picker-like content или contextual controls.
-- Не заменяй их ad-hoc overlay-разметкой без необходимости.
-- Validation и inline guidance должны использовать существующие tooltip/popover primitives, если проект уже их применяет в аналогичных местах.
+- Tooltip — 短说明。
+- Popover —  richer 内联内容、picker、上下文控件。
+- 无必要不要用 ad-hoc overlay 替代。
+- Validation、inline guidance 用已有 tooltip/popover（若项目已在类似场景使用）。
 
-## Common Mistakes
+## 常见错误
 
-- Писать ещё одну кнопку или input с нуля “потому что быстрее”.
-- Склеивать сложные conditional classes без `cn()`.
-- Дублировать существующий primitive внутри feature directory вместо общего `src/renderer/components/ui/`.
-- Использовать disabled input как универсальный readonly display surface.
-- Делать overlay pattern вручную там, где уже есть Shadcn primitive.
-- Смешивать правила primitives с вопросами визуальной базы, которые должны идти в `ui-foundations`.
+- “更快”而从零写 button/input。
+- 复杂 conditional class 不用 `cn()`。
+- 在 feature 目录复制已有 primitive，而非用 `src/renderer/components/ui/`。
+- 把 disabled input 当通用 readonly 展示面。
+- 已有 Shadcn primitive 处手写 overlay。
+- 把 primitives 规则与应属 `ui-foundations` 的视觉问题混谈。

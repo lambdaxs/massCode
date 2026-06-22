@@ -227,8 +227,8 @@ describe('syncNoteFileWithDisk', () => {
 
     syncNotesRuntimeWithDisk(paths)
 
-    // Внешний mv source.md → target.md: add нового пути приходит раньше
-    // unlink старого.
+    // 外部 mv source.md → target.md：新路径 add 先到
+    // unlink 旧路径.
     const targetPath = path.join(paths.inboxDirPath, 'target.md')
     fs.moveSync(sourcePath, targetPath)
 

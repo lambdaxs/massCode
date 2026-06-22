@@ -6,8 +6,7 @@ const isLoading = ref(false)
 const isTagsLoaded = ref(false)
 let inFlightRequest: Promise<void> | null = null
 
-// Параллельные вызовы (init спейса + маунт компонентов) дедуплицируются
-// в один запрос.
+// 并行调用（space init + 组件 mount）去重合并为一次请求。
 function getTags(): Promise<void> {
   if (inFlightRequest) {
     return inFlightRequest

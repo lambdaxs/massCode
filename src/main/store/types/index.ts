@@ -42,7 +42,14 @@ export interface NotesDashboardWidgets {
   topLinked: boolean
 }
 
-export type SpaceId = 'code' | 'tools' | 'math' | 'notes' | 'http' | 'drawings'
+export type SpaceId =
+  | 'code'
+  | 'tools'
+  | 'math'
+  | 'notes'
+  | 'http'
+  | 'drawings'
+  | 'ai-prototype'
 export type CommandPaletteRecentTarget =
   | 'space'
   | 'snippet'
@@ -180,6 +187,9 @@ export interface AppStore {
   taskTimer: {
     floatPosition: { x: number, y: number } | null
   }
+  aiPrototype: {
+    activeSessionId: string | null
+  }
   activeSpaceId: SpaceId
 }
 
@@ -235,6 +245,13 @@ export interface HttpSettings {
 
 export interface UpdatesSettings {}
 
+export interface AiPrototypeSettings {
+  apiKey: string
+  baseUrl: string
+  defaultAspectRatio: string
+  pollIntervalMs: number
+}
+
 export interface PreferencesStore {
   appearance: {
     theme: string
@@ -261,6 +278,7 @@ export interface PreferencesStore {
   }
   math: MathSettings
   http: HttpSettings
+  aiPrototype: AiPrototypeSettings
 }
 
 export interface MathSheet {

@@ -91,6 +91,14 @@ type SpacesAction =
   | 'drawings:rename'
   | 'drawings:duplicate'
   | 'drawings:delete'
+  | 'ai-prototype:list-sessions'
+  | 'ai-prototype:create-session'
+  | 'ai-prototype:delete-session'
+  | 'ai-prototype:get-messages'
+  | 'ai-prototype:send-message'
+  | 'ai-prototype:get-asset'
+  | 'ai-prototype:get-stats'
+  | 'ai-prototype:task-updated'
 
 export type MainMenuChannel = CombineWith<MainMenuAction, 'main-menu'>
 export type DBChannel = CombineWith<DBAction, 'db'>

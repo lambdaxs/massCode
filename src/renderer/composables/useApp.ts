@@ -92,8 +92,7 @@ function persistCodeSelectionState() {
   store.app.set('code.selection', JSON.parse(JSON.stringify(state)))
 }
 
-// store.app.set — синхронная запись файла на диск: без debounce каждая смена
-// выбранного сниппета/папки блокирует main thread renderer.
+// store.app.set 为同步写盘：若不 debounce，每次切换 snippet/文件夹都会阻塞 renderer 主线程。
 watchDebounced(state, persistCodeSelectionState, { debounce: 300, deep: true })
 
 if (typeof window !== 'undefined') {

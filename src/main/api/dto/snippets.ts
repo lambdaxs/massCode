@@ -60,8 +60,8 @@ const snippetItem = t.Object({
   ),
 })
 
-// Список не содержит тел фрагментов: контент выбранного сниппета
-// загружается отдельным GET /snippets/:id.
+// 列表不含 fragment body：选中 snippet 的 content 单独加载。
+// 单独加载 GET /snippets/:id.
 const snippetListItem = t.Object({
   ...snippetItemBase,
   contents: t.Array(

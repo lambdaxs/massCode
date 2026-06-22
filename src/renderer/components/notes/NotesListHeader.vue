@@ -78,8 +78,8 @@ function selectCreateKind(kind: 'note' | 'task') {
   isCreateMenuOpen.value = false
 }
 
-// Без debounce каждый символ порождает full-text запрос, смену выбранной
-// заметки и перезагрузку документа в редакторе.
+// 无 debounce 时每个字符都会 full-text 搜索、切换选中
+// note 并重载编辑器文档。
 const searchDebounced = useDebounceFn(() => {
   if (searchQuery.value) {
     search()

@@ -109,8 +109,7 @@ export function useNoteFolderDragDrop() {
     if (matchedNotes.every(n => n.folder?.id === folderId && !n.isDeleted))
       return
 
-    // Один bulk-вызов: PATCH выполняются параллельно, список
-    // перезагружается один раз, а не на каждую заметку.
+    // 单次 bulk 调用：PATCH 并行执行，列表只重载一次，而非每条 note 一次。
     await updateNotes(
       matchedNotes.map(note => note.id),
       matchedNotes.map(() => ({ folderId, isDeleted: 0 })),

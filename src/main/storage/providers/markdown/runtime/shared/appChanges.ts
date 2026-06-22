@@ -13,7 +13,7 @@ const RECENT_APP_CHANGE_TTL_MS = 2500
 
 interface RecentAppFileChange {
   timestamp: number
-  // null — файла нет на диске (собственное удаление/перемещение)
+  // null — 磁盘无文件（自有删除/移动)
   signature: string | null
 }
 
@@ -29,8 +29,7 @@ function getFileSignature(absolutePath: string): string | null {
   }
 }
 
-// Должен вызываться сразу ПОСЛЕ собственной fs-операции, чтобы сигнатура
-// соответствовала состоянию, которое оставило приложение.
+// 须在自有 fs 操作之后立即调用，使签名与应用留下的状态一致.
 export function rememberAppFileChange(absolutePath: string): void {
   const now = Date.now()
 
@@ -60,7 +59,7 @@ export function wasRecentAppFileChange(absolutePath: string): boolean {
     return false
   }
 
-  // Файл изменился после нашей записи — это внешняя правка, а не эхо.
+  // 文件在我们写入后再次变化——属外部修改，非 echo.
   if (getFileSignature(resolvedPath) !== entry.signature) {
     recentAppFileChanges.delete(resolvedPath)
     return false

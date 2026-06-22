@@ -1,53 +1,53 @@
 ---
 name: vue-renderer-standards
-description: Use when editing massCode renderer code in Vue 3, especially for script setup patterns, import rules, composables, shared state, and renderer-side conventions.
+description: 编辑 massCode Vue 3 renderer 代码时使用，尤其是 script setup、import 规则、composables、共享状态与 renderer 约定。
 ---
 
-# Vue Renderer Standards
+# Vue Renderer 规范
 
-## Overview
+## 概述
 
-Renderer в massCode строится на Vue 3 Composition API с `<script setup lang="ts">`. Здесь важны строгие import rules, composable-first state sharing и запрет на прямой доступ к backend-возможностям.
+Renderer 基于 Vue 3 Composition API 与 `<script setup lang="ts">`。须遵守严格 import 规则、composable-first 共享状态，且禁止直连 backend。
 
-## Component Pattern
+## 组件模式
 
-- Используй Vue 3 Composition API и `<script setup lang="ts">`.
-- Vue core (`ref`, `computed`, `watch`, `onMounted` и подобные) не импортируй вручную: они auto-imported.
-- Проектные компоненты из `src/renderer/components/` тоже не импортируй вручную: они auto-imported.
-- Локальную логику компонента держи в script, а не в template.
+- 使用 Vue 3 Composition API 与 `<script setup lang="ts">`。
+- Vue core（`ref`、`computed`、`watch`、`onMounted` 等）**不要**手动 import：已 auto-import。
+- `src/renderer/components/` 下项目组件**不要**手动 import：已 auto-import。
+- 局部逻辑放在 script，不要堆在 template。
 
-## Manual Imports Only Where Required
+## 仅必要时手动 Import
 
-Всегда импортируй вручную:
+始终手动 import：
 
-- composables из `@/composables`;
-- utils из `@/utils`;
-- `@vueuse/core`;
-- Electron bridge из `@/electron`;
-- Shadcn UI из `@/components/ui/shadcn/*`.
+- `@/composables` 中的 composables；
+- `@/utils` 中的 utils；
+- `@vueuse/core`；
+- `@/electron` 的 Electron bridge；
+- `@/components/ui/shadcn/*` 的 Shadcn UI。
 
-## Shared State
+## 共享状态
 
-- Глобальное shared state реализуется composables без Pinia/Vuex.
-- Reactive state, который должен шариться между компонентами, объявляй на module level, вне экспортируемой функции composable.
-- Persistent UI/settings state храни через `store` из `@/electron`:
-  - `store.app` для UI state;
-  - `store.preferences` для user preferences.
+- 全局共享状态用 composables，无 Pinia/Vuex。
+- 需在组件间共享的 reactive state 声明在 **module level**（composable 导出函数之外）。
+- 持久 UI/设置状态用 `@/electron` 的 `store`：
+  - `store.app` — UI state；
+  - `store.preferences` — 用户偏好。
 
-## VueUse First
+## VueUse 优先
 
-- Перед написанием нового composable сначала проверь, нет ли подходящего решения в `@vueuse/core`.
-- Кастомный composable добавляй только если готового utility реально нет.
+- 写新 composable 前先查 `@vueuse/core` 是否已有。
+- 仅当确实没有合适 utility 时才自定义。
 
-## Renderer Boundaries
+## Renderer 边界
 
-- Renderer не импортирует storage internals или backend-модули доступа к данным напрямую.
-- Renderer не обращается напрямую к Node.js, filesystem или storage runtime.
-- Доступ к main process возможен только через `api` или `ipc`.
+- Renderer **不** import storage internals 或直接访问数据的 backend 模块。
+- Renderer **不**直接访问 Node.js、filesystem、storage runtime。
+- 访问 main process 仅通过 `api` 或 `ipc`。
 
-## Common Mistakes
+## 常见错误
 
-- Ручной импорт `ref` / `computed` / `watch`.
-- Ручной импорт локальных project components.
-- Локальный state внутри composable, который должен быть общим между несколькими компонентами.
-- Попытка “срезать путь” и импортировать backend-модуль прямо в renderer.
+- 手动 import `ref` / `computed` / `watch`。
+- 手动 import 本地 project components。
+- 本应在多组件共享的状态写在 composable 函数内部。
+- 在 renderer “抄近路” import backend 模块。

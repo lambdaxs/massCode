@@ -1,58 +1,58 @@
 ---
 name: spaces-architecture
-description: Use when working on massCode spaces such as code, notes, math, or tools, especially when changing their state, behavior, synchronization, or spaces IPC channels.
+description: 处理 massCode 的 code、notes、math、tools 等 space，尤其是状态、行为、同步或 spaces IPC channel 时使用。
 ---
 
-# Spaces Architecture
+# Spaces 架构
 
-## Overview
+## 概述
 
-massCode использует систему Spaces для разделения функциональных областей. Это не просто UI tabs: у каждого space есть собственное состояние, свои правила обновления и свой способ синхронизации с данными в vault.
+massCode 用 **Spaces** 划分功能域。不仅是 UI tab：每个 space 有独立状态、更新规则及与 vault 数据的同步方式。
 
-## Space Model
+## Space 模型
 
-- `code` — snippets, folders, tags
-- `notes` — notes, folders, tags, markdown-based flows
-- `math` — calculation sheets и состояние math notebook
-- `tools` — developer utilities
+- `code` — snippets、folders、tags
+- `notes` — notes、folders、tags、markdown 流程
+- `math` — 计算 sheet、math notebook 状态
+- `tools` — 开发者工具
 
-Основные определения живут в `src/renderer/spaceDefinitions.ts`.
+主要定义在 `src/renderer/spaceDefinitions.ts`。
 
-## Space State Storage
+## Space 状态存储
 
-- Состояние каждого space хранится в `__spaces__/{spaceId}/.state.yaml` внутри vault.
-- Runtime helpers:
+- 各 space 状态在 vault 内 `__spaces__/{spaceId}/.state.yaml`。
+- Runtime helpers：
   - `src/main/storage/providers/markdown/runtime/spaces.ts`
   - `src/main/storage/providers/markdown/runtime/spaceState.ts`
-- Директория `__spaces__/` — служебная часть vault для состояния spaces.
+- `__spaces__/` 是 vault 中存放 space 状态的系统目录。
 
-## Persistence Rules
+## 持久化规则
 
-- Запись состояния spaces использует ту же debounce/flush инфраструктуру, что и `state.json`.
-- Не ломай совместимость с `pendingStateWriteByPath` и flush-on-exit поведением.
-- Если меняешь способ записи, учитывай сценарий завершения приложения до явного ручного flush.
+- Space 状态写入使用与 `state.json` 相同的 debounce/flush 基础设施。
+- 不要破坏与 `pendingStateWriteByPath`、flush-on-exit 的兼容。
+- 若改写入方式，须考虑应用退出前未手动 flush 的场景。
 
-## IPC Rules
+## IPC 规则
 
-- Space-specific IPC handlers живут в `src/main/ipc/handlers/spaces.ts`.
-- Текущие math handlers:
+- Space 相关 IPC 在 `src/main/ipc/handlers/spaces.ts`。
+- 当前 math handlers：
   - `spaces:math:read`
   - `spaces:math:write`
-- Если добавляется новый `spaces:*` flow, он должен работать через общую модель состояния spaces, а не в обход неё.
+- 新增 `spaces:*` flow 须走统一 space 状态模型，不可绕过。
 
-## Space-Aware Sync
+## Space 感知同步
 
-- `system:storage-synced` обновляет активное пространство через `getActiveSpaceId()`.
-- Ожидаемое поведение:
+- `system:storage-synced` 通过 `getActiveSpaceId()` 刷新当前 space。
+- 预期行为：
   - `code` → refresh folders + snippets
   - `notes` → refresh notes + note folders
-  - `math` → `reloadFromDisk()` через `useMathNotebook()`
+  - `math` → `useMathNotebook()` 的 `reloadFromDisk()`
   - `tools` → no-op
-- Изменения, которые уже сохранены в vault, должны вызывать `markPersistedStorageMutation()`, чтобы не создавать sync loops.
+- 已写入 vault 的变更应调用 `markPersistedStorageMutation()`，避免 sync loop。
 
-## Common Mistakes
+## 常见错误
 
-- Считать spaces только UI-концепцией и забывать, что у них есть собственное состояние и правила синхронизации.
-- Писать состояние space в обход общих markdown runtime helpers.
-- Добавлять mutation без `markPersistedStorageMutation()`.
-- Ломать согласованность между состоянием space, helpers и sync behavior.
+- 把 space 当纯 UI 概念，忽略独立状态与同步规则。
+- 绕过 markdown runtime helpers 写 space 状态。
+- mutation 不加 `markPersistedStorageMutation()`。
+- space 状态、helpers、sync 行为不一致。

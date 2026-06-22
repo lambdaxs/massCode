@@ -132,8 +132,8 @@ function hideLoadingCounts() {
   isLoadingCounts.value = false
 }
 
-// Отложенный лоадер скана: показываем спиннер только если скан длится дольше
-// порога, иначе быстрый скан вызвал бы мелькание лоадера на долю секунды.
+// 延迟显示扫描 loader：仅当扫描超过阈值时显示 spinner，
+// 避免快速扫描时 loader 闪烁。
 function showVaultDoctorScanLoader() {
   vaultDoctorScanLoaderTimer = setTimeout(() => {
     isVaultDoctorScanLoaderVisible.value = true
@@ -149,7 +149,7 @@ function hideVaultDoctorScanLoader() {
   isVaultDoctorScanLoaderVisible.value = false
 }
 
-// Тот же отложенный лоадер для apply, чтобы быстрый apply не мигал спиннером.
+// apply 使用相同延迟 loader，避免快速 apply 时 spinner 闪烁。
 function showVaultDoctorApplyLoader() {
   vaultDoctorApplyLoaderTimer = setTimeout(() => {
     isVaultDoctorApplyLoaderVisible.value = true
@@ -280,7 +280,7 @@ async function moveVaultStorage() {
     vaultPath.value = result.vaultPath
     await resetAndReloadVaultData()
 
-    // Контент тот же, но путь сменился — прежний отчёт по старым путям неактуален.
+    // content 相同但路径已变——旧路径上的报告已失效。
     dismiss(VAULT_DOCTOR_NOTICE_ID)
     resetVaultDoctor()
 
@@ -429,11 +429,10 @@ function scrollToVaultDoctorSection() {
   })
 }
 
-// Смена vault делает прежний отчёт неактуальным (он про другой путь). Сбрасываем
-// и пере-сканируем новый vault. Сканируем тихо (без sonner): мы уже в Storage,
-// секция сама покажет результат, а при конфликтах подсвечиваем её скроллом.
+// 切换 vault 使旧报告失效（对应其他路径）。重置并重新扫描新 vault。
+// 静默扫描（无 sonner）：已在 Storage 页，由本区块展示结果；有冲突时滚动高亮。
 async function refreshVaultDoctorAfterVaultChange() {
-  // Убираем уведомление о конфликтах прежнего vault — оно больше не актуально.
+  // 移除旧 vault 冲突通知——已不再适用。
   dismiss(VAULT_DOCTOR_NOTICE_ID)
   resetVaultDoctor()
   showVaultDoctorScanLoader()
@@ -446,17 +445,15 @@ async function refreshVaultDoctorAfterVaultChange() {
     }
   }
   catch {
-    // Vault уже загружен; провал health-чека не критичен и не требует sonner.
+    // vault 已加载；health check 失败非关键，无需 sonner。
   }
   finally {
     hideVaultDoctorScanLoader()
   }
 }
 
-// Переход из startup-уведомления о конфликтах: переиспользуем отчёт
-// startup-проверки (если он есть), иначе сканируем, и скроллим к секции,
-// чтобы пользователь не искал её вручную. Query чистим, чтобы повторный
-// заход не триггерил автоповедение.
+// 从启动冲突通知跳转：复用启动检查报告（若有），否则重新扫描并滚动到本区块。
+// 清除 query，避免再次进入时重复触发。
 onMounted(() => {
   if (route.query.doctor !== 'scan') {
     return
@@ -762,7 +759,7 @@ onMounted(() => {
                       </UiText>
                     </div>
 
-                    <!-- Дубли id: выбор canonical через radio-group -->
+                    <!-- 重复 id：通过 radio-group 选择 canonical -->
                     <div
                       v-if="group.reason === 'duplicate-id'"
                       class="space-y-2"
@@ -867,7 +864,7 @@ onMounted(() => {
                       </RadioGroup>
                     </div>
 
-                    <!-- Заблокированные файлы (merge markers / битый frontmatter) -->
+                    <!-- 被锁文件（merge 标记 / 损坏 frontmatter） -->
                     <UiText
                       v-else
                       variant="caption"

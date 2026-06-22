@@ -79,7 +79,7 @@ watch(
 
 useTheme()
 
-// Одноразовый тост после смены версии приложения; контент живёт в release notes.
+// 应用版本变更后的一次性 toast；内容来自 release notes。
 function showWhatsNewOnce() {
   if (store.app.get('notifications.lastWhatsNewVersion') === version) {
     return
@@ -105,10 +105,9 @@ function showWhatsNewOnce() {
   })
 }
 
-// Неблокирующая проверка vault после загрузки приложения. Doctor живёт в
-// Storage settings, куда пользователь почти не заходит, поэтому о конфликтах
-// синхронизации (дубли id, merge-маркеры, битый frontmatter) сообщаем
-// проактивно. Safe fixes сюда не входят — их watcher применяет молча.
+// 应用加载后对 vault 的非阻塞检查。Doctor 在 Storage 设置中，用户很少进入，
+// 因此对同步冲突（重复 id、merge 标记、损坏 frontmatter）主动提示。
+// Safe fixes 不在此处理——由 watcher 静默应用。
 function checkVaultHealth() {
   const { sonner } = useSonner()
   const { scan } = useVaultDoctor()
@@ -139,7 +138,7 @@ function checkVaultHealth() {
       })
     }
     catch {
-      // Health check не критичен: при ошибке тихо пропускаем.
+      // Health check 非关键：出错时静默跳过。
     }
   }
 

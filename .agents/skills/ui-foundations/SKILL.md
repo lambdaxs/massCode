@@ -1,69 +1,68 @@
 ---
 name: ui-foundations
-description: Use when defining or reviewing massCode UI foundation rules such as typography, renderer styling consistency, TailwindCSS v4 usage, and when raw markup starts competing with established UI text patterns.
+description: 定义或审查 massCode UI 基础规则（typography、renderer 样式一致性、TailwindCSS v4），或原始 markup 与既有 UI 文本模式冲突时使用。
 ---
 
-# UI Foundations
+# UI 基础
 
-## Overview
+## 概述
 
-UI в massCode должен оставаться визуально консистентным. Этот skill отвечает за базовые styling decisions: как относиться к typography, когда использовать established text patterns и как не скатываться в разрозненный renderer styling.
+massCode UI 须保持视觉一致。本 skill 涵盖基础 styling：typography、何时用 established text patterns、如何避免 renderer 样式各自为政。
 
-## Core Rules
+## 核心规则
 
-- Базовая styling system в renderer строится на TailwindCSS v4.
-- Новые UI-экраны и состояния должны продолжать существующий visual language, а не вводить локальные правила “для одного места”.
-- Для стандартного app UI предпочитай семантические токены вроде `bg-background`, `text-muted-foreground`, `border-border`, `border-destructive/*` вместо raw palette-классов вроде `bg-white`, `text-black`, `text-green-500`, `bg-slate-900`.
-- Typography по умолчанию строится через `UiText`.
-- Не заменяй `UiText` на произвольный набор `text-*`, `font-*`, `text-muted-foreground`, если подходящий variant уже существует.
-- Если `UiText` почти подходит, лучше добавить точечные классы поверх него, чем уходить в raw typography markup.
+- Renderer 基础 styling 基于 **TailwindCSS v4**。
+- 新屏幕与状态应延续现有 visual language，不要为单点发明局部规则。
+- 标准 app UI 优先用语义 token：`bg-background`、`text-muted-foreground`、`border-border`、`border-destructive/*`，而非 `bg-white`、`text-black` 等 raw palette。
+- 默认 typography 用 **`UiText`**。
+- 已有 variant 适用时，不要用随意 `text-*`、`font-*` 替代 `UiText`。
+- `UiText` 接近可用时，在其上加点 class，而非 raw typography markup。
 
 ## Typography
 
-- `UiText` — базовый источник правды для текстовых размеров и muted-state.
-- `caption` и `xs` — подписи, helper text, secondary labels.
-- `sm` и `base` — основной интерфейсный текст.
-- `lg` и `xl` — усиленные title/value cases, когда это действительно нужно по hierarchy.
-- `font-mono` — только для code-like content, IDs, counts with alignment needs, readonly generated output и подобных случаев.
-- Для uppercase labels используй существующий pattern через `UiText` или согласованный tracking/uppercase стиль, а не случайную смесь utility classes в каждом месте.
+- `UiText` 是文本尺寸与 muted 状态的基准。
+- `caption`、`xs` — 说明、helper、secondary label。
+- `sm`、`base` — 主界面正文。
+- `lg`、`xl` — 需要 hierarchy 时的强化 title/value。
+- `font-mono` — 仅 code-like content、ID、对齐计数、readonly 生成输出等。
+- uppercase label 用既有 `UiText` 或一致 tracking/uppercase，不要每处乱拼 utility。
 
-## Spacing And Layout Rhythm
+## 间距与布局节奏
 
-- Корневые screen/container wrappers обычно живут в ритме `space-y-4` или `space-y-6`.
-- Внутри компактных секций чаще всего `space-y-2` или `space-y-3`.
-- Grid gaps по умолчанию: `gap-2`, `gap-3`, `gap-4` в зависимости от плотности.
-- Не придумывай локальный spacing-scale для одного экрана, если существующие интервалы уже покрывают задачу.
-- Повторяющиеся content blocks должны иметь одинаковый padding и vertical rhythm.
+- 根 screen/container 常用 `space-y-4` 或 `space-y-6`。
+- 紧凑区块内常用 `space-y-2` 或 `space-y-3`。
+- Grid gap 默认：`gap-2`、`gap-3`、`gap-4`（按密度）。
+- 已有间隔够用就不要为新屏发明 spacing scale。
+- 重复 content block 的 padding、vertical rhythm 应一致。
 
-## Radius And Shadows
+## 圆角与阴影
 
-- `rounded-md` — controls, inline boxes, compact containers.
-- `rounded-lg` — card-like blocks, dialogs, overlays, dashboard sections.
-- `rounded-xl` — preview-heavy surfaces и крупные visual blocks.
-- `rounded-full` — pills, badges, circular handles.
-- `shadow-xs` — inputs, buttons, small controls.
-- `shadow-md` и `shadow-lg` — overlays, popovers, previews, где elevation реально нужна.
-- Не вводи произвольные `rounded-[...]` и `shadow-[...]`, если стандартные токены уже подходят.
+- `rounded-md` — control、inline box、紧凑容器。
+- `rounded-lg` — card、dialog、overlay、dashboard section。
+- `rounded-xl` — 预览为主的大块 surface。
+- `rounded-full` — pill、badge、圆形 handle。
+- `shadow-xs` — input、button、小 control。
+- `shadow-md`、`shadow-lg` — overlay、popover、预览（确需 elevation 时）。
+- 标准 token 够用就不要随意 `rounded-[...]`、`shadow-[...]`。
 
-## Exceptions
+## 例外
 
-- Raw colors допустимы, если цвет является частью самих данных или preview:
-  color pickers, contrast previews, code/image export backgrounds, diagram or visualizer nodes.
-- Если цвет вычисляется из контента или нужен для корректного контраста на пользовательском фоне, raw class или inline style допустимы.
-- Исключения не должны становиться поводом тащить raw palette в обычный application chrome.
+- Raw color 可用于数据或 preview 本身的一部分：取色器、对比预览、code/image 导出背景、可视化节点等。
+- 颜色来自内容或需保证对比度时，raw class 或 inline style 可接受。
+- 例外不能成为把 raw palette 带进普通 app chrome 的借口。
 
-## When To Prefer This Skill
+## 何时优先本 Skill
 
-- Нужно понять, как оформлять текст и подписи в новом UI.
-- Есть соблазн писать raw Tailwind typography вместо существующего text pattern.
-- В экране начинают появляться локальные styling rules, которые расходятся с остальным renderer UI.
-- Нужно принять решение на уровне визуальной базы, а не конкретного button/input/dialog.
+- 新 UI 如何排版文本与标签。
+-  tempted 用 raw Tailwind typography 而非既有 text pattern。
+- 某屏出现与整体 renderer 不一致的局部 styling。
+- 需在视觉层决策，而非具体 button/input/dialog。
 
-## Common Mistakes
+## 常见错误
 
-- Размазывать локальные визуальные исключения по фичам.
-- Тащить raw palette в обычный app UI без реальной причины.
-- Писать текст напрямую через произвольные utility classes там, где подходит `UiText`.
-- Делать новый экран со своим spacing rhythm вместо существующего scale.
-- Случайно смешивать small-control radii и preview-surface radii в одном и том же UI слое.
-- Считать Tailwind поводом делать каждый экран визуально “с нуля”.
+- 功能间散落局部视觉例外。
+- 无充分理由在普通 app UI 用 raw palette。
+- 该用 `UiText` 处写随意 utility。
+- 新屏自造 spacing rhythm。
+- 小 control 圆角与 preview surface 圆角混用。
+- 把 Tailwind 当成每屏从零设计的借口。

@@ -23,9 +23,9 @@ describe('getTextStats', () => {
     })
   })
 
-  it('supports cyrillic and numbers in words counter', () => {
-    expect(getTextStats('Привет\nмир 123')).toEqual({
-      symbols: 14,
+  it('supports cjk and numbers in words counter', () => {
+    expect(getTextStats('你好\n世界 123')).toEqual({
+      symbols: 9,
       words: 3,
     })
   })

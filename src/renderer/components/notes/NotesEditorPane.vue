@@ -267,15 +267,13 @@ function onNameBlur() {
 }
 
 const editorContent = ref('')
-// id заметки, контент которой сейчас находится в редакторе: меняется только
-// вместе с editorContent, когда полная запись уже загружена.
+// 当前编辑器中 note 的 id：仅在完整记录加载后与 editorContent 一起变更。
 const editorNoteId = ref<number | undefined>()
 
 watch(
   selectedNote,
   (nextNote, previousNote) => {
-    // Контент выбранной заметки ещё загружается — редактор обновится,
-    // когда придёт полная запись.
+    // 选中 note 的 content 仍在加载——完整记录到达后更新编辑器。
     if (nextNote && nextNote.content === undefined) {
       return
     }
@@ -298,17 +296,15 @@ const content = computed({
   set: (value: string) => {
     editorContent.value = value
 
-    // Сохраняем только если редактор отображает выбранную заметку:
-    // в момент переключения ввод не должен уйти в новую заметку
-    // с текстом старой.
+    // 仅当编辑器显示当前选中 note 时才保存：
+    // 切换时避免把旧 note 文本写入新 note。
     if (selectedNote.value && selectedNote.value.id === editorNoteId.value) {
       updateNoteContent(selectedNote.value.id, value)
     }
   },
 })
 
-// Статистика по всему документу не должна пересчитываться на каждый
-// keystroke большого документа.
+// 大文档不应在每次按键时重算全文统计。
 const debouncedContent = refDebounced(editorContent, 300)
 const textStats = computed(() => getTextStats(debouncedContent.value))
 
@@ -324,8 +320,8 @@ function onCopyNoteMenu() {
 
 ipc.on('main-menu:copy-note', onCopyNoteMenu)
 
-// Компонент пересоздаётся при переходах dashboard/graph → workspace:
-// без снятия listener каждый переход добавляет обработчик.
+// dashboard/graph → workspace 切换时组件会重建：
+// 不移除 listener 则每次切换都会新增处理器。
 onBeforeUnmount(() => {
   ipc.removeListeners('main-menu:copy-note')
 })

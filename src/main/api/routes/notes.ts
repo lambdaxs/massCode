@@ -69,8 +69,8 @@ app
       const storage = useNotesStorage()
       const result = storage.notes.getNotes(query)
 
-      // Контент заметок не сериализуется в список: контент выбранной
-      // заметки загружается через GET /notes/:id.
+      // note content 不序列化进列表：选中 note 的 content
+      // 通过以下方式加载 GET /notes/:id.
       return result.map(
         ({ content: _content, ...note }) => note,
       ) as NotesResponse
