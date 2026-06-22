@@ -82,7 +82,7 @@ function loadFloatContent(window: BrowserWindow) {
   }
 
   void window.loadFile(
-    path.join(__dirname, '../../build/renderer/task-timer-float.html'),
+    path.join(__dirname, '../../renderer/task-timer-float.html'),
   )
 }
 
