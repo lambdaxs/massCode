@@ -12,7 +12,6 @@ import { isQuitting, setQuitting } from './quitState'
 import { startMarkdownWatcher, stopMarkdownWatcher } from './storage'
 import { ensureFlatSpacesLayout } from './storage/providers/markdown/runtime/spaces'
 import { store } from './store'
-import { checkForUpdates } from './updates'
 import { isSqliteFile, log } from './utils'
 import { DEFAULT_WINDOW_BOUNDS, normalizeWindowBounds } from './windowBounds'
 
@@ -267,13 +266,6 @@ else {
     }
     catch (error) {
       log('Error initializing API', error)
-    }
-
-    try {
-      checkForUpdates()
-    }
-    catch (error) {
-      log('Error checking for updates', error)
     }
   })
 

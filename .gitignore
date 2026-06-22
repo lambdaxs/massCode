@@ -6,6 +6,7 @@ build/src
 build/package.json
 
 node_modules
+.pnpm-store
 .DS_Store
 components.d.ts
 auto-imports.d.ts

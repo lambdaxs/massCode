@@ -18,7 +18,6 @@ import {
 } from 'electron'
 import i18n from '../i18n'
 import { send } from '../ipc'
-import { checkForUpdatesFromMenu } from '../updates'
 import { createMenu, createPlatformMenuItems } from './utils'
 
 const year = new Date().getFullYear()
@@ -83,14 +82,6 @@ const appMenuItems: MenuConfig[] = [
     label: i18n.t('menu:app.about'),
     platforms: ['darwin'],
     click: () => aboutApp(),
-  },
-  {
-    id: 'update',
-    label: i18n.t('menu:app.update'),
-    click: () => checkForUpdatesFromMenu(),
-  },
-  {
-    type: 'separator',
   },
   {
     id: 'preferences',

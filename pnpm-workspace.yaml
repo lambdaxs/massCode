@@ -1,0 +1,11 @@
+allowBuilds:
+  '@parcel/watcher': true
+  better-sqlite3: true
+  electron: true
+  esbuild: true
+  simple-git-hooks: true
+  vue-demi: true
+
+overrides:
+  '@electron/rebuild': ^4.0.4
+  '@electron/node-gyp': 10.2.0-electron.2

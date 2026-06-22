@@ -230,9 +230,7 @@ export interface HttpSettings {
   skipCertificateVerification: boolean
 }
 
-export interface UpdatesSettings {
-  autoUpdate: boolean
-}
+export interface UpdatesSettings {}
 
 export interface PreferencesStore {
   appearance: {

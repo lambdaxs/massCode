@@ -31,16 +31,10 @@ import {
 } from '../../storage/providers/markdown/runtime/moveVault'
 import { getVaultPath } from '../../storage/providers/markdown/runtime/paths'
 import { store } from '../../store'
-import { installDownloadedUpdate } from '../../updates'
 
 export function registerSystemHandlers() {
   ipcMain.handle('system:activate-license', (_, payload: { key: string }) => {
     return activateLicense(payload.key)
-  })
-
-  ipcMain.handle('system:install-update', () => {
-    installDownloadedUpdate()
-    return true
   })
 
   ipcMain.handle('system:api-token-generate', () => {

@@ -33,10 +33,6 @@ vi.mock('../../ipc', () => ({
   send: vi.fn(),
 }))
 
-vi.mock('../../updates', () => ({
-  fetchUpdates: vi.fn(),
-}))
-
 vi.mock('../../../../package.json', () => ({
   repository: 'https://example.com/repo',
 }))

@@ -22,7 +22,6 @@ import {
 import { i18n, ipc } from '@/electron'
 import { router, RouterName } from '@/router'
 import { getActiveSpaceId } from '@/spaceDefinitions'
-import { repository } from '../../../../package.json'
 import { handleDeepLink } from './deepLinks'
 
 const { state, isCodeSpaceInitialized } = useApp()
@@ -138,34 +137,6 @@ export function registerSystemListeners() {
     catch (error) {
       console.error(error)
     }
-  })
-
-  ipc.on('system:update-available', () => {
-    sonner({
-      message: i18n.t('messages:update.availableToast'),
-      type: 'success',
-      action: {
-        label: i18n.t('messages:update.goToGitHub'),
-        onClick: () => {
-          ipc.invoke('system:open-external', `${repository}/releases`)
-        },
-      },
-    })
-  })
-
-  ipc.on('system:update-downloaded', (_, payload: { version: string }) => {
-    sonner({
-      message: i18n.t('messages:update.downloaded', {
-        version: payload.version,
-      }),
-      type: 'success',
-      action: {
-        label: i18n.t('messages:update.restart'),
-        onClick: () => {
-          ipc.invoke('system:install-update', null)
-        },
-      },
-    })
   })
 
   ipc.on(
