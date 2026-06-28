@@ -135,6 +135,9 @@ function ensureListener() {
 
       upsertMessage(payload.message)
       totals.value = payload.totals
+      if (payload.message.status === 'succeeded') {
+        void refreshDeliverables(payload.sessionId)
+      }
       void refreshSessions()
       void refreshCredits()
     },
@@ -415,12 +418,13 @@ async function exportAllDeliverables(folderId: number | null) {
 async function getAssetDataUrl(
   assetId: string,
   kind: 'uploads' | 'outputs' = 'outputs',
+  revision?: number,
 ) {
   if (!activeSessionId.value) {
     return null
   }
 
-  const cacheKey = `${activeSessionId.value}:${kind}:${assetId}`
+  const cacheKey = `${activeSessionId.value}:${kind}:${assetId}:${revision ?? 0}`
   if (assetCache.has(cacheKey)) {
     return assetCache.get(cacheKey) ?? null
   }

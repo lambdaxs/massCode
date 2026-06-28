@@ -391,7 +391,9 @@
       },
       "actions": {
         "enterToSend": "Enter — отправить · Shift+Enter — новая строка",
-        "imageHint": "Text-to-image / image-to-image · соотношение {{ratio}}"
+        "imageHint": "Text-to-image / image-to-image · соотношение {{ratio}}",
+        "sending": "Отправка…",
+        "waitForReply": "Ожидание ответа AI…"
       },
       "export": {
         "action": "Экспорт в заметки",

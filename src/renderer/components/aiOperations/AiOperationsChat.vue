@@ -4,7 +4,14 @@ import { useSonner } from '@/composables'
 import { useAiOperations } from '@/composables/spaces/aiOperations/useAiOperations'
 import { useAiPrototypeSettings } from '@/composables/spaces/aiPrototype/useAiPrototypeSettings'
 import { i18n } from '@/electron'
-import { Image, MessageSquare, Paperclip, Save, X } from 'lucide-vue-next'
+import {
+  Image,
+  LoaderCircle,
+  MessageSquare,
+  Paperclip,
+  Save,
+  X,
+} from 'lucide-vue-next'
 
 const {
   messages,
@@ -29,7 +36,61 @@ const isComposing = ref(false)
 const uploadAssetIds = ref<string[]>([])
 const uploadPreviews = ref<Array<{ assetId: string, url: string }>>([])
 const fileInputRef = ref<HTMLInputElement | null>(null)
+const messagesScrollRef = ref<HTMLElement | null>(null)
 const isSaveTemplateOpen = ref(false)
+
+const isReplyPending = computed(() => {
+  return chatMode.value === 'write' ? isChatRunning.value : isGenerating.value
+})
+
+const sendButtonLabel = computed(() => {
+  if (isSending.value) {
+    return i18n.t('spaces.aiOperations.actions.sending')
+  }
+
+  if (isReplyPending.value) {
+    return i18n.t('spaces.aiOperations.status.running')
+  }
+
+  return i18n.t('spaces.aiOperations.send')
+})
+
+const aspectRatioHint = computed(() => {
+  return (
+    activeTemplate.value?.defaults?.aspectRatio?.trim()
+    || settings.defaultAspectRatio
+  )
+})
+
+const footerHint = computed(() => {
+  if (isReplyPending.value) {
+    return i18n.t('spaces.aiOperations.actions.waitForReply')
+  }
+
+  if (chatMode.value === 'write') {
+    return i18n.t('spaces.aiOperations.actions.enterToSend')
+  }
+
+  return i18n.t('spaces.aiOperations.actions.imageHint', {
+    ratio: aspectRatioHint.value,
+  })
+})
+
+function scrollToLatest() {
+  nextTick(() => {
+    const container = messagesScrollRef.value
+    if (!container) {
+      return
+    }
+
+    container.scrollTop = container.scrollHeight
+  })
+}
+
+watch(
+  () => [messages.value.length, isChatRunning.value, isGenerating.value],
+  () => scrollToLatest(),
+)
 
 const canSend = computed(() => {
   return (
@@ -38,13 +99,6 @@ const canSend = computed(() => {
     && !isChatRunning.value
     && !isGenerating.value
     && activeSession.value
-  )
-})
-
-const aspectRatioHint = computed(() => {
-  return (
-    activeTemplate.value?.defaults?.aspectRatio?.trim()
-    || settings.defaultAspectRatio
   )
 })
 
@@ -89,6 +143,8 @@ async function onSend() {
       uploadAssetIds.value = []
       uploadPreviews.value = []
     }
+
+    scrollToLatest()
   }
   catch (error) {
     const message = error instanceof Error ? error.message : String(error)
@@ -138,7 +194,10 @@ function removeUpload(assetId: string) {
       <AiOperationsDeliverablesPanel />
     </div>
 
-    <div class="scrollbar min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
+    <div
+      ref="messagesScrollRef"
+      class="scrollbar min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4"
+    >
       <div
         v-if="!messages.length"
         class="text-muted-foreground py-8 text-center text-sm"
@@ -258,7 +317,11 @@ function removeUpload(assetId: string) {
             :disabled="!canSend"
             @click="onSend"
           >
-            {{ i18n.t("spaces.aiOperations.send") }}
+            <LoaderCircle
+              v-if="isSending || isReplyPending"
+              class="mr-1.5 h-3.5 w-3.5 animate-spin"
+            />
+            {{ sendButtonLabel }}
           </Button>
         </div>
       </div>
@@ -268,13 +331,7 @@ function removeUpload(assetId: string) {
         size="xs"
         class="text-muted-foreground"
       >
-        {{
-          chatMode === "write"
-            ? i18n.t("spaces.aiOperations.actions.enterToSend")
-            : i18n.t("spaces.aiOperations.actions.imageHint", {
-              ratio: aspectRatioHint,
-            })
-        }}
+        {{ footerHint }}
       </UiText>
 
       <input

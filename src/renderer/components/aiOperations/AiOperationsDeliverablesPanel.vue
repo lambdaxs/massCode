@@ -14,6 +14,7 @@ import {
 
 const {
   deliverables,
+  activeSessionId,
   getDeliverableContent,
   exportDeliverable,
   exportAllDeliverables,
@@ -30,6 +31,51 @@ const isExportDialogOpen = ref(false)
 const exportFileName = ref<string | null>(null)
 const exportAll = ref(false)
 
+const previewedDeliverable = computed(() => {
+  if (!previewFileName.value) {
+    return null
+  }
+
+  return (
+    deliverables.value.find(
+      item => item.fileName === previewFileName.value,
+    ) ?? null
+  )
+})
+
+async function refreshPreviewContent() {
+  if (!previewFileName.value) {
+    previewContent.value = ''
+    return
+  }
+
+  previewContent.value
+    = (await getDeliverableContent(previewFileName.value)) ?? ''
+}
+
+watch(
+  () => previewedDeliverable.value?.updatedAt,
+  (updatedAt) => {
+    if (!updatedAt || !previewFileName.value) {
+      return
+    }
+
+    void refreshPreviewContent()
+  },
+)
+
+watch(activeSessionId, () => {
+  previewFileName.value = null
+  previewContent.value = ''
+})
+
+watch(previewedDeliverable, (item) => {
+  if (previewFileName.value && !item) {
+    previewFileName.value = null
+    previewContent.value = ''
+  }
+})
+
 async function onPreview(item: AiOperationsDeliverable) {
   if (previewFileName.value === item.fileName) {
     previewFileName.value = null
@@ -37,9 +83,8 @@ async function onPreview(item: AiOperationsDeliverable) {
     return
   }
 
-  const content = await getDeliverableContent(item.fileName)
   previewFileName.value = item.fileName
-  previewContent.value = content ?? ''
+  await refreshPreviewContent()
 }
 
 async function onCopy(item: AiOperationsDeliverable) {

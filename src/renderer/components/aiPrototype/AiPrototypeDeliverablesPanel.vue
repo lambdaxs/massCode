@@ -15,6 +15,7 @@ import {
 
 const {
   deliverables,
+  activeSessionId,
   getDeliverableContent,
   exportDeliverable,
   exportAllDeliverables,
@@ -33,6 +34,58 @@ const isExportDialogOpen = ref(false)
 const exportDeliverableId = ref<string | null>(null)
 const exportAll = ref(false)
 
+const previewedDeliverable = computed(() => {
+  if (!previewId.value) {
+    return null
+  }
+
+  return deliverables.value.find(item => item.id === previewId.value) ?? null
+})
+
+async function refreshPreviewContent() {
+  const item = previewedDeliverable.value
+  if (!item) {
+    previewContent.value = ''
+    previewImageUrl.value = ''
+    return
+  }
+
+  if (item.kind === 'markdown') {
+    previewContent.value = (await getDeliverableContent(item.id)) ?? ''
+    previewImageUrl.value = ''
+    return
+  }
+
+  previewContent.value = ''
+  previewImageUrl.value
+    = (await getAssetDataUrl(item.id, 'outputs', item.updatedAt)) ?? ''
+}
+
+watch(
+  () => previewedDeliverable.value?.updatedAt,
+  (updatedAt) => {
+    if (!updatedAt || !previewId.value) {
+      return
+    }
+
+    void refreshPreviewContent()
+  },
+)
+
+watch(activeSessionId, () => {
+  previewId.value = null
+  previewContent.value = ''
+  previewImageUrl.value = ''
+})
+
+watch(previewedDeliverable, (item) => {
+  if (previewId.value && !item) {
+    previewId.value = null
+    previewContent.value = ''
+    previewImageUrl.value = ''
+  }
+})
+
 async function onPreview(item: AiPrototypeDeliverable) {
   if (previewId.value === item.id) {
     previewId.value = null
@@ -42,15 +95,7 @@ async function onPreview(item: AiPrototypeDeliverable) {
   }
 
   previewId.value = item.id
-
-  if (item.kind === 'markdown') {
-    previewContent.value = (await getDeliverableContent(item.id)) ?? ''
-    previewImageUrl.value = ''
-    return
-  }
-
-  previewContent.value = ''
-  previewImageUrl.value = (await getAssetDataUrl(item.id, 'outputs')) ?? ''
+  await refreshPreviewContent()
 }
 
 async function onCopy(item: AiPrototypeDeliverable) {
@@ -62,7 +107,7 @@ async function onCopy(item: AiPrototypeDeliverable) {
     return
   }
 
-  const url = await getAssetDataUrl(item.id, 'outputs')
+  const url = await getAssetDataUrl(item.id, 'outputs', item.updatedAt)
   if (url) {
     copy(url)
   }

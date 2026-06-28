@@ -19,6 +19,23 @@ const outputAssets = ref<Array<{ assetId: string, url: string }>>([])
 
 const isUserBubble = computed(() => props.message.role === 'user')
 
+const isChatPending = computed(() => {
+  return (
+    props.message.role === 'assistant'
+    && messageKind.value === 'chat'
+    && props.message.status === 'running'
+  )
+})
+
+const isImagePending = computed(() => {
+  return (
+    props.message.role === 'assistant'
+    && messageKind.value === 'image-generation'
+    && props.message.status
+    && props.message.status !== 'succeeded'
+  )
+})
+
 const bubbleText = computed(() => {
   if (props.message.role === 'user') {
     return props.message.prompt ?? ''
@@ -114,26 +131,28 @@ watch(
       "
     >
       <div
-        v-if="
-          messageKind === 'image-generation'
-            && message.role === 'assistant'
-            && message.status !== 'succeeded'
-        "
-        class="text-muted-foreground inline-flex items-center gap-2 text-xs"
-      >
-        <LoaderCircle
-          v-if="message.status === 'running' || message.status === 'submitting'"
-          class="h-3.5 w-3.5 animate-spin"
-        />
-        {{ statusLabel }}
-        <span v-if="message.progress">{{ message.progress }}%</span>
-      </div>
-
-      <div
         v-if="bubbleText"
         class="whitespace-pre-wrap"
       >
         {{ bubbleText }}
+      </div>
+
+      <div
+        v-if="isChatPending || isImagePending"
+        class="text-muted-foreground inline-flex items-center gap-2 text-xs"
+      >
+        <LoaderCircle
+          v-if="
+            message.status === 'running'
+              || message.status === 'submitting'
+              || message.status === 'pending'
+          "
+          class="h-3.5 w-3.5 animate-spin"
+        />
+        {{ statusLabel }}
+        <span v-if="typeof message.progress === 'number'">
+          · {{ message.progress }}%
+        </span>
       </div>
 
       <div

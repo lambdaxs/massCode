@@ -77,7 +77,7 @@ function assertChatSession(sessionId: string) {
   return { vaultPath, session, cursorSettings }
 }
 
-async function syncNewDeliverables(
+async function syncDeliverablesAfterChat(
   vaultPath: string,
   sessionId: string,
   before: Set<string>,
@@ -94,12 +94,10 @@ async function syncNewDeliverables(
     broadcastChatUpdated({ sessionId, message })
   }
 
-  if (newIds.length > 0) {
-    broadcastDeliverablesUpdated({
-      sessionId,
-      deliverables: listAiPrototypeDeliverables(vaultPath, sessionId),
-    })
-  }
+  broadcastDeliverablesUpdated({
+    sessionId,
+    deliverables: listAiPrototypeDeliverables(vaultPath, sessionId),
+  })
 }
 
 async function finishAiPrototypeChat(
@@ -146,7 +144,7 @@ async function finishAiPrototypeChat(
       cursorAgentId: agentId,
     })
 
-    await syncNewDeliverables(vaultPath, sessionId, beforeDeliverables)
+    await syncDeliverablesAfterChat(vaultPath, sessionId, beforeDeliverables)
   }
   catch (error) {
     assistantMessage.status = 'failed'

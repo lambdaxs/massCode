@@ -390,7 +390,9 @@
       },
       "actions": {
         "enterToSend": "Enter to send · Shift+Enter for new line",
-        "imageHint": "Text-to-image or image-to-image · default ratio {{ratio}}"
+        "imageHint": "Text-to-image or image-to-image · default ratio {{ratio}}",
+        "sending": "Sending…",
+        "waitForReply": "Waiting for the AI reply…"
       },
       "export": {
         "action": "Export to notes",

@@ -893,7 +893,7 @@ export function createAiOperationsChatPair(
     kind: 'chat',
     createdAt: now + 1,
     status: payload.assistantStatus,
-    finishedAt: payload.assistantStatus ? Date.now() : undefined,
+    startedAt: payload.assistantStatus === 'running' ? Date.now() : undefined,
   }
 
   writeMessage(vaultPath, userMessage)

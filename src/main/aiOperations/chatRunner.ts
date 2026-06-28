@@ -80,7 +80,7 @@ function assertChatSession(sessionId: string) {
   return { vaultPath, session, cursorSettings }
 }
 
-async function syncNewDeliverables(
+async function syncDeliverablesAfterChat(
   vaultPath: string,
   sessionId: string,
   before: Set<string>,
@@ -97,12 +97,10 @@ async function syncNewDeliverables(
     broadcastChatUpdated({ sessionId, message })
   }
 
-  if (newFiles.length > 0) {
-    broadcastDeliverablesUpdated({
-      sessionId,
-      deliverables: listAiOperationsDeliverables(vaultPath, sessionId),
-    })
-  }
+  broadcastDeliverablesUpdated({
+    sessionId,
+    deliverables: listAiOperationsDeliverables(vaultPath, sessionId),
+  })
 }
 
 async function finishAiOperationsChat(
@@ -149,7 +147,7 @@ async function finishAiOperationsChat(
       cursorAgentId: agentId,
     })
 
-    await syncNewDeliverables(vaultPath, sessionId, beforeDeliverables)
+    await syncDeliverablesAfterChat(vaultPath, sessionId, beforeDeliverables)
   }
   catch (error) {
     assistantMessage.status = 'failed'
