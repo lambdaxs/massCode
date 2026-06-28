@@ -50,6 +50,7 @@ export type SpaceId =
   | 'http'
   | 'drawings'
   | 'ai-prototype'
+  | 'ai-operations'
 export type CommandPaletteRecentTarget =
   | 'space'
   | 'snippet'
@@ -190,6 +191,9 @@ export interface AppStore {
   aiPrototype: {
     activeSessionId: string | null
   }
+  aiOperations: {
+    activeSessionId: string | null
+  }
   activeSpaceId: SpaceId
 }
 
@@ -250,6 +254,8 @@ export interface AiPrototypeSettings {
   baseUrl: string
   defaultAspectRatio: string
   pollIntervalMs: number
+  cursorApiKey: string
+  cursorModel: string
 }
 
 export interface PreferencesStore {

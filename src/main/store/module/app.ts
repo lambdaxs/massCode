@@ -154,6 +154,9 @@ const APP_STORE_DEFAULTS: AppStore = {
   aiPrototype: {
     activeSessionId: null,
   },
+  aiOperations: {
+    activeSessionId: null,
+  },
   activeSpaceId: 'code',
 }
 
@@ -393,6 +396,7 @@ function sanitizeCommandPaletteRecent(
     'http',
     'drawings',
     'ai-prototype',
+    'ai-operations',
   ] satisfies SpaceId[]
   const entries: CommandPaletteRecentEntry[] = []
   const seen = new Set<string>()
@@ -763,6 +767,12 @@ function sanitizeAppStore(value: unknown): AppStore {
           ? String(asRecord(source.aiPrototype).activeSessionId)
           : APP_STORE_DEFAULTS.aiPrototype.activeSessionId,
     },
+    aiOperations: {
+      activeSessionId:
+        typeof asRecord(source.aiOperations).activeSessionId === 'string'
+          ? String(asRecord(source.aiOperations).activeSessionId)
+          : APP_STORE_DEFAULTS.aiOperations.activeSessionId,
+    },
     activeSpaceId: readEnum(
       source,
       'activeSpaceId',
@@ -774,6 +784,7 @@ function sanitizeAppStore(value: unknown): AppStore {
         'http',
         'drawings',
         'ai-prototype',
+        'ai-operations',
       ] as const,
       APP_STORE_DEFAULTS.activeSpaceId,
     ) as SpaceId,

@@ -6,6 +6,7 @@ import {
   Blocks,
   Calculator,
   Code2,
+  Megaphone,
   Notebook,
   PenTool,
   Send,
@@ -20,6 +21,7 @@ export type SpaceId =
   | 'http'
   | 'drawings'
   | 'ai-prototype'
+  | 'ai-operations'
 
 export interface SpaceDefinition {
   id: SpaceId
@@ -105,6 +107,14 @@ export function getSpaceDefinitions(): SpaceDefinition[] {
       icon: Sparkles,
       to: { name: RouterName.aiPrototypeSpace },
       isActive: routeName => routeName === RouterName.aiPrototypeSpace,
+    },
+    {
+      id: 'ai-operations',
+      label: i18n.t('spaces.aiOperations.label'),
+      tooltip: i18n.t('spaces.aiOperations.tooltip'),
+      icon: Megaphone,
+      to: { name: RouterName.aiOperationsSpace },
+      isActive: routeName => routeName === RouterName.aiOperationsSpace,
     },
     {
       id: 'tools',

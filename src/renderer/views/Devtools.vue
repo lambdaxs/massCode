@@ -50,6 +50,10 @@ const convertersNav = [
     label: i18n.t('devtools:converters.colorConverter.label'),
     name: RouterName.devtoolsColorConverter,
   },
+  {
+    label: i18n.t('devtools:converters.timestampParser.label'),
+    name: RouterName.devtoolsTimestampParser,
+  },
 ]
 
 const cryptoNav = [

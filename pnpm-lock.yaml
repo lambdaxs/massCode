@@ -7,6 +7,8 @@ settings:
 overrides:
   '@electron/node-gyp': 10.2.0-electron.2
 
+packageExtensionsChecksum: sha256-KeC+eCutU8plJKmkg5QIXWjHCEz3szerFuiO8nGabng=
+
 importers:
 
   .:
@@ -38,6 +40,12 @@ importers:
       '@codemirror/view':
         specifier: ^6.40.0
         version: 6.40.0
+      '@connectrpc/connect-node':
+        specifier: ^1.7.0
+        version: 1.7.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.7.0(@bufbuild/protobuf@1.10.0))
+      '@cursor/sdk':
+        specifier: ^1.0.19
+        version: 1.0.19
       '@dagrejs/dagre':
         specifier: ^1.1.5
         version: 1.1.5
@@ -236,7 +244,7 @@ importers:
         version: 19.7.1
       '@electron/rebuild':
         specifier: ^3.7.1
-        version: 3.7.2
+        version: 3.7.2(supports-color@5.5.0)
       '@tailwindcss/postcss':
         specifier: ^4.0.9
         version: 4.0.9
@@ -460,6 +468,9 @@ packages:
   '@braintree/sanitize-url@7.1.1':
     resolution: {integrity: sha512-i1L7noDNxtFyL5DmZafWy1wRVhGehQmzZaz1HiN5e7iylJMSZR7ekOV7NsIqa5qBldlLrsKv4HbgFUVlQrz8Mw==}
 
+  '@bufbuild/protobuf@1.10.0':
+    resolution: {integrity: sha512-QDdVFLoN93Zjg36NoQPZfsVH9tZew7wKDKyV5qRdj8ntT4wQCOradQjRaTdwMhWUYsgKsvCINKKm87FdEk96Ag==}
+
   '@chevrotain/cst-dts-gen@11.0.3':
     resolution: {integrity: sha512-BvIKpRLeS/8UbfxXxgC33xOumsacaeCKAjAeLyOn7Pcp95HiRbrpl14S+9vaZLolnbssPIUuiUd8IvgkRyt6NQ==}
 
@@ -639,6 +650,58 @@ packages:
   '@commitlint/types@19.5.0':
     resolution: {integrity: sha512-DSHae2obMSMkAtTBSOulg5X7/z+rGLxcXQIkg3OmWvY6wifojge5uVMydfhUvs7yQj+V7jNmRZ2Xzl8GJyqRgg==}
     engines: {node: '>=v18'}
+
+  '@connectrpc/connect-node@1.7.0':
+    resolution: {integrity: sha512-6vaPIkG/NyhxlYgytLoR9KYbPhczEboFB2OYWkA9qvUz1K7efXfeGrlRxoLtpa+r8VxyIOw73w5ktNe743nD+A==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.10.0
+      '@connectrpc/connect': 1.7.0
+
+  '@connectrpc/connect-web@1.7.0':
+    resolution: {integrity: sha512-qyP0YOnUPRWwCc/VfsoydMJvkb7EyUPr2q9sHgBuJzbADjiqck1gKH5V5ZPzPhTLBvmz5UvG+wiZ5sMRQHU1MQ==}
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.10.0
+      '@connectrpc/connect': 1.7.0
+
+  '@connectrpc/connect@1.7.0':
+    resolution: {integrity: sha512-iNKdJRi69YP3mq6AePRT8F/HrxWCewrhxnLMNm0vpqXAR8biwzRtO6Hjx80C6UvtKJ5sFmffQT7I4Baecz389w==}
+    peerDependencies:
+      '@bufbuild/protobuf': ^1.10.0
+
+  '@cursor/sdk-darwin-arm64@1.0.19':
+    resolution: {integrity: sha512-CPhqcpDaqjjqkkVGMLsdfXv7PGznL5L6U5CJXps/oaGW5mtHoxDpsRNj1rszCRQXNAvmMU+EFxLWnBwlE8mUNg==}
+    cpu: [arm64]
+    os: [darwin]
+    hasBin: true
+
+  '@cursor/sdk-darwin-x64@1.0.19':
+    resolution: {integrity: sha512-6/Jj0hxrxEs9V9wtYEApSkMcJwYAaT4Vwna9xBzgN6CK1K4Ws0E1/PfiddahAAFZpkp9pgjb8wQXwG7qJ2g77A==}
+    cpu: [x64]
+    os: [darwin]
+    hasBin: true
+
+  '@cursor/sdk-linux-arm64@1.0.19':
+    resolution: {integrity: sha512-Dq/BhGT1jAZ6eHJwy1Vugi/Upc+yoL0X/LN6ppd9cVPM9OAB1xX5KIbvIwsGlNiZccPLVXFv/1KOp5SBK+y+jQ==}
+    cpu: [arm64]
+    os: [linux]
+    hasBin: true
+
+  '@cursor/sdk-linux-x64@1.0.19':
+    resolution: {integrity: sha512-ZHgHH+SdEwYwfPg/uVKqZRVOIMCV3/3vghxc/usOMYMrhbY9TYXZxYqwWTduVLzCXH7Dz0aT19mSJHmhwkQ1CA==}
+    cpu: [x64]
+    os: [linux]
+    hasBin: true
+
+  '@cursor/sdk-win32-x64@1.0.19':
+    resolution: {integrity: sha512-XGIQmx3J0K8uKkA00qnoy1FJHFdFdwNdcmUqtRF1PXLcYup91YYetAHk9afXM7S/v1t0L4EatydsirL8uz7SIw==}
+    cpu: [x64]
+    os: [win32]
+    hasBin: true
+
+  '@cursor/sdk@1.0.19':
+    resolution: {integrity: sha512-DJbVnGeRJq7iwt9mz1cMACqVfAYP15IB+Q8Iz2eDtEN4A8Dp83yB0Y31YREj1jeA9EPUEdRZJRIYch/s+Wi9Ow==}
+    engines: {node: '>=22.13'}
 
   '@dagrejs/dagre@1.1.5':
     resolution: {integrity: sha512-Ghgrh08s12DCL5SeiR6AoyE80mQELTWhJBRmXfFoqDiFkR458vPEdgTbbjA0T+9ETNxUblnD0QW55tfdvi5pjQ==}
@@ -939,6 +1002,10 @@ packages:
   '@faker-js/faker@10.1.0':
     resolution: {integrity: sha512-C3mrr3b5dRVlKPJdfrAXS8+dq+rq8Qm5SNRazca0JKgw1HQERFmrVb0towvMmw5uu8hHKNiQasMaR/tydf3Zsg==}
     engines: {node: ^20.19.0 || ^22.13.0 || ^23.5.0 || >=24.0.0, npm: '>=10'}
+
+  '@fastify/busboy@2.1.1':
+    resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
+    engines: {node: '>=14'}
 
   '@floating-ui/core@1.6.9':
     resolution: {integrity: sha512-uMXCuQ3BItDUbAMhIXw7UPXRfAlOAvZzdK9BWpE60MCn+Svt3aLn9jsPTi/WNGlRUu2uI0v5S7JiIUsbsvh3fw==}
@@ -1645,6 +1712,12 @@ packages:
 
   '@standard-schema/spec@1.1.0':
     resolution: {integrity: sha512-l2aFy5jALhniG5HgqrD6jXLi/rUWrKvqN/qJx6yoJsgKhblVd+iqqU4RCXavm/jPityDo5TCvKMnpjKnOriy0w==}
+
+  '@statsig/client-core@3.31.0':
+    resolution: {integrity: sha512-SuxQD6TmVszPG7FoMKwTk/uyBuVFk7XnxI3T/E0uyb7PL7GNjONtfsoh+NqBBVUJVse0CUeSFfgJPoZy1ZOslQ==}
+
+  '@statsig/js-client@3.31.0':
+    resolution: {integrity: sha512-LFa5E0LjT6sTfZv3sNGoyRLSZ1078+agdgOA+Vm1ecjG+KbSOfBLTW7hMwimrJ29slRwbYDzbtKaPJo/R37N2g==}
 
   '@stylistic/eslint-plugin@2.13.0':
     resolution: {integrity: sha512-RnO1SaiCFHn666wNz2QfZEFxvmiNRqhzaMXHXxXXKt+MEP7aajlPxUSMIQpKAaJfverpovEYqjBOXDq6dDcaOQ==}
@@ -5868,6 +5941,10 @@ packages:
   undici-types@6.20.0:
     resolution: {integrity: sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==}
 
+  undici@5.29.0:
+    resolution: {integrity: sha512-raqeBD6NQK4SkWhQzeYKd1KmIG6dllBOTt55Rmkt4HtI9mwdWtJljnrXjAFUBLTSN67HWrOIZ3EPF4kjUw80Bg==}
+    engines: {node: '>=14.0'}
+
   undici@6.21.2:
     resolution: {integrity: sha512-uROZWze0R0itiAKVPsYhFov9LxrPMHLMEQFszeI2gCN6bnIIZ8twzBCJcN2LJrBBLfrP0t1FW0g+JmKVl8Vk1g==}
     engines: {node: '>=18.17'}
@@ -6267,6 +6344,9 @@ packages:
     resolution: {integrity: sha512-9qv4rlDiopXg4E69k+vMHjNN63YFMe9sZMrdlvKnCjlCRWeCBswPPMPUfx+ipsAWq1LXHe70RcbaHdJJpS6hyQ==}
     engines: {node: '>= 10'}
 
+  zod@3.25.76:
+    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+
   zustand@4.5.7:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
     engines: {node: '>=12.7.0'}
@@ -6381,6 +6461,8 @@ snapshots:
   '@braintree/sanitize-url@6.0.2': {}
 
   '@braintree/sanitize-url@7.1.1': {}
+
+  '@bufbuild/protobuf@1.10.0': {}
 
   '@chevrotain/cst-dts-gen@11.0.3':
     dependencies:
@@ -6764,6 +6846,51 @@ snapshots:
       '@types/conventional-commits-parser': 5.0.1
       chalk: 5.4.1
 
+  '@connectrpc/connect-node@1.7.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.7.0(@bufbuild/protobuf@1.10.0))':
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+      '@connectrpc/connect': 1.7.0(@bufbuild/protobuf@1.10.0)
+      undici: 5.29.0
+
+  '@connectrpc/connect-web@1.7.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.7.0(@bufbuild/protobuf@1.10.0))':
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+      '@connectrpc/connect': 1.7.0(@bufbuild/protobuf@1.10.0)
+
+  '@connectrpc/connect@1.7.0(@bufbuild/protobuf@1.10.0)':
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+
+  '@cursor/sdk-darwin-arm64@1.0.19':
+    optional: true
+
+  '@cursor/sdk-darwin-x64@1.0.19':
+    optional: true
+
+  '@cursor/sdk-linux-arm64@1.0.19':
+    optional: true
+
+  '@cursor/sdk-linux-x64@1.0.19':
+    optional: true
+
+  '@cursor/sdk-win32-x64@1.0.19':
+    optional: true
+
+  '@cursor/sdk@1.0.19':
+    dependencies:
+      '@bufbuild/protobuf': 1.10.0
+      '@connectrpc/connect': 1.7.0(@bufbuild/protobuf@1.10.0)
+      '@connectrpc/connect-node': 1.7.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.7.0(@bufbuild/protobuf@1.10.0))
+      '@connectrpc/connect-web': 1.7.0(@bufbuild/protobuf@1.10.0)(@connectrpc/connect@1.7.0(@bufbuild/protobuf@1.10.0))
+      '@statsig/js-client': 3.31.0
+      zod: 3.25.76
+    optionalDependencies:
+      '@cursor/sdk-darwin-arm64': 1.0.19
+      '@cursor/sdk-darwin-x64': 1.0.19
+      '@cursor/sdk-linux-arm64': 1.0.19
+      '@cursor/sdk-linux-x64': 1.0.19
+      '@cursor/sdk-win32-x64': 1.0.19
+
   '@dagrejs/dagre@1.1.5':
     dependencies:
       '@dagrejs/graphlib': 2.2.4
@@ -6852,7 +6979,7 @@ snapshots:
       - bluebird
       - supports-color
 
-  '@electron/rebuild@3.7.2':
+  '@electron/rebuild@3.7.2(supports-color@5.5.0)':
     dependencies:
       '@electron/node-gyp': 10.2.0-electron.2
       '@malept/cross-spawn-promise': 2.0.0
@@ -7108,6 +7235,8 @@ snapshots:
   '@excalidraw/random-username@1.1.0': {}
 
   '@faker-js/faker@10.1.0': {}
+
+  '@fastify/busboy@2.1.1': {}
 
   '@floating-ui/core@1.6.9':
     dependencies:
@@ -7793,6 +7922,12 @@ snapshots:
   '@sindresorhus/is@4.6.0': {}
 
   '@standard-schema/spec@1.1.0': {}
+
+  '@statsig/client-core@3.31.0': {}
+
+  '@statsig/js-client@3.31.0':
+    dependencies:
+      '@statsig/client-core': 3.31.0
 
   '@stylistic/eslint-plugin@2.13.0(eslint@9.19.0(jiti@2.4.2)(supports-color@5.5.0))(typescript@5.7.3)':
     dependencies:
@@ -12518,6 +12653,10 @@ snapshots:
 
   undici-types@6.20.0: {}
 
+  undici@5.29.0:
+    dependencies:
+      '@fastify/busboy': 2.1.1
+
   undici@6.21.2: {}
 
   unicorn-magic@0.1.0: {}
@@ -12901,6 +13040,8 @@ snapshots:
       archiver-utils: 3.0.4
       compress-commons: 4.1.2
       readable-stream: 3.6.2
+
+  zod@3.25.76: {}
 
   zustand@4.5.7(@types/react@19.2.17)(react@19.2.7):
     dependencies:

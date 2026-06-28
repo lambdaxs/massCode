@@ -150,6 +150,28 @@
     "colorConverter": {
       "label": "Color Converter",
       "description": "Convert color between different formats"
+    },
+    "timestampParser": {
+      "label": "Timestamp Parser",
+      "description": "Convert Unix timestamps and date strings in both directions",
+      "useNow": "Use current time",
+      "detectedUnit": "Detected unit",
+      "units": {
+        "seconds": "Seconds",
+        "milliseconds": "Milliseconds",
+        "dateString": "Date string"
+      },
+      "fields": {
+        "unixSeconds": "Unix timestamp (s)",
+        "unixMilliseconds": "Unix timestamp (ms)",
+        "iso8601": "ISO 8601 (UTC)",
+        "utc": "UTC",
+        "local": "Local time",
+        "weekday": "Weekday"
+      },
+      "errors": {
+        "invalid": "Unable to parse timestamp or date"
+      }
     }
   },
   "crypto": {
@@ -237,7 +259,8 @@
       "text": "Enter a text",
       "value": "Enter a value",
       "secretKey": "Enter a secret key",
-      "url": "Enter a URL"
+      "url": "Enter a URL",
+      "timestamp": "Enter a Unix timestamp or date string"
     }
   }
 }

@@ -20,10 +20,12 @@ import {
 } from '../../storage/providers/markdown/runtime/spaceState'
 import { store } from '../../store'
 
+import { registerAiOperationsHandlers } from './aiOperations'
 import { registerAiPrototypeHandlers } from './aiPrototype'
 
 export function registerSpacesHandlers() {
   registerAiPrototypeHandlers()
+  registerAiOperationsHandlers()
   ipcMain.handle('spaces:math:read', () => {
     const vaultPath = getVaultPath()
     if (!vaultPath) {

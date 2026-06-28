@@ -208,9 +208,17 @@
   },
   "aiPrototype": {
     "label": "Prototype Design",
+    "cursorApiKey": {
+      "label": "Cursor API Key",
+      "description": "Your Cursor API key for requirements chat and product document generation. Stored locally on this device only."
+    },
+    "cursorModel": {
+      "label": "Cursor Model",
+      "description": "Model used for Cursor agent steps, for example composer-2.5."
+    },
     "apiKey": {
-      "label": "API Key",
-      "description": "Your gpt-image-2 API key for the domestic provider. Stored locally on this device only."
+      "label": "Image API Key",
+      "description": "Your gpt-image-2 API key for prototype image generation. Stored locally on this device only."
     },
     "defaultAspectRatio": {
       "label": "Default Aspect Ratio",

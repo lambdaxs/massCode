@@ -1,16 +1,28 @@
 import type {
+  AiPrototypeDeliverable,
   AiPrototypeIndex,
   AiPrototypeIndexTotals,
   AiPrototypeMessage,
   AiPrototypeSessionMeta,
   AiPrototypeSessionSummary,
+  AiPrototypeSkill,
 } from '../../../../../shared/aiPrototype'
 import { Buffer } from 'node:buffer'
 import { randomUUID } from 'node:crypto'
 import path from 'node:path'
 import fs from 'fs-extra'
+import yaml from 'js-yaml'
 import { request as undiciRequest } from 'undici'
-import { AI_PROTOTYPE_SPACE_ID } from '../../../../../shared/aiPrototype'
+import {
+  AI_PROTOTYPE_PRODUCT_DOC_FILE,
+  AI_PROTOTYPE_REQUIREMENTS_FILE,
+  AI_PROTOTYPE_SKILLS_DIR,
+  AI_PROTOTYPE_SPACE_ID,
+} from '../../../../../shared/aiPrototype'
+import {
+  BUILTIN_AI_PROTOTYPE_SKILLS,
+  getBuiltinAiPrototypeSkill,
+} from '../../../../aiPrototype/skills'
 import { ensureSpaceDirectory, getSpaceDirPath } from '../runtime/spaces'
 
 const INDEX_FILE = 'index.json'
@@ -38,6 +50,137 @@ function getMessagesDir(vaultPath: string, sessionId: string): string {
 
 function getUploadsDir(vaultPath: string, sessionId: string): string {
   return path.join(getSessionDir(vaultPath, sessionId), 'assets', 'uploads')
+}
+
+function getArtifactsDir(vaultPath: string, sessionId: string): string {
+  return path.join(getSessionDir(vaultPath, sessionId), 'artifacts')
+}
+
+function getArtifactPath(
+  vaultPath: string,
+  sessionId: string,
+  relativePath: string,
+): string {
+  return path.join(getSessionDir(vaultPath, sessionId), relativePath)
+}
+
+function normalizeSessionMeta(
+  meta: AiPrototypeSessionMeta,
+): AiPrototypeSessionMeta {
+  return { ...meta }
+}
+
+export function getAiPrototypeSessionWorkspace(
+  vaultPath: string,
+  sessionId: string,
+): string {
+  return getSessionDir(vaultPath, sessionId)
+}
+
+export function ensureAiPrototypeSessionArtifacts(
+  vaultPath: string,
+  sessionId: string,
+): void {
+  fs.ensureDirSync(getArtifactsDir(vaultPath, sessionId))
+}
+
+export function readAiPrototypeSessionMeta(
+  vaultPath: string,
+  sessionId: string,
+): AiPrototypeSessionMeta | null {
+  const meta = readSessionMeta(vaultPath, sessionId)
+  if (!meta) {
+    return null
+  }
+
+  return normalizeSessionMeta(meta)
+}
+
+export function updateAiPrototypeSessionMeta(
+  vaultPath: string,
+  sessionId: string,
+  patch: Partial<AiPrototypeSessionMeta>,
+): AiPrototypeSessionMeta | null {
+  const meta = readSessionMeta(vaultPath, sessionId)
+  if (!meta) {
+    return null
+  }
+
+  const nextMeta = normalizeSessionMeta({
+    ...meta,
+    ...patch,
+    updatedAt: Date.now(),
+  })
+  writeSessionMeta(vaultPath, nextMeta)
+  syncSessionSummary(vaultPath, sessionId)
+  return nextMeta
+}
+
+export function readAiPrototypeRequirements(
+  vaultPath: string,
+  sessionId: string,
+): string | null {
+  const filePath = getArtifactPath(
+    vaultPath,
+    sessionId,
+    AI_PROTOTYPE_REQUIREMENTS_FILE,
+  )
+  if (!fs.pathExistsSync(filePath)) {
+    return null
+  }
+
+  const content = fs.readFileSync(filePath, 'utf8').trim()
+  return content || null
+}
+
+export function readAiPrototypeProductDoc(
+  vaultPath: string,
+  sessionId: string,
+): string | null {
+  const filePath = getArtifactPath(
+    vaultPath,
+    sessionId,
+    AI_PROTOTYPE_PRODUCT_DOC_FILE,
+  )
+  if (!fs.pathExistsSync(filePath)) {
+    return null
+  }
+
+  const content = fs.readFileSync(filePath, 'utf8').trim()
+  return content || null
+}
+
+export function readAiPrototypeArtifacts(
+  vaultPath: string,
+  sessionId: string,
+): { requirements: string | null, productDoc: string | null } {
+  return {
+    requirements: readAiPrototypeRequirements(vaultPath, sessionId),
+    productDoc: readAiPrototypeProductDoc(vaultPath, sessionId),
+  }
+}
+
+export function listAiPrototypeOutputAssets(
+  vaultPath: string,
+  sessionId: string,
+): string[] {
+  const outputsDir = getOutputsDir(vaultPath, sessionId)
+  if (!fs.pathExistsSync(outputsDir)) {
+    return []
+  }
+
+  return fs
+    .readdirSync(outputsDir)
+    .filter(fileName => !fileName.startsWith('.'))
+    .sort((left, right) => left.localeCompare(right))
+}
+
+export function getAiPrototypeOutputAssetPath(
+  vaultPath: string,
+  sessionId: string,
+  assetId: string,
+): string {
+  return path.join(getOutputsDir(vaultPath, sessionId), path.basename(assetId))
 }
 
 function getOutputsDir(vaultPath: string, sessionId: string): string {
@@ -212,8 +355,9 @@ function syncSessionSummary(vaultPath: string, sessionId: string) {
   const counts = recountSession(vaultPath, sessionId)
   const index = readIndex(vaultPath)
   const summary: AiPrototypeSessionSummary = {
-    ...meta,
+    ...normalizeSessionMeta(meta),
     ...counts,
+    deliverableCount: countSessionDeliverables(vaultPath, sessionId),
   }
 
   const existingIndex = index.sessions.findIndex(
@@ -279,24 +423,28 @@ export function getAiPrototypeTotals(
 
 export function createAiPrototypeSession(
   vaultPath: string,
+  payload?: { title?: string, skillId?: string },
 ): AiPrototypeSessionSummary {
   const now = Date.now()
   const id = randomUUID()
   const meta: AiPrototypeSessionMeta = {
     id,
-    title: 'Untitled',
+    title: payload?.title?.trim() || 'Untitled',
+    skillId: payload?.skillId?.trim() || undefined,
     createdAt: now,
     updatedAt: now,
   }
 
   writeSessionMeta(vaultPath, meta)
   fs.ensureDirSync(getMessagesDir(vaultPath, id))
+  ensureAiPrototypeSessionArtifacts(vaultPath, id)
 
   const summary: AiPrototypeSessionSummary = {
-    ...meta,
+    ...normalizeSessionMeta(meta),
     messageCount: 0,
     successCount: 0,
     failCount: 0,
+    deliverableCount: 0,
   }
 
   const index = readIndex(vaultPath)
@@ -416,6 +564,54 @@ export async function downloadOutputAsset(
   return assetId
 }
 
+export function createAiPrototypeChatPair(
+  vaultPath: string,
+  sessionId: string,
+  payload: {
+    userText: string
+    assistantContent?: string
+    assistantStatus?: AiPrototypeMessage['status']
+    assistantError?: string
+  },
+): { userMessage: AiPrototypeMessage, assistantMessage: AiPrototypeMessage } {
+  const now = Date.now()
+  const userMessage: AiPrototypeMessage = {
+    id: randomUUID(),
+    sessionId,
+    role: 'user',
+    kind: 'chat',
+    createdAt: now,
+    prompt: payload.userText,
+  }
+
+  const assistantMessage: AiPrototypeMessage = {
+    id: randomUUID(),
+    sessionId,
+    role: 'assistant',
+    kind: 'chat',
+    createdAt: now + 1,
+    content: payload.assistantContent,
+    status: payload.assistantStatus,
+    error: payload.assistantError,
+    finishedAt: payload.assistantStatus ? Date.now() : undefined,
+  }
+
+  writeMessage(vaultPath, userMessage)
+  writeMessage(vaultPath, assistantMessage)
+
+  const meta = readSessionMeta(vaultPath, sessionId)
+  if (meta) {
+    if (meta.title === 'Untitled' && payload.userText.trim()) {
+      meta.title = truncateTitle(payload.userText)
+    }
+    meta.updatedAt = now
+    writeSessionMeta(vaultPath, meta)
+  }
+
+  syncSessionSummary(vaultPath, sessionId)
+  return { userMessage, assistantMessage }
+}
+
 export function createAiPrototypeMessagePair(
   vaultPath: string,
   sessionId: string,
@@ -431,6 +627,7 @@ export function createAiPrototypeMessagePair(
     id: randomUUID(),
     sessionId,
     role: 'user',
+    kind: 'image-generation',
     createdAt: now,
     prompt: payload.prompt,
     uploadAssetIds: payload.uploadAssetIds,
@@ -440,6 +637,7 @@ export function createAiPrototypeMessagePair(
     id: randomUUID(),
     sessionId,
     role: 'assistant',
+    kind: 'image-generation',
     createdAt: now + 1,
     status: 'pending',
     model: payload.model,
@@ -504,4 +702,434 @@ export function getUploadBase64List(
 
 export function getAiPrototypeSpaceDir(vaultPath: string): string {
   return getSpaceDirPath(vaultPath, AI_PROTOTYPE_SPACE_ID)
+}
+
+function getSkillsDir(vaultPath: string): string {
+  return path.join(getRootDir(vaultPath), AI_PROTOTYPE_SKILLS_DIR)
+}
+
+function walkArtifactMarkdown(
+  dir: string,
+  baseDir: string,
+  results: Array<{ id: string, updatedAt: number }>,
+): void {
+  if (!fs.pathExistsSync(dir)) {
+    return
+  }
+
+  for (const name of fs.readdirSync(dir)) {
+    if (name.startsWith('.')) {
+      continue
+    }
+
+    const fullPath = path.join(dir, name)
+    const stat = fs.statSync(fullPath)
+
+    if (stat.isDirectory()) {
+      walkArtifactMarkdown(fullPath, baseDir, results)
+      continue
+    }
+
+    if (!name.endsWith('.md')) {
+      continue
+    }
+
+    const relativeId = path
+      .relative(baseDir, fullPath)
+      .split(path.sep)
+      .join('/')
+    results.push({ id: relativeId, updatedAt: stat.mtimeMs })
+  }
+}
+
+function countSessionDeliverables(
+  vaultPath: string,
+  sessionId: string,
+): number {
+  return listAiPrototypeDeliverables(vaultPath, sessionId).length
+}
+
+export function listArtifactMarkdownIds(
+  vaultPath: string,
+  sessionId: string,
+): string[] {
+  return listAiPrototypeDeliverables(vaultPath, sessionId)
+    .filter(item => item.kind === 'markdown')
+    .map(item => item.id)
+}
+
+export function listAiPrototypeDeliverables(
+  vaultPath: string,
+  sessionId: string,
+): AiPrototypeDeliverable[] {
+  const deliverables: AiPrototypeDeliverable[] = []
+  const artifactsDir = getArtifactsDir(vaultPath, sessionId)
+  const markdownItems: Array<{ id: string, updatedAt: number }> = []
+
+  walkArtifactMarkdown(artifactsDir, artifactsDir, markdownItems)
+
+  for (const item of markdownItems) {
+    deliverables.push({
+      id: item.id,
+      kind: 'markdown',
+      name: path.basename(item.id, path.extname(item.id)) || item.id,
+      updatedAt: item.updatedAt,
+    })
+  }
+
+  const outputsDir = getOutputsDir(vaultPath, sessionId)
+  if (fs.pathExistsSync(outputsDir)) {
+    for (const fileName of fs.readdirSync(outputsDir)) {
+      if (fileName.startsWith('.')) {
+        continue
+      }
+
+      const filePath = path.join(outputsDir, fileName)
+      if (!fs.statSync(filePath).isFile()) {
+        continue
+      }
+
+      deliverables.push({
+        id: fileName,
+        kind: 'image',
+        name: fileName,
+        updatedAt: fs.statSync(filePath).mtimeMs,
+      })
+    }
+  }
+
+  return deliverables.sort((a, b) => b.updatedAt - a.updatedAt)
+}
+
+export function readAiPrototypeDeliverableMarkdown(
+  vaultPath: string,
+  sessionId: string,
+  deliverableId: string,
+): string | null {
+  const safeId = deliverableId.split(path.sep).join('/').replace(/\.\./g, '')
+  const filePath = path.join(getArtifactsDir(vaultPath, sessionId), safeId)
+  const artifactsDir = getArtifactsDir(vaultPath, sessionId)
+
+  if (!filePath.startsWith(artifactsDir) || !fs.pathExistsSync(filePath)) {
+    return null
+  }
+
+  const content = fs.readFileSync(filePath, 'utf8').trim()
+  return content || null
+}
+
+export function createAiPrototypeDeliverableMessage(
+  vaultPath: string,
+  sessionId: string,
+  deliverableId: string,
+): AiPrototypeMessage {
+  const message: AiPrototypeMessage = {
+    id: randomUUID(),
+    sessionId,
+    role: 'assistant',
+    kind: 'deliverable',
+    createdAt: Date.now(),
+    status: 'succeeded',
+    deliverableId,
+    content: deliverableId,
+    finishedAt: Date.now(),
+  }
+
+  writeMessage(vaultPath, message)
+  syncSessionSummary(vaultPath, sessionId)
+  return message
+}
+
+export function createAiPrototypeImagePair(
+  vaultPath: string,
+  sessionId: string,
+  payload: {
+    prompt: string
+    uploadAssetIds: string[]
+    aspectRatio: string
+    model: string
+  },
+): { userMessage: AiPrototypeMessage, assistantMessage: AiPrototypeMessage } {
+  return createAiPrototypeMessagePair(vaultPath, sessionId, payload)
+}
+
+export function listAiPrototypeSkills(vaultPath: string): AiPrototypeSkill[] {
+  const skills = [...BUILTIN_AI_PROTOTYPE_SKILLS]
+  const skillsDir = getSkillsDir(vaultPath)
+
+  if (fs.pathExistsSync(skillsDir)) {
+    for (const fileName of fs.readdirSync(skillsDir)) {
+      if (!fileName.endsWith('.yaml') && !fileName.endsWith('.yml')) {
+        continue
+      }
+
+      try {
+        const parsed = yaml.load(
+          fs.readFileSync(path.join(skillsDir, fileName), 'utf8'),
+        ) as AiPrototypeSkill
+
+        if (parsed?.id && parsed.name && parsed.systemPrompt) {
+          skills.push({ ...parsed, builtin: false })
+        }
+      }
+      catch {
+        // skip invalid skill files
+      }
+    }
+  }
+
+  return skills.sort((a, b) => {
+    if (Boolean(a.builtin) !== Boolean(b.builtin)) {
+      return a.builtin ? -1 : 1
+    }
+
+    return a.name.localeCompare(b.name, 'zh-CN')
+  })
+}
+
+export function getAiPrototypeSkill(
+  vaultPath: string,
+  skillId: string,
+): AiPrototypeSkill | null {
+  const builtin = getBuiltinAiPrototypeSkill(skillId)
+  if (builtin) {
+    return builtin
+  }
+
+  const skillsDir = getSkillsDir(vaultPath)
+  const filePath = path.join(skillsDir, `${skillId}.yaml`)
+  if (!fs.pathExistsSync(filePath)) {
+    const ymlPath = path.join(skillsDir, `${skillId}.yml`)
+    if (!fs.pathExistsSync(ymlPath)) {
+      return null
+    }
+
+    try {
+      return {
+        ...(yaml.load(fs.readFileSync(ymlPath, 'utf8')) as AiPrototypeSkill),
+        builtin: false,
+      }
+    }
+    catch {
+      return null
+    }
+  }
+
+  try {
+    return {
+      ...(yaml.load(fs.readFileSync(filePath, 'utf8')) as AiPrototypeSkill),
+      builtin: false,
+    }
+  }
+  catch {
+    return null
+  }
+}
+
+export function resolveSessionSkill(
+  vaultPath: string,
+  session: AiPrototypeSessionMeta,
+): AiPrototypeSkill | null {
+  if (!session.skillId?.trim()) {
+    return null
+  }
+
+  return getAiPrototypeSkill(vaultPath, session.skillId)
+}
+
+export function formatSessionMessagesForSkillDraft(
+  messages: AiPrototypeMessage[],
+): string {
+  return messages
+    .filter(message => message.kind === 'chat' || !message.kind)
+    .map((message) => {
+      if (message.role === 'user') {
+        return `User: ${message.prompt?.trim() ?? ''}`
+      }
+
+      return `Assistant: ${message.content?.trim() ?? ''}`
+    })
+    .filter(line => line.trim().length > 8)
+    .slice(-24)
+    .join('\n\n')
+}
+
+function slugifySkillId(name: string): string {
+  const normalized = name
+    .trim()
+    .toLowerCase()
+    .replace(/[^\w\u4E00-\u9FFF-]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 48)
+
+  return normalized || 'skill'
+}
+
+function skillIdExists(vaultPath: string, id: string): boolean {
+  if (getBuiltinAiPrototypeSkill(id)) {
+    return true
+  }
+
+  return (
+    fs.pathExistsSync(path.join(getSkillsDir(vaultPath), `${id}.yaml`))
+    || fs.pathExistsSync(path.join(getSkillsDir(vaultPath), `${id}.yml`))
+  )
+}
+
+function resolveUniqueSkillId(vaultPath: string, baseId: string): string {
+  let candidate = baseId
+  let suffix = 1
+
+  while (skillIdExists(vaultPath, candidate)) {
+    candidate = `${baseId}-${suffix}`
+    suffix += 1
+  }
+
+  return candidate
+}
+
+function serializeVaultSkill(skill: AiPrototypeSkill): string {
+  const doc: Record<string, unknown> = {
+    id: skill.id,
+    name: skill.name,
+    systemPrompt: skill.systemPrompt,
+  }
+
+  if (skill.tags?.length) {
+    doc.tags = skill.tags
+  }
+
+  if (skill.defaults?.aspectRatio) {
+    doc.defaults = { aspectRatio: skill.defaults.aspectRatio }
+  }
+
+  if (skill.deliverableHints?.length) {
+    doc.deliverableHints = skill.deliverableHints
+  }
+
+  return yaml.dump(doc, { lineWidth: 120, noRefs: true })
+}
+
+function writeVaultSkill(
+  vaultPath: string,
+  skill: AiPrototypeSkill,
+): AiPrototypeSkill {
+  if (getBuiltinAiPrototypeSkill(skill.id)) {
+    throw new Error('SKILL_BUILTIN_READONLY')
+  }
+
+  fs.ensureDirSync(getSkillsDir(vaultPath))
+  fs.writeFileSync(
+    path.join(getSkillsDir(vaultPath), `${skill.id}.yaml`),
+    serializeVaultSkill({ ...skill, builtin: false }),
+    'utf8',
+  )
+
+  return { ...skill, builtin: false }
+}
+
+export function createAiPrototypeSkill(
+  vaultPath: string,
+  payload: {
+    id?: string
+    name: string
+    tags?: string[]
+    systemPrompt: string
+    defaults?: AiPrototypeSkill['defaults']
+    deliverableHints?: string[]
+  },
+): AiPrototypeSkill {
+  const name = payload.name.trim()
+  const systemPrompt = payload.systemPrompt.trim()
+
+  if (!name) {
+    throw new Error('SKILL_NAME_MISSING')
+  }
+
+  if (!systemPrompt) {
+    throw new Error('SKILL_PROMPT_MISSING')
+  }
+
+  const baseId = payload.id?.trim() || slugifySkillId(name)
+  const id = resolveUniqueSkillId(vaultPath, baseId)
+
+  return writeVaultSkill(vaultPath, {
+    id,
+    name,
+    tags: payload.tags?.filter(Boolean),
+    systemPrompt,
+    defaults: payload.defaults,
+    deliverableHints: payload.deliverableHints,
+    builtin: false,
+  })
+}
+
+export function updateAiPrototypeSkill(
+  vaultPath: string,
+  skillId: string,
+  payload: {
+    name?: string
+    tags?: string[]
+    systemPrompt?: string
+    defaults?: AiPrototypeSkill['defaults'] | null
+    deliverableHints?: string[]
+  },
+): AiPrototypeSkill {
+  const existing = getAiPrototypeSkill(vaultPath, skillId)
+  if (!existing) {
+    throw new Error('SKILL_NOT_FOUND')
+  }
+
+  if (existing.builtin) {
+    throw new Error('SKILL_BUILTIN_READONLY')
+  }
+
+  const name = payload.name?.trim() || existing.name
+  const systemPrompt = payload.systemPrompt?.trim() || existing.systemPrompt
+
+  if (!name) {
+    throw new Error('SKILL_NAME_MISSING')
+  }
+
+  if (!systemPrompt) {
+    throw new Error('SKILL_PROMPT_MISSING')
+  }
+
+  return writeVaultSkill(vaultPath, {
+    id: skillId,
+    name,
+    tags: payload.tags ?? existing.tags,
+    systemPrompt,
+    defaults:
+      payload.defaults === null
+        ? undefined
+        : (payload.defaults ?? existing.defaults),
+    deliverableHints: payload.deliverableHints ?? existing.deliverableHints,
+    builtin: false,
+  })
+}
+
+export function deleteAiPrototypeSkill(
+  vaultPath: string,
+  skillId: string,
+): boolean {
+  const existing = getAiPrototypeSkill(vaultPath, skillId)
+  if (!existing) {
+    return false
+  }
+
+  if (existing.builtin) {
+    throw new Error('SKILL_BUILTIN_READONLY')
+  }
+
+  const yamlPath = path.join(getSkillsDir(vaultPath), `${skillId}.yaml`)
+  const ymlPath = path.join(getSkillsDir(vaultPath), `${skillId}.yml`)
+  const filePath = fs.pathExistsSync(yamlPath) ? yamlPath : ymlPath
+
+  if (!fs.pathExistsSync(filePath)) {
+    return false
+  }
+
+  fs.removeSync(filePath)
+  return true
 }

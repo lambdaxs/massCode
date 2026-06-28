@@ -1,4 +1,5 @@
 import type {
+  AiPrototypeDeliverablesUpdatedPayload,
   AiPrototypeMessage,
   AiPrototypeTaskUpdatedPayload,
 } from '../../shared/aiPrototype'
@@ -10,10 +11,12 @@ import {
   AI_PROTOTYPE_MODEL,
 } from '../../shared/aiPrototype'
 import {
+  createAiPrototypeImagePair,
   downloadOutputAsset,
   getAiPrototypeMessage,
   getAiPrototypeTotals,
   getUploadBase64List,
+  listAiPrototypeDeliverables,
   updateAiPrototypeMessage,
 } from '../storage/providers/markdown/aiPrototype'
 import { getVaultPath } from '../storage/providers/markdown/runtime/paths'
@@ -48,6 +51,19 @@ function broadcastTaskUpdated(payload: AiPrototypeTaskUpdatedPayload) {
   })
 }
 
+function broadcastDeliverablesUpdated(
+  payload: AiPrototypeDeliverablesUpdatedPayload,
+) {
+  BrowserWindow.getAllWindows().forEach((window) => {
+    if (!window.isDestroyed()) {
+      window.webContents.send(
+        'spaces:ai-prototype:deliverables-updated',
+        payload,
+      )
+    }
+  })
+}
+
 function stopPoll(messageId: string) {
   const timer = activePolls.get(messageId)
   if (timer) {
@@ -76,7 +92,6 @@ async function finalizeMessage(
     progress?: number
     error?: string
     outputAssetIds?: string[]
-    remoteResultUrls?: string[]
   },
 ) {
   message.status = status
@@ -87,12 +102,16 @@ async function finalizeMessage(
   if (options?.outputAssetIds) {
     message.outputAssetIds = options.outputAssetIds
   }
-  if (options?.remoteResultUrls) {
-    message.remoteResultUrls = options.remoteResultUrls
-  }
 
   await persistAndBroadcast(vaultPath, message)
   stopPoll(message.id)
+
+  if (status === 'succeeded' && options?.outputAssetIds?.length) {
+    broadcastDeliverablesUpdated({
+      sessionId: message.sessionId,
+      deliverables: listAiPrototypeDeliverables(vaultPath, message.sessionId),
+    })
+  }
 }
 
 async function pollTask(
@@ -147,7 +166,6 @@ async function pollTask(
       await finalizeMessage(vaultPath, message, 'succeeded', {
         progress: 100,
         outputAssetIds,
-        remoteResultUrls: remoteUrls,
       })
       return
     }
@@ -160,7 +178,7 @@ async function pollTask(
     }
 
     await finalizeMessage(vaultPath, message, 'failed', {
-      error: result.error || 'generate failed',
+      error: result.error || 'GENERATE_FAILED',
     })
   }
   catch (error) {
@@ -170,7 +188,7 @@ async function pollTask(
   }
 }
 
-export async function runAiPrototypeGeneration(
+export async function runAiPrototypeImageGeneration(
   sessionId: string,
   assistantMessageId: string,
   payload: {
@@ -240,7 +258,45 @@ export async function runAiPrototypeGeneration(
   }
 }
 
-export function disposeAiPrototypeTasks() {
+export function startAiPrototypeImageGeneration(
+  sessionId: string,
+  payload: {
+    prompt: string
+    uploadAssetIds?: string[]
+    aspectRatio?: string
+  },
+) {
+  const vaultPath = getVaultPath()
+  if (!vaultPath) {
+    throw new Error('VAULT_NOT_READY')
+  }
+
+  const settings = getSettings()
+  if (!settings.apiKey) {
+    throw new Error('API_KEY_MISSING')
+  }
+
+  const { userMessage, assistantMessage } = createAiPrototypeImagePair(
+    vaultPath,
+    sessionId,
+    {
+      prompt: payload.prompt.trim(),
+      uploadAssetIds: payload.uploadAssetIds ?? [],
+      aspectRatio: payload.aspectRatio?.trim() || settings.defaultAspectRatio,
+      model: AI_PROTOTYPE_MODEL,
+    },
+  )
+
+  void runAiPrototypeImageGeneration(sessionId, assistantMessage.id, {
+    prompt: payload.prompt.trim(),
+    uploadAssetIds: payload.uploadAssetIds ?? [],
+    aspectRatio: payload.aspectRatio?.trim() || settings.defaultAspectRatio,
+  })
+
+  return { userMessage, assistantMessage }
+}
+
+export function disposeAiPrototypeImageTasks() {
   for (const messageId of activePolls.keys()) {
     stopPoll(messageId)
   }

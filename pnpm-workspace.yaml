@@ -8,3 +8,8 @@ allowBuilds:
 
 overrides:
   '@electron/node-gyp': 10.2.0-electron.2
+
+packageExtensions:
+  '@cursor/sdk':
+    dependencies:
+      '@connectrpc/connect-node': ^1.6.1

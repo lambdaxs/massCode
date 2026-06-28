@@ -150,6 +150,28 @@
     "colorConverter": {
       "label": "颜色转换器",
       "description": "在不同格式之间转换颜色"
+    },
+    "timestampParser": {
+      "label": "时间戳解析",
+      "description": "Unix 时间戳与日期字符串双向转换",
+      "useNow": "使用当前时间",
+      "detectedUnit": "识别单位",
+      "units": {
+        "seconds": "秒",
+        "milliseconds": "毫秒",
+        "dateString": "日期字符串"
+      },
+      "fields": {
+        "unixSeconds": "Unix 时间戳（秒）",
+        "unixMilliseconds": "Unix 时间戳（毫秒）",
+        "iso8601": "ISO 8601（UTC）",
+        "utc": "UTC",
+        "local": "本地时间",
+        "weekday": "星期"
+      },
+      "errors": {
+        "invalid": "无法解析时间戳或日期"
+      }
     }
   },
   "crypto": {
@@ -218,7 +240,8 @@
       "text": "输入文本",
       "value": "输入值",
       "secretKey": "输入密钥",
-      "url": "输入URL"
+      "url": "输入URL",
+      "timestamp": "输入 Unix 时间戳或日期字符串"
     }
   }
 }

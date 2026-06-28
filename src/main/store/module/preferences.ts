@@ -12,6 +12,7 @@ import Store from 'electron-store'
 import {
   AI_PROTOTYPE_DEFAULT_ASPECT_RATIO,
   AI_PROTOTYPE_DEFAULT_BASE_URL,
+  AI_PROTOTYPE_DEFAULT_CURSOR_MODEL,
   AI_PROTOTYPE_DEFAULT_POLL_INTERVAL_MS,
 } from '../../../shared/aiPrototype'
 import { EDITOR_DEFAULTS, NOTES_EDITOR_DEFAULTS } from '../constants'
@@ -46,6 +47,8 @@ const AI_PROTOTYPE_DEFAULTS: AiPrototypeSettings = {
   baseUrl: AI_PROTOTYPE_DEFAULT_BASE_URL,
   defaultAspectRatio: AI_PROTOTYPE_DEFAULT_ASPECT_RATIO,
   pollIntervalMs: AI_PROTOTYPE_DEFAULT_POLL_INTERVAL_MS,
+  cursorApiKey: '',
+  cursorModel: AI_PROTOTYPE_DEFAULT_CURSOR_MODEL,
 }
 
 const API_INTEGRATIONS_DEFAULTS: PreferencesStore['api']['integrations'] = {
@@ -265,6 +268,16 @@ function sanitizeAiPrototypeSettings(value: unknown): AiPrototypeSettings {
       source,
       'pollIntervalMs',
       AI_PROTOTYPE_DEFAULTS.pollIntervalMs,
+    ),
+    cursorApiKey: readString(
+      source,
+      'cursorApiKey',
+      AI_PROTOTYPE_DEFAULTS.cursorApiKey,
+    ),
+    cursorModel: readString(
+      source,
+      'cursorModel',
+      AI_PROTOTYPE_DEFAULTS.cursorModel,
     ),
   }
 }

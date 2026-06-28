@@ -64,6 +64,8 @@
     "@codemirror/legacy-modes": "^6.5.2",
     "@codemirror/state": "^6.6.0",
     "@codemirror/view": "^6.40.0",
+    "@connectrpc/connect-node": "^1.7.0",
+    "@cursor/sdk": "^1.0.19",
     "@dagrejs/dagre": "^1.1.5",
     "@elysiajs/cors": "^1.2.0",
     "@elysiajs/node": "^1.4.2",

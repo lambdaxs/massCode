@@ -150,6 +150,28 @@
     "colorConverter": {
       "label": "Конвертер цветов",
       "description": "Конвертация цветов между различными форматами"
+    },
+    "timestampParser": {
+      "label": "Разбор timestamp",
+      "description": "Конвертация Unix timestamp и строк с датой в обе стороны",
+      "useNow": "Текущее время",
+      "detectedUnit": "Определённая единица",
+      "units": {
+        "seconds": "Секунды",
+        "milliseconds": "Миллисекунды",
+        "dateString": "Строка даты"
+      },
+      "fields": {
+        "unixSeconds": "Unix timestamp (с)",
+        "unixMilliseconds": "Unix timestamp (мс)",
+        "iso8601": "ISO 8601 (UTC)",
+        "utc": "UTC",
+        "local": "Локальное время",
+        "weekday": "День недели"
+      },
+      "errors": {
+        "invalid": "Не удалось разобрать timestamp или дату"
+      }
     }
   },
   "crypto": {
@@ -237,7 +259,8 @@
       "text": "Введите текст",
       "value": "Введите значение",
       "secretKey": "Введите секретный ключ",
-      "url": "Введите URL"
+      "url": "Введите URL",
+      "timestamp": "Введите Unix timestamp или строку с датой"
     }
   }
 }

@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import { app, BrowserWindow, ipcMain, Menu, protocol, screen } from 'electron'
-import { disposeAiPrototypeTasks } from './aiPrototype/taskRunner'
+import { disposeAiPrototypeImageTasks } from './aiPrototype/imageRunner'
 import { initApi } from './api'
 import { registerIPC } from './ipc'
 import { startThemeWatcher, stopThemeWatcher } from './ipc/handlers/theme'
@@ -283,7 +283,7 @@ else {
     stopThemeWatcher()
     stopMarkdownWatcher()
     disposeTaskTimer()
-    disposeAiPrototypeTasks()
+    disposeAiPrototypeImageTasks()
   })
 
   app.on('window-all-closed', () => {

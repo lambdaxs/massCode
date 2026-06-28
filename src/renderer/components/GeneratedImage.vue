@@ -5,13 +5,27 @@ import { useSonner } from '@/composables'
 import { i18n } from '@/electron'
 import { Copy, Download } from 'lucide-vue-next'
 
-const props = defineProps<{
-  src: string
-  assetId?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    src: string
+    assetId?: string
+    downloadPrefix?: string
+    imgClass?: string
+    messagesPrefix?: string
+  }>(),
+  {
+    downloadPrefix: 'image',
+    imgClass: 'max-h-64 max-w-full cursor-zoom-in rounded-md object-contain',
+    messagesPrefix: 'spaces.aiPrototype.image',
+  },
+)
 
 const isPreviewOpen = ref(false)
 const { sonner } = useSonner()
+
+function imageMessage(key: string) {
+  return i18n.t(`${props.messagesPrefix}.${key}`)
+}
 
 const downloadFileName = computed(() => {
   const assetId = props.assetId?.trim()
@@ -28,7 +42,7 @@ const downloadFileName = computed(() => {
         ? 'webp'
         : 'jpg'
 
-  return `prototype-${Date.now()}.${extension}`
+  return `${props.downloadPrefix}-${Date.now()}.${extension}`
 })
 
 function openPreview() {
@@ -44,7 +58,7 @@ function downloadImage() {
   }
   catch {
     sonner({
-      message: i18n.t('spaces.aiPrototype.image.downloadFailed'),
+      message: imageMessage('downloadFailed'),
       type: 'error',
     })
   }
@@ -62,7 +76,7 @@ async function copyImageToClipboard() {
   }
   catch {
     sonner({
-      message: i18n.t('spaces.aiPrototype.image.copyFailed'),
+      message: imageMessage('copyFailed'),
       type: 'error',
     })
   }
@@ -74,12 +88,12 @@ async function copyImageToClipboard() {
     <ContextMenu.ContextMenuTrigger as-child>
       <button
         type="button"
-        class="focus-visible:ring-ring block overflow-hidden rounded-md focus-visible:ring-2 focus-visible:outline-hidden"
+        class="focus-visible:ring-ring block w-full overflow-hidden rounded-lg focus-visible:ring-2 focus-visible:outline-hidden"
         @click="openPreview"
       >
         <img
           :src="src"
-          class="max-h-64 max-w-full cursor-zoom-in rounded-md object-contain"
+          :class="imgClass"
           alt=""
           draggable="false"
         >
@@ -89,11 +103,11 @@ async function copyImageToClipboard() {
     <ContextMenu.ContextMenuContent>
       <ContextMenu.ContextMenuItem @click="downloadImage">
         <Download />
-        {{ i18n.t("spaces.aiPrototype.image.download") }}
+        {{ imageMessage("download") }}
       </ContextMenu.ContextMenuItem>
       <ContextMenu.ContextMenuItem @click="copyImageToClipboard">
         <Copy />
-        {{ i18n.t("spaces.aiPrototype.image.copy") }}
+        {{ imageMessage("copy") }}
       </ContextMenu.ContextMenuItem>
     </ContextMenu.ContextMenuContent>
   </ContextMenu.ContextMenu>
@@ -104,7 +118,7 @@ async function copyImageToClipboard() {
     >
       <Dialog.DialogHeader class="sr-only">
         <Dialog.DialogTitle>
-          {{ i18n.t("spaces.aiPrototype.image.preview") }}
+          {{ imageMessage("preview") }}
         </Dialog.DialogTitle>
       </Dialog.DialogHeader>
 

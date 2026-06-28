@@ -115,6 +115,25 @@
     "label": "Markdown",
     "codeRenderer": "代码块渲染器"
   },
+  "aiPrototype": {
+    "label": "原型设计",
+    "cursorApiKey": {
+      "label": "Cursor API Key",
+      "description": "用于需求对话与产品文档生成的 Cursor API Key，仅保存在本机。"
+    },
+    "cursorModel": {
+      "label": "Cursor 模型",
+      "description": "Cursor Agent 使用的模型，例如 composer-2.5。"
+    },
+    "apiKey": {
+      "label": "图片 API Key",
+      "description": "用于原型图生成的 gpt-image-2 API Key，仅保存在本机。"
+    },
+    "defaultAspectRatio": {
+      "label": "默认宽高比",
+      "description": "新图片生成的默认尺寸，例如 1024x1024。"
+    }
+  },
   "api": {
     "label": "API",
     "port": {

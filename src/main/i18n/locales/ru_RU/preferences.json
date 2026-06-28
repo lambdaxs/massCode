@@ -175,9 +175,17 @@
   },
   "aiPrototype": {
     "label": "Прототипирование",
+    "cursorApiKey": {
+      "label": "Cursor API Key",
+      "description": "Cursor API-ключ для чата требований и генерации продуктового документа. Хранится только на этом устройстве."
+    },
+    "cursorModel": {
+      "label": "Модель Cursor",
+      "description": "Модель для шагов Cursor agent, например composer-2.5."
+    },
     "apiKey": {
-      "label": "API-ключ",
-      "description": "API-ключ gpt-image-2 для domestic-провайдера. Хранится только на этом устройстве."
+      "label": "API-ключ изображений",
+      "description": "API-ключ gpt-image-2 для генерации прототипов. Хранится только на этом устройстве."
     },
     "defaultAspectRatio": {
       "label": "Соотношение сторон по умолчанию",

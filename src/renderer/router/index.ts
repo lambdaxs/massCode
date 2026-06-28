@@ -30,6 +30,7 @@ export const RouterName = {
   devtoolsSlugify: 'devtools/slugify',
   devtoolsUrlEncoder: 'devtools/url-encoder',
   devtoolsColorConverter: 'devtools/color-converter',
+  devtoolsTimestampParser: 'devtools/timestamp-parser',
   devtoolsJsonGenerator: 'devtools/json-generator',
   devtoolsLoremIpsumGenerator: 'devtools/lorem-ipsum-generator',
   devtoolsJsonDiff: 'devtools/json-diff',
@@ -37,6 +38,7 @@ export const RouterName = {
   httpSpace: 'http-space',
   drawingsSpace: 'drawings-space',
   aiPrototypeSpace: 'ai-prototype-space',
+  aiOperationsSpace: 'ai-operations-space',
   notesSpace: 'notes-space',
   notesDashboard: 'notes-space/dashboard',
   notesGraph: 'notes-space/graph',
@@ -209,6 +211,12 @@ const routes = [
           import('@/components/devtools/converters/ColorConverter.vue'),
       },
       {
+        path: 'timestamp-parser',
+        name: RouterName.devtoolsTimestampParser,
+        component: () =>
+          import('@/components/devtools/converters/TimestampParser.vue'),
+      },
+      {
         path: 'json-generator',
         name: RouterName.devtoolsJsonGenerator,
         component: () =>
@@ -246,6 +254,11 @@ const routes = [
     path: '/ai-prototype',
     name: RouterName.aiPrototypeSpace,
     component: () => import('@/views/AiPrototypeSpace.vue'),
+  },
+  {
+    path: '/ai-operations',
+    name: RouterName.aiOperationsSpace,
+    component: () => import('@/views/AiOperationsSpace.vue'),
   },
   {
     path: '/notes',

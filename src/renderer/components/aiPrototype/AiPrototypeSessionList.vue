@@ -7,14 +7,35 @@ import { Plus, Trash2 } from 'lucide-vue-next'
 const {
   sessions,
   totals,
+  skills,
   activeSessionId,
+  credits,
+  isCreditsLoading,
   createSession,
   deleteSession,
   selectSession,
 } = useAiPrototype()
 
+const showCreate = ref(false)
+const title = ref('')
+const skillId = ref('')
+
+const formattedCredits = computed(() => {
+  if (credits.value === null) {
+    return null
+  }
+
+  return credits.value.toLocaleString()
+})
+
 async function onCreateSession() {
-  await createSession()
+  await createSession({
+    title: title.value.trim() || undefined,
+    skillId: skillId.value || undefined,
+  })
+  showCreate.value = false
+  title.value = ''
+  skillId.value = ''
 }
 
 async function onSelectSession(session: AiPrototypeSessionSummary) {
@@ -35,7 +56,7 @@ async function onDeleteSession(sessionId: string) {
       <template #action>
         <UiActionButton
           :tooltip="i18n.t('spaces.aiPrototype.newSession')"
-          @click="onCreateSession"
+          @click="showCreate = !showCreate"
         >
           <Plus class="h-4 w-4" />
         </UiActionButton>
@@ -50,6 +71,58 @@ async function onDeleteSession(sessionId: string) {
           failed: totals.failed,
         })
       }}
+    </div>
+
+    <div
+      class="text-muted-foreground border-border border-b px-1 pb-2 text-[11px] leading-none"
+    >
+      <span v-if="isCreditsLoading">
+        {{ i18n.t("spaces.aiPrototype.credits.loading") }}
+      </span>
+      <span v-else-if="formattedCredits !== null">
+        {{
+          i18n.t("spaces.aiPrototype.credits.balance", {
+            balance: formattedCredits,
+          })
+        }}
+      </span>
+      <span v-else>
+        {{ i18n.t("spaces.aiPrototype.credits.unavailable") }}
+      </span>
+    </div>
+
+    <div
+      v-if="showCreate"
+      class="border-border space-y-2 border-b px-1 py-2"
+    >
+      <UiInput
+        v-model="title"
+        variant="default"
+        class="text-xs"
+        :placeholder="i18n.t('spaces.aiPrototype.sessionTitlePlaceholder')"
+      />
+      <select
+        v-model="skillId"
+        class="border-input bg-background h-8 w-full rounded-md border px-2 text-xs"
+      >
+        <option value="">
+          {{ i18n.t("spaces.aiPrototype.noSkill") }}
+        </option>
+        <option
+          v-for="skill in skills"
+          :key="skill.id"
+          :value="skill.id"
+        >
+          {{ skill.name }}
+        </option>
+      </select>
+      <button
+        type="button"
+        class="bg-primary text-primary-foreground w-full rounded-md px-2 py-1.5 text-xs"
+        @click="onCreateSession"
+      >
+        {{ i18n.t("spaces.aiPrototype.createSession") }}
+      </button>
     </div>
 
     <div class="scrollbar min-h-0 flex-1 overflow-y-auto">
@@ -74,6 +147,7 @@ async function onDeleteSession(sessionId: string) {
               i18n.t("spaces.aiPrototype.sessionMeta", {
                 messages: session.messageCount,
                 succeeded: session.successCount,
+                deliverables: session.deliverableCount ?? 0,
               })
             }}
           </div>
@@ -86,5 +160,7 @@ async function onDeleteSession(sessionId: string) {
         </UiActionButton>
       </button>
     </div>
+
+    <AiPrototypeSkillsPanel />
   </div>
 </template>
